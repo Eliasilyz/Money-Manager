@@ -4,6 +4,7 @@ import 'package:money_manager/database/database.dart';
 import 'package:money_manager/data/repositories/drift_account_repository.dart';
 import 'package:money_manager/data/repositories/drift_budget_repository.dart';
 import 'package:money_manager/data/repositories/drift_category_repository.dart';
+import 'package:money_manager/data/repositories/drift_currency_repository.dart';
 import 'package:money_manager/data/repositories/drift_debt_repository.dart';
 import 'package:money_manager/data/repositories/drift_goal_repository.dart';
 import 'package:money_manager/data/repositories/drift_recurring_repository.dart';
@@ -11,6 +12,7 @@ import 'package:money_manager/data/repositories/drift_transaction_repository.dar
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/budgets/application/budget_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/currencies/application/currency_provider.dart';
 import 'package:money_manager/features/debts/application/debt_provider.dart';
 import 'package:money_manager/features/goals/application/goal_provider.dart';
 import 'package:money_manager/features/recurring/application/recurring_provider.dart';
@@ -27,6 +29,7 @@ void main() {
   final goalRepo = DriftGoalRepository(db);
   final debtRepo = DriftDebtRepository(db);
   final recurringRepo = DriftRecurringRepository(db);
+  final currencyRepo = DriftCurrencyRepository(db);
 
   runApp(
     ProviderScope(
@@ -38,6 +41,7 @@ void main() {
         goalRepositoryProvider.overrideWithValue(goalRepo),
         debtRepositoryProvider.overrideWithValue(debtRepo),
         recurringRepositoryProvider.overrideWithValue(recurringRepo),
+        currencyRepositoryProvider.overrideWithValue(currencyRepo),
       ],
       child: const MoneyManagerApp(),
     ),
