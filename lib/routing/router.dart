@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:money_manager/features/accounts/presentation/accounts_screen.dart';
+import 'package:money_manager/features/budgets/presentation/budgets_screen.dart';
+import 'package:money_manager/features/budgets/presentation/add_budget_screen.dart';
 import 'package:money_manager/features/categories/presentation/categories_screen.dart';
 import 'package:money_manager/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:money_manager/features/transactions/presentation/transactions_screen.dart';
@@ -46,6 +48,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/add-transfer',
         name: 'add-transfer',
         builder: (context, state) => const AddTransferScreen(),
+      ),
+      GoRoute(
+        path: '/budgets',
+        name: 'budgets',
+        builder: (context, state) => const BudgetsScreen(),
+      ),
+      GoRoute(
+        path: '/add-budget',
+        name: 'add-budget',
+        builder: (context, state) => const AddBudgetScreen(),
       ),
     ],
   );

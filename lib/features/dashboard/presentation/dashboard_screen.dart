@@ -7,10 +7,8 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Money Manager'),
-      ),
-      body: Padding(
+      appBar: AppBar(title: const Text('Money Manager')),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -26,6 +24,12 @@ class DashboardScreen extends StatelessWidget {
               icon: Icons.swap_horiz,
               label: 'Transfers',
               onTap: () => context.push('/transfers'),
+            ),
+            const SizedBox(height: 12),
+            _QuickActionCard(
+              icon: Icons.account_balance_wallet,
+              label: 'Budgets',
+              onTap: () => context.push('/budgets'),
             ),
             const SizedBox(height: 12),
             Row(
