@@ -8,6 +8,7 @@ import 'package:money_manager/features/goals/presentation/goals_screen.dart';
 import 'package:money_manager/features/goals/presentation/add_goal_screen.dart';
 import 'package:money_manager/features/debts/presentation/debts_screen.dart';
 import 'package:money_manager/features/debts/presentation/add_debt_screen.dart';
+import 'package:money_manager/features/recurring/presentation/recurring_screen.dart';
 import 'package:money_manager/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:money_manager/features/transactions/presentation/transactions_screen.dart';
 import 'package:money_manager/features/transactions/presentation/add_transaction_screen.dart';
@@ -82,6 +83,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/add-debt',
         name: 'add-debt',
         builder: (context, state) => const AddDebtScreen(),
+      ),
+      GoRoute(
+        path: '/recurring',
+        name: 'recurring',
+        builder: (context, state) => const RecurringScreen(),
       ),
     ],
   );
