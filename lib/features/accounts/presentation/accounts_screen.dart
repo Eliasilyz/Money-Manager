@@ -177,7 +177,7 @@ class AccountsScreen extends ConsumerWidget {
               style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
             ),
             subtitle: Text(
-              '${account.currencyCode}',
+              account.currencyCode,
               style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
             ),
             trailing: Text(

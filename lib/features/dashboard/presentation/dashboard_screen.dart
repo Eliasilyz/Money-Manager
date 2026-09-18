@@ -73,9 +73,9 @@ class DashboardScreen extends ConsumerWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.lilac, AppColors.sky],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,

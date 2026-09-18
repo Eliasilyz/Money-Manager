@@ -55,9 +55,9 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
             TextField(
               controller: _nameCtrl,
               style: GoogleFonts.inter(color: AppColors.textPrimary),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Contoh: BCA Utama',
-                prefixIcon: const Icon(Icons.label_outline, color: AppColors.textMuted),
+                prefixIcon: Icon(Icons.label_outline, color: AppColors.textMuted),
               ),
               textCapitalization: TextCapitalization.words,
             ),
@@ -125,9 +125,9 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               controller: _balanceCtrl,
               keyboardType: TextInputType.number,
               style: GoogleFonts.jetBrainsMono(color: AppColors.textPrimary, fontSize: 16),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: '0',
-                prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppColors.textMuted),
+                prefixIcon: Icon(Icons.monetization_on_outlined, color: AppColors.textMuted),
               ),
             ),
             const SizedBox(height: 24),
