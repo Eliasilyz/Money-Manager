@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:money_manager/features/accounts/presentation/accounts_screen.dart';
 import 'package:money_manager/features/categories/presentation/categories_screen.dart';
 import 'package:money_manager/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:money_manager/features/transactions/presentation/transactions_screen.dart';
+import 'package:money_manager/features/transactions/presentation/add_transaction_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -22,6 +24,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/categories',
         name: 'categories',
         builder: (context, state) => const CategoriesScreen(),
+      ),
+      GoRoute(
+        path: '/transactions',
+        name: 'transactions',
+        builder: (context, state) => const TransactionsScreen(),
+      ),
+      GoRoute(
+        path: '/add-transaction',
+        name: 'add-transaction',
+        builder: (context, state) => const AddTransactionScreen(),
       ),
     ],
   );
