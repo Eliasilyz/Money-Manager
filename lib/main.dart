@@ -26,8 +26,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final db = AppDatabase();
 
-  await _seedDefaults(db);
-
   final accountRepo = DriftAccountRepository(db);
   final categoryRepo = DriftCategoryRepository(db);
   final transactionRepo = DriftTransactionRepository(db);
@@ -52,6 +50,9 @@ void main() async {
       child: const MoneyManagerApp(),
     ),
   );
+
+  // Seed defaults after app starts — don't block first frame
+  await _seedDefaults(db);
 }
 
 Future<void> _seedDefaults(AppDatabase db) async {
