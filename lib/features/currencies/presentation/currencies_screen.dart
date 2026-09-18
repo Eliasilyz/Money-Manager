@@ -17,13 +17,22 @@ class CurrenciesScreen extends ConsumerWidget {
             return const Center(child: Text('No currencies available.'));
           }
           return ListView.builder(
+            padding: const EdgeInsets.all(8),
             itemCount: currencies.length,
             itemBuilder: (context, index) {
               final c = currencies[index];
-              return ListTile(
-                leading: CircleAvatar(child: Text(c.symbol)),
-                title: Text('${c.code} - ${c.name}'),
-                subtitle: Text('Symbol: ${c.symbol} · Decimals: ${c.decimalDigits}'),
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    child: Text(c.symbol, style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    )),
+                  ),
+                  title: Text('${c.code} - ${c.name}', style: const TextStyle(fontWeight: FontWeight.w500)),
+                  subtitle: Text('Symbol: ${c.symbol} · Decimals: ${c.decimalDigits}'),
+                ),
               );
             },
           );
