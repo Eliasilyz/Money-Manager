@@ -22,11 +22,11 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   bool _saving = false;
 
   static const _accountTypes = [
-    ('wallet', 'Dompet', Icons.account_balance_wallet_outlined, AppColors.emerald),
-    ('savings', 'Tabungan', Icons.savings_outlined, AppColors.blue),
-    ('credit', 'Kartu Kredit', Icons.credit_card_outlined, AppColors.coral),
-    ('cash', 'Tunai', Icons.payments_outlined, AppColors.amber),
-    ('investment', 'Investasi', Icons.trending_up_rounded, AppColors.violet),
+    ('wallet', 'Dompet', Icons.account_balance_wallet_outlined, AppColors.gold),
+    ('savings', 'Tabungan', Icons.savings_outlined, AppColors.sky),
+    ('credit', 'Kartu Kredit', Icons.credit_card_outlined, AppColors.rose),
+    ('cash', 'Tunai', Icons.payments_outlined, AppColors.orange),
+    ('investment', 'Investasi', Icons.trending_up_rounded, AppColors.lilac),
   ];
 
   @override
@@ -114,8 +114,8 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                   onChanged: (val) => setState(() => _currencyCode = val ?? 'IDR'),
                 );
               },
-              loading: () => const LinearProgressIndicator(color: AppColors.emerald),
-              error: (e, _) => Text('Error: $e', style: GoogleFonts.inter(color: AppColors.coral)),
+              loading: () => const LinearProgressIndicator(color: AppColors.gold),
+              error: (e, _) => Text('Error: $e', style: GoogleFonts.inter(color: AppColors.rose)),
             ),
             const SizedBox(height: 24),
 
@@ -150,7 +150,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               child: FilledButton(
                 onPressed: _saving ? null : _save,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.emerald,
+                  backgroundColor: AppColors.gold,
                   foregroundColor: AppColors.bg,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),

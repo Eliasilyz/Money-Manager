@@ -4,23 +4,38 @@ import 'package:google_fonts/google_fonts.dart';
 class AppColors {
   AppColors._();
 
-  static const bg = Color(0xFF0A0A0F);
-  static const surface = Color(0xFF12121A);
-  static const card = Color(0xFF1A1A26);
-  static const card2 = Color(0xFF1F1F2E);
+  // Backgrounds — deep navy-ink
+  static const bg = Color(0xFF070B18);
+  static const surface = Color(0xFF0B1022);
+  static const card = Color(0xFF0F1630);
+  static const card2 = Color(0xFF141D3A);
 
-  static const emerald = Color(0xFF00E096);
-  static const coral = Color(0xFFFF5252);
-  static const amber = Color(0xFFFFB800);
-  static const violet = Color(0xFF8B5CF6);
-  static const blue = Color(0xFF3B82F6);
+  // Primary — warm gold
+  static const gold = Color(0xFFF4C430);
+  static const gold2 = Color(0xFFE8A800);
 
-  static const textPrimary = Color(0xFFF0F0F8);
-  static const textMuted = Color(0x73FFFFFF);
-  static const textDisabled = Color(0x40FFFFFF);
+  // Semantic
+  static const teal = Color(0xFF22D4A6);   // income / positive
+  static const rose = Color(0xFFFF4757);   // expense / negative
+  static const sky = Color(0xFF5E9BFF);    // transfer / info
+  static const orange = Color(0xFFFF9F43); // warning
+  static const lilac = Color(0xFFA78BFA);  // goals / accent
 
-  static const border = Color(0x14FFFFFF);
-  static const borderMid = Color(0x1AFFFFFF);
+  // Text
+  static const textPrimary = Color(0xFFEEF0FB);
+  static const textMuted = Color(0x6BEEF0FB);
+  static const textDim = Color(0x38EEF0FB);
+
+  // Borders
+  static const border = Color(0x12FFFFFF);
+
+  // Deprecated aliases
+  static const textDisabled = textDim;
+  static const emerald = teal;
+  static const coral = rose;
+  static const violet = lilac;
+  static const blue = sky;
+  static const amber = orange;
 }
 
 class AppTheme {
@@ -32,9 +47,9 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.bg,
     colorScheme: const ColorScheme.dark(
       surface: AppColors.surface,
-      primary: AppColors.emerald,
-      secondary: AppColors.violet,
-      error: AppColors.coral,
+      primary: AppColors.gold,
+      secondary: AppColors.lilac,
+      error: AppColors.rose,
       onSurface: AppColors.textPrimary,
     ),
     appBarTheme: AppBarTheme(
@@ -60,18 +75,18 @@ class AppTheme {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: AppColors.surface,
       elevation: 0,
-      indicatorColor: AppColors.emerald.withValues(alpha: 0.12),
+      indicatorColor: AppColors.gold.withValues(alpha: 0.12),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.emerald);
+          return GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.gold);
         }
-        return GoogleFonts.inter(fontSize: 12, color: AppColors.textDisabled);
+        return GoogleFonts.inter(fontSize: 12, color: AppColors.textDim);
       }),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return const IconThemeData(color: AppColors.emerald, size: 24);
+          return const IconThemeData(color: AppColors.gold, size: 24);
         }
-        return const IconThemeData(color: AppColors.textDisabled, size: 24);
+        return const IconThemeData(color: AppColors.textDim, size: 24);
       }),
     ),
     dividerTheme: const DividerThemeData(color: AppColors.border, thickness: 1),
@@ -89,13 +104,13 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.emerald, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
       ),
-      hintStyle: GoogleFonts.inter(color: AppColors.textDisabled, fontSize: 14),
+      hintStyle: GoogleFonts.inter(color: AppColors.textDim, fontSize: 14),
       labelStyle: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: AppColors.emerald,
+      backgroundColor: AppColors.gold,
       foregroundColor: AppColors.bg,
       elevation: 4,
     ),
@@ -116,15 +131,15 @@ class AppTheme {
       ),
     ),
     tabBarTheme: TabBarThemeData(
-      labelColor: AppColors.emerald,
-      unselectedLabelColor: AppColors.textDisabled,
-      indicatorColor: AppColors.emerald,
+      labelColor: AppColors.gold,
+      unselectedLabelColor: AppColors.textDim,
+      indicatorColor: AppColors.gold,
       labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14),
       unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 14),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.card,
-      selectedColor: AppColors.emerald,
+      selectedColor: AppColors.gold,
       labelStyle: GoogleFonts.inter(fontSize: 13),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -135,7 +150,7 @@ class AppTheme {
       contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.emerald,
+      color: AppColors.gold,
       linearTrackColor: AppColors.border,
     ),
   );
@@ -148,4 +163,3 @@ extension TextStyles on BuildContext {
   TextStyle get interMuted => GoogleFonts.inter(color: AppColors.textMuted);
   TextStyle get mono => GoogleFonts.jetBrainsMono(fontWeight: FontWeight.w600, color: AppColors.textPrimary);
 }
-

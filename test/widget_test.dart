@@ -8,7 +8,7 @@ void main() {
     await tester.pumpWidget(
       const ProviderScope(child: MoneyManagerApp()),
     );
-    await tester.pump();
+    await tester.pumpAndSettle(const Duration(seconds: 3));
     expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

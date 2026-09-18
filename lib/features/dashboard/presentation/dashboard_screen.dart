@@ -21,7 +21,7 @@ class DashboardScreen extends ConsumerWidget {
             final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
             return RefreshIndicator(
               onRefresh: () async => ref.invalidate(dashboardProvider),
-              color: AppColors.emerald,
+              color: AppColors.gold,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
@@ -32,9 +32,9 @@ class DashboardScreen extends ConsumerWidget {
                     const SizedBox(height: 24),
                     _buildQuickActions(context),
                     const SizedBox(height: 24),
-                    _buildSection(context, 'Recent Transactions', () => context.push('/transactions')),
+                    _buildSection(context, 'Transaksi Terakhir', () => context.push('/transactions')),
                     if (data.recentTransactions.isEmpty)
-                      _buildEmpty(context, 'No transactions yet')
+                      _buildEmpty(context, 'Belum ada transaksi')
                     else
                       ...data.recentTransactions.map((t) => _buildTransactionTile(context, t, fmt)),
                     const SizedBox(height: 100),
@@ -43,8 +43,8 @@ class DashboardScreen extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-          error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.coral))),
+          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
+          error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
         ),
       ),
     );
@@ -75,10 +75,14 @@ class DashboardScreen extends ConsumerWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.violet.withValues(alpha: 0.4), width: 2),
+              gradient: const LinearGradient(
+                colors: [AppColors.lilac, AppColors.sky],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
             child: const Center(
-              child: Icon(Icons.person, color: AppColors.violet, size: 20),
+              child: Icon(Icons.person, color: Colors.white, size: 20),
             ),
           ),
         ],
@@ -110,8 +114,8 @@ class DashboardScreen extends ConsumerWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.emerald.withValues(alpha: 0.1),
-                    AppColors.emerald.withValues(alpha: 0.0),
+                    AppColors.gold.withValues(alpha: 0.08),
+                    AppColors.gold.withValues(alpha: 0.0),
                   ],
                 ),
               ),
@@ -127,14 +131,18 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 fmt.format(data.totalBalance),
-                style: GoogleFonts.jetBrainsMono(fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: GoogleFonts.jetBrainsMono(fontSize: 28, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               Row(
                 children: [
-                  _buildMiniStat(Icons.arrow_downward, 'Pemasukan', fmt.format(data.totalIncome), AppColors.emerald),
-                  const SizedBox(width: 24),
-                  _buildMiniStat(Icons.arrow_upward, 'Pengeluaran', fmt.format(data.totalExpenses), AppColors.coral),
+                  Expanded(
+                    child: _buildMiniStat(Icons.arrow_downward, 'Pemasukan', fmt.format(data.totalIncome), AppColors.teal),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildMiniStat(Icons.arrow_upward, 'Pengeluaran', fmt.format(data.totalExpenses), AppColors.rose),
+                  ),
                 ],
               ),
             ],
@@ -146,6 +154,7 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildMiniStat(IconData icon, String label, String value, Color color) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 28,
@@ -157,12 +166,15 @@ class DashboardScreen extends ConsumerWidget {
           child: Icon(icon, color: color, size: 14),
         ),
         const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
-            Text(value, style: GoogleFonts.jetBrainsMono(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
-          ],
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted), overflow: TextOverflow.ellipsis),
+              Text(value, style: GoogleFonts.jetBrainsMono(fontSize: 12, fontWeight: FontWeight.w600, color: color), overflow: TextOverflow.ellipsis),
+            ],
+          ),
         ),
       ],
     );
@@ -170,14 +182,14 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
-      _Action('Transaksi', Icons.receipt_long_outlined, () => context.push('/transactions'), AppColors.emerald),
-      _Action('Transfer', Icons.swap_horiz_rounded, () => context.push('/transfers'), AppColors.violet),
-      _Action('Anggaran', Icons.pie_chart_outline_rounded, () => context.push('/budgets'), AppColors.amber),
-      _Action('Target', Icons.flag_outlined, () => context.push('/goals'), AppColors.blue),
-      _Action('Hutang', Icons.money_off_rounded, () => context.push('/debts'), AppColors.coral),
-      _Action('Berulang', Icons.repeat_rounded, () => context.push('/recurring'), AppColors.violet),
-      _Action('Kategori', Icons.category_outlined, () => context.push('/categories'), AppColors.emerald),
-      _Action('Mata Uang', Icons.monetization_on_outlined, () => context.push('/currencies'), AppColors.blue),
+      _Action('Transaksi', Icons.receipt_long_outlined, () => context.push('/transactions'), AppColors.teal),
+      _Action('Transfer', Icons.swap_horiz_rounded, () => context.push('/transfers'), AppColors.sky),
+      _Action('Anggaran', Icons.pie_chart_outline_rounded, () => context.push('/budgets'), AppColors.orange),
+      _Action('Target', Icons.flag_outlined, () => context.push('/goals'), AppColors.lilac),
+      _Action('Hutang', Icons.money_off_rounded, () => context.push('/debts'), AppColors.rose),
+      _Action('Berulang', Icons.repeat_rounded, () => context.push('/recurring'), AppColors.sky),
+      _Action('Kategori', Icons.category_outlined, () => context.push('/categories'), AppColors.teal),
+      _Action('Mata Uang', Icons.monetization_on_outlined, () => context.push('/currencies'), AppColors.gold),
     ];
 
     return Padding(
@@ -237,7 +249,7 @@ class DashboardScreen extends ConsumerWidget {
           if (onSeeAll != null)
             TextButton(
               onPressed: onSeeAll,
-              child: Text('See All', style: GoogleFonts.inter(fontSize: 12, color: AppColors.emerald)),
+              child: Text('Lihat Semua', style: GoogleFonts.inter(fontSize: 12, color: AppColors.gold)),
             ),
         ],
       ),
@@ -246,7 +258,7 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildTransactionTile(BuildContext context, Transaction t, NumberFormat fmt) {
     final isIncome = t.type == 'income';
-    final color = isIncome ? AppColors.emerald : AppColors.coral;
+    final color = isIncome ? AppColors.teal : AppColors.rose;
     final sign = isIncome ? '+' : '-';
 
     return Container(
@@ -290,7 +302,7 @@ class DashboardScreen extends ConsumerWidget {
       child: Center(
         child: Column(
           children: [
-            const Icon(Icons.inbox_outlined, size: 48, color: AppColors.textDisabled),
+            const Text('📭', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
             Text(message, style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
           ],

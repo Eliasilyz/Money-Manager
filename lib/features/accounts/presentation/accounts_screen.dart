@@ -11,11 +11,11 @@ class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
 
   static const _typeConfig = {
-    'wallet': ('Dompet', Icons.account_balance_wallet_outlined, AppColors.emerald),
-    'savings': ('Tabungan', Icons.savings_outlined, AppColors.blue),
-    'credit': ('Kartu Kredit', Icons.credit_card_outlined, AppColors.coral),
-    'cash': ('Tunai', Icons.payments_outlined, AppColors.amber),
-    'investment': ('Investasi', Icons.trending_up_rounded, AppColors.violet),
+    'wallet': ('Dompet', Icons.account_balance_wallet_outlined, AppColors.gold),
+    'savings': ('Tabungan', Icons.savings_outlined, AppColors.sky),
+    'credit': ('Kartu Kredit', Icons.credit_card_outlined, AppColors.rose),
+    'cash': ('Tunai', Icons.payments_outlined, AppColors.orange),
+    'investment': ('Investasi', Icons.trending_up_rounded, AppColors.lilac),
   };
 
   @override
@@ -51,12 +51,12 @@ class AccountsScreen extends ConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-        error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.coral))),
+        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
+        error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/add-account'),
-        backgroundColor: AppColors.emerald,
+        backgroundColor: AppColors.gold,
         foregroundColor: AppColors.bg,
         icon: const Icon(Icons.add),
         label: Text('Tambah Akun', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
@@ -105,7 +105,7 @@ class AccountsScreen extends ConsumerWidget {
           const SizedBox(height: 6),
           Text(
             fmt.format(total),
-            style: GoogleFonts.jetBrainsMono(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.emerald),
+            style: GoogleFonts.jetBrainsMono(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.gold),
           ),
         ],
       ),
@@ -123,7 +123,7 @@ class AccountsScreen extends ConsumerWidget {
 
   Widget _buildAccountTile(BuildContext context, WidgetRef ref, Account account) {
     final config = _typeConfig[account.accountType];
-    final color = config?.$3 ?? AppColors.emerald;
+    final color = config?.$3 ?? AppColors.gold;
     final icon = config?.$2 ?? Icons.account_balance_wallet_outlined;
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
 
@@ -137,7 +137,7 @@ class AccountsScreen extends ConsumerWidget {
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),
             decoration: BoxDecoration(
-              color: AppColors.coral,
+              color: AppColors.rose,
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(Icons.delete_outline, color: Colors.white),
@@ -152,7 +152,7 @@ class AccountsScreen extends ConsumerWidget {
                   TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
                   TextButton(
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: Text('Hapus', style: GoogleFonts.inter(color: AppColors.coral)),
+                    child: Text('Hapus', style: GoogleFonts.inter(color: AppColors.rose)),
                   ),
                 ],
               ),

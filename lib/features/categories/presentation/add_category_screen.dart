@@ -20,16 +20,16 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
   bool _saving = false;
 
   static const _presets = [
-    ('Makanan', '🍜', AppColors.coral),
-    ('Transport', '🚗', AppColors.blue),
-    ('Belanja', '🛒', AppColors.violet),
-    ('Tagihan', '💡', AppColors.coral),
-    ('Hiburan', '🎮', AppColors.violet),
-    ('Kesehatan', '🏥', AppColors.emerald),
-    ('Pendidikan', '📚', AppColors.amber),
-    ('Gaji', '💼', AppColors.emerald),
-    ('Freelance', '💻', AppColors.blue),
-    ('Investasi', '📈', AppColors.violet),
+    ('Makanan', '🍜', AppColors.rose),
+    ('Transport', '🚗', AppColors.sky),
+    ('Belanja', '🛒', AppColors.lilac),
+    ('Tagihan', '💡', AppColors.rose),
+    ('Hiburan', '🎮', AppColors.lilac),
+    ('Kesehatan', '🏥', AppColors.teal),
+    ('Pendidikan', '📚', AppColors.orange),
+    ('Gaji', '💼', AppColors.teal),
+    ('Freelance', '💻', AppColors.sky),
+    ('Investasi', '📈', AppColors.lilac),
   ];
 
   @override
@@ -53,9 +53,9 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(child: _typeButton('Pengeluaran', 'expense', AppColors.coral)),
+                Expanded(child: _typeButton('Pengeluaran', 'expense', AppColors.rose)),
                 const SizedBox(width: 12),
-                Expanded(child: _typeButton('Pemasukan', 'income', AppColors.emerald)),
+                Expanded(child: _typeButton('Pemasukan', 'income', AppColors.teal)),
               ],
             ),
             const SizedBox(height: 24),
@@ -107,7 +107,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
               child: FilledButton(
                 onPressed: _saving ? null : _save,
                 style: FilledButton.styleFrom(
-                  backgroundColor: _type == 'expense' ? AppColors.coral : AppColors.emerald,
+                  backgroundColor: AppColors.gold,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
