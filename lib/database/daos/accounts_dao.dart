@@ -1,0 +1,43 @@
+import 'package:drift/drift.dart';
+import 'package:money_manager/database/tables/accounts_table.dart';
+import 'package:money_manager/database/database.dart';
+
+part 'accounts_dao.g.dart';
+
+@DriftAccessor(tables: [AccountsTable])
+class AccountsDao extends DatabaseAccessor<AppDatabase>
+    with _$AccountsDaoMixin {
+  final AppDatabase db;
+
+  AccountsDao(this.db) : super(db);
+
+  Future<int> insertAccount(AccountsTableCompanion account) =>
+      into(accountsTable).insert(account);
+
+  Future<bool> updateAccount(AccountsTableCompanion account) =>
+      update(accountsTable).replace(account);
+
+  Future<int> deleteAccount(String id) =>
+      (delete(accountsTable)..where((a) => a.id.equals(id))).go();
+
+  Future<List<Account>> getAllAccounts() => select(accountsTable).get();
+
+  Future<List<Account>> getActiveAccounts() =>
+      (select(accountsTable)..where((a) => a.isArchived.equals(false))).get();
+
+  Future<Account?> getAccountById(String id) =>
+      (select(accountsTable)..where((a) => a.id.equals(id))).getSingleOrNull();
+
+  Stream<List<Account>> watchAllAccounts() => select(accountsTable).watch();
+
+  Stream<List<Account>> watchActiveAccounts() =>
+      (select(accountsTable)..where((a) => a.isArchived.equals(false))).watch();
+
+  Stream<Account?> watchAccountById(String id) =>
+      (select(accountsTable)..where((a) => a.id.equals(id)))
+          .watchSingleOrNull();
+
+  Future<int> archiveAccount(String id, bool archived) =>
+      (update(accountsTable)..where((a) => a.id.equals(id)))
+          .write(AccountsTableCompanion(isArchived: Value(archived)));
+}
