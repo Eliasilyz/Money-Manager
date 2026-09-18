@@ -5,6 +5,8 @@ import 'package:money_manager/features/categories/presentation/categories_screen
 import 'package:money_manager/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:money_manager/features/transactions/presentation/transactions_screen.dart';
 import 'package:money_manager/features/transactions/presentation/add_transaction_screen.dart';
+import 'package:money_manager/features/transfers/presentation/transfers_screen.dart';
+import 'package:money_manager/features/transfers/presentation/add_transfer_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -34,6 +36,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/add-transaction',
         name: 'add-transaction',
         builder: (context, state) => const AddTransactionScreen(),
+      ),
+      GoRoute(
+        path: '/transfers',
+        name: 'transfers',
+        builder: (context, state) => const TransfersScreen(),
+      ),
+      GoRoute(
+        path: '/add-transfer',
+        name: 'add-transfer',
+        builder: (context, state) => const AddTransferScreen(),
       ),
     ],
   );

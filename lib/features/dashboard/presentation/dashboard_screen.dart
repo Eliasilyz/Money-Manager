@@ -22,6 +22,12 @@ class DashboardScreen extends StatelessWidget {
               onTap: () => context.push('/transactions'),
             ),
             const SizedBox(height: 12),
+            _QuickActionCard(
+              icon: Icons.swap_horiz,
+              label: 'Transfers',
+              onTap: () => context.push('/transfers'),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
