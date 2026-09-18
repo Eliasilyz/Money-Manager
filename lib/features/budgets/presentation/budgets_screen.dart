@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/budgets/application/budget_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
@@ -43,7 +44,7 @@ class BudgetsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add-budget'),
+        onPressed: () => context.push('/add-budget'),
         child: const Icon(Icons.add),
       ),
     );

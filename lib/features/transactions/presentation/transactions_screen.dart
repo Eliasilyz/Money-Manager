@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 
@@ -71,7 +72,7 @@ class TransactionsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add-transaction'),
+        onPressed: () => context.push('/add-transaction'),
         child: const Icon(Icons.add),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:money_manager/features/debts/application/debt_provider.dart';
 
 class DebtsScreen extends ConsumerWidget {
@@ -44,7 +45,7 @@ class DebtsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add-debt'),
+        onPressed: () => context.push('/add-debt'),
         child: const Icon(Icons.add),
       ),
     );

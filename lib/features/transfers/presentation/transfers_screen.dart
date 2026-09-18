@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/transfers/application/transfer_provider.dart';
 
@@ -35,7 +36,7 @@ class TransfersScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/add-transfer'),
+        onPressed: () => context.push('/add-transfer'),
         child: const Icon(Icons.add),
       ),
     );
