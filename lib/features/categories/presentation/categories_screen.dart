@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/theme/app_theme.dart';
 
 class CategoriesScreen extends ConsumerStatefulWidget {
   const CategoriesScreen({super.key});
@@ -13,18 +15,28 @@ class CategoriesScreen extends ConsumerStatefulWidget {
 class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with SingleTickerProviderStateMixin {
   late final TabController _tabCtrl;
 
-  static const _defaultIcons = {
-    'food': Icons.restaurant,
-    'transport': Icons.directions_car,
-    'shopping': Icons.shopping_bag,
-    'bills': Icons.receipt,
-    'entertainment': Icons.movie,
-    'health': Icons.local_hospital,
-    'education': Icons.school,
-    'salary': Icons.work,
-    'freelance': Icons.laptop,
-    'investment': Icons.trending_up,
-    'other': Icons.more_horiz,
+  static const _icons = {
+    'food & drinks': ('🍜', AppColors.coral),
+    'makanan': ('🍜', AppColors.coral),
+    'transport': ('🚗', AppColors.blue),
+    'transportasi': ('🚗', AppColors.blue),
+    'shopping': ('🛒', AppColors.violet),
+    'belanja': ('🛒', AppColors.violet),
+    'bills & utilities': ('💡', AppColors.coral),
+    'tagihan': ('💡', AppColors.coral),
+    'entertainment': ('🎮', AppColors.violet),
+    'hiburan': ('🎮', AppColors.violet),
+    'health': ('🏥', AppColors.emerald),
+    'kesehatan': ('🏥', AppColors.emerald),
+    'education': ('📚', AppColors.amber),
+    'pendidikan': ('📚', AppColors.amber),
+    'salary': ('💼', AppColors.emerald),
+    'gaji': ('💼', AppColors.emerald),
+    'freelance': ('💻', AppColors.blue),
+    'investment': ('📈', AppColors.violet),
+    'investasi': ('📈', AppColors.violet),
+    'other income': ('💰', AppColors.emerald),
+    'pendapatan lain': ('💰', AppColors.emerald),
   };
 
   @override
@@ -45,12 +57,12 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Categories'),
+        title: Text('Kategori', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         bottom: TabBar(
           controller: _tabCtrl,
           tabs: const [
-            Tab(text: 'Expense', icon: Icon(Icons.arrow_upward)),
-            Tab(text: 'Income', icon: Icon(Icons.arrow_downward)),
+            Tab(text: 'Pengeluaran'),
+            Tab(text: 'Pemasukan'),
           ],
         ),
       ),
@@ -64,78 +76,101 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
+        error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.coral))),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/add-category'),
+        backgroundColor: AppColors.emerald,
+        foregroundColor: AppColors.bg,
         icon: const Icon(Icons.add),
-        label: const Text('Add Category'),
+        label: Text('Tambah Kategori', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
       ),
     );
   }
 
   Widget _buildList(BuildContext context, List categories) {
     if (categories.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.category_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('No categories yet', style: TextStyle(fontSize: 18, color: Colors.grey)),
+            const Text('📂', style: TextStyle(fontSize: 48)),
+            const SizedBox(height: 12),
+            Text('Belum ada kategori', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
           ],
         ),
       );
     }
+
     return ListView.builder(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
-        final icon = _defaultIcons[cat.name.toLowerCase().replaceAll(' ', '')] ?? Icons.category;
-        return Card(
-          child: Dismissible(
-            key: ValueKey(cat.id),
-            direction: DismissDirection.endToStart,
-            background: Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
-              color: Colors.red,
-              child: const Icon(Icons.delete, color: Colors.white),
-            ),
-            confirmDismiss: (_) async {
-              return await showDialog<bool>(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('Delete Category?'),
-                  content: Text('"${cat.name}" will be permanently deleted.'),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
+        final lookup = _icons[cat.name.toLowerCase()];
+        final emoji = lookup?.$1 ?? '📁';
+        final color = lookup?.$2 ?? AppColors.textMuted;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 6),
+          child: Card(
+            child: Dismissible(
+              key: ValueKey(cat.id),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                decoration: BoxDecoration(
+                  color: AppColors.coral,
+                  borderRadius: BorderRadius.circular(16),
                 ),
-              );
-            },
-            onDismissed: (_) {
-              ref.read(categoriesNotifierProvider.notifier).deleteCategory(cat.id);
-            },
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: cat.type == 'expense'
-                    ? Colors.red.shade50
-                    : Colors.green.shade50,
-                child: Icon(icon, color: cat.type == 'expense' ? Colors.red : Colors.green),
+                child: const Icon(Icons.delete_outline, color: Colors.white),
               ),
-              title: Text(cat.name, style: const TextStyle(fontWeight: FontWeight.w500)),
-              subtitle: Text(cat.type.toUpperCase(), style: TextStyle(
-                fontSize: 11,
-                color: cat.type == 'expense' ? Colors.red : Colors.green,
-                fontWeight: FontWeight.w600,
-              )),
+              confirmDismiss: (_) async {
+                return await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text('Hapus Kategori?'),
+                    content: Text('"${cat.name}" akan dihapus permanen.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text('Hapus', style: GoogleFonts.inter(color: AppColors.coral)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              onDismissed: (_) {
+                ref.read(categoriesNotifierProvider.notifier).deleteCategory(cat.id);
+              },
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(child: Text(emoji, style: const TextStyle(fontSize: 18))),
+                ),
+                title: Text(
+                  cat.name,
+                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+                ),
+                subtitle: Text(
+                  cat.type.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: cat.type == 'expense' ? AppColors.coral : AppColors.emerald,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
             ),
           ),
         );

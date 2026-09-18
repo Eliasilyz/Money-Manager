@@ -108,8 +108,9 @@ class MoneyManagerApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Money Manager',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.dark,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.dark,
       routerConfig: ref.watch(routerProvider),
     );
   }

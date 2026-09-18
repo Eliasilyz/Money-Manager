@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/currencies/application/currency_provider.dart';
+import 'package:money_manager/theme/app_theme.dart';
 
 class AddAccountScreen extends ConsumerStatefulWidget {
   const AddAccountScreen({super.key});
@@ -20,11 +22,11 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   bool _saving = false;
 
   static const _accountTypes = [
-    ('wallet', 'Wallet', Icons.account_balance_wallet),
-    ('savings', 'Savings', Icons.savings),
-    ('credit', 'Credit Card', Icons.credit_card),
-    ('cash', 'Cash', Icons.payments),
-    ('investment', 'Investment', Icons.show_chart),
+    ('wallet', 'Dompet', Icons.account_balance_wallet_outlined, AppColors.emerald),
+    ('savings', 'Tabungan', Icons.savings_outlined, AppColors.blue),
+    ('credit', 'Kartu Kredit', Icons.credit_card_outlined, AppColors.coral),
+    ('cash', 'Tunai', Icons.payments_outlined, AppColors.amber),
+    ('investment', 'Investasi', Icons.trending_up_rounded, AppColors.violet),
   ];
 
   @override
@@ -40,92 +42,121 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
     final currenciesAsync = ref.watch(currenciesNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Account')),
+      appBar: AppBar(
+        title: Text('Tambah Akun', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Text('NAMA AKUN', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
+            const SizedBox(height: 8),
             TextField(
               controller: _nameCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Account Name',
-                hintText: 'e.g. BCA Savings',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.label_outline),
+              style: GoogleFonts.inter(color: AppColors.textPrimary),
+              decoration: InputDecoration(
+                hintText: 'Contoh: BCA Utama',
+                prefixIcon: const Icon(Icons.label_outline, color: AppColors.textMuted),
               ),
               textCapitalization: TextCapitalization.words,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
-            Text('Account Type', style: Theme.of(context).textTheme.titleSmall),
+            Text('TIPE AKUN', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: _accountTypes.map((t) {
                 final selected = _accountType == t.$1;
-                return ChoiceChip(
-                  label: Text(t.$2),
-                  avatar: Icon(t.$3, size: 18),
-                  selected: selected,
-                  onSelected: (_) => setState(() => _accountType = t.$1),
+                return GestureDetector(
+                  onTap: () => setState(() => _accountType = t.$1),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: selected ? t.$4.withValues(alpha: 0.15) : AppColors.card,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: selected ? t.$4 : AppColors.border,
+                        width: selected ? 1.5 : 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(t.$3, size: 16, color: selected ? t.$4 : AppColors.textMuted),
+                        const SizedBox(width: 6),
+                        Text(t.$2, style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                          color: selected ? t.$4 : AppColors.textMuted,
+                        )),
+                      ],
+                    ),
+                  ),
                 );
               }).toList(),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
+            Text('MATA UANG', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
+            const SizedBox(height: 8),
             currenciesAsync.when(
               data: (currencies) {
                 return DropdownButtonFormField<String>(
                   initialValue: _currencyCode,
                   items: currencies.map((c) => DropdownMenuItem(
                     value: c.code,
-                    child: Text('${c.code} - ${c.name}'),
+                    child: Text('${c.code} — ${c.name}', style: GoogleFonts.inter()),
                   )).toList(),
                   onChanged: (val) => setState(() => _currencyCode = val ?? 'IDR'),
-                  decoration: const InputDecoration(
-                    labelText: 'Currency',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.monetization_on),
-                  ),
                 );
               },
-              loading: () => const LinearProgressIndicator(),
-              error: (e, _) => Text('Error: $e'),
+              loading: () => const LinearProgressIndicator(color: AppColors.emerald),
+              error: (e, _) => Text('Error: $e', style: GoogleFonts.inter(color: AppColors.coral)),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
+            Text('SALDO AWAL', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
+            const SizedBox(height: 8),
             TextField(
               controller: _balanceCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Initial Balance',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.numbers),
+              style: GoogleFonts.jetBrainsMono(color: AppColors.textPrimary, fontSize: 16),
+              decoration: InputDecoration(
+                hintText: '0',
+                prefixIcon: const Icon(Icons.monetization_on_outlined, color: AppColors.textMuted),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
+            Text('CATATAN', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
+            const SizedBox(height: 8),
             TextField(
               controller: _noteCtrl,
+              style: GoogleFonts.inter(color: AppColors.textPrimary),
               decoration: const InputDecoration(
-                labelText: 'Note (optional)',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.note_outlined),
+                hintText: 'Opsional',
+                prefixIcon: Icon(Icons.note_outlined, color: AppColors.textMuted),
               ),
               maxLines: 2,
             ),
             const SizedBox(height: 32),
 
-            FilledButton.icon(
-              onPressed: _saving ? null : _save,
-              icon: _saving
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.check),
-              label: Text(_saving ? 'Saving...' : 'Save Account'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+            SizedBox(
+              height: 52,
+              child: FilledButton(
+                onPressed: _saving ? null : _save,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.emerald,
+                  foregroundColor: AppColors.bg,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: _saving
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg))
+                    : Text('Simpan Akun', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
               ),
             ),
           ],
@@ -138,7 +169,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter an account name')),
+        SnackBar(content: Text('Masukkan nama akun', style: GoogleFonts.inter())),
       );
       return;
     }
@@ -156,7 +187,11 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
       );
       if (mounted) context.pop();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e', style: GoogleFonts.inter())),
+        );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
