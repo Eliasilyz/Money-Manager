@@ -11,30 +11,35 @@
 
 ## 2. Color Tokens
 
+Deep navy-ink base (not generic charcoal). Gold as primary CTA — deliberately breaks the fintech green default.
+
 ```dart
 // lib/core/theme/app_colors.dart
 class AppColors {
-  // Backgrounds
-  static const bg        = Color(0xFF0A0A0F);   // page scaffold
-  static const surface   = Color(0xFF12121A);   // bottom sheets, nav bar
-  static const card      = Color(0xFF1A1A26);   // cards, list tiles
-  static const card2     = Color(0xFF1F1F2E);   // elevated cards
+  // Backgrounds — deep navy-ink, not pure black
+  static const bg        = Color(0xFF070B18);   // page scaffold
+  static const surface   = Color(0xFF0B1022);   // bottom sheets, nav bar
+  static const card      = Color(0xFF0F1630);   // cards, list tiles
+  static const card2     = Color(0xFF141D3A);   // elevated / pressed cards
 
-  // Accents
-  static const emerald   = Color(0xFF00E096);   // income, positive, CTA
-  static const coral     = Color(0xFFFF5252);   // expense, negative, danger
-  static const amber     = Color(0xFFFFB800);   // warning, near-limit budgets
-  static const violet    = Color(0xFF8B5CF6);   // transfer, multi-currency
-  static const blue      = Color(0xFF3B82F6);   // info, transport category
+  // Primary — warm gold (distinctive, not the default fintech green)
+  static const gold      = Color(0xFFF4C430);   // CTA buttons, FAB, active nav
+  static const gold2     = Color(0xFFE8A800);   // gradient end for buttons
+
+  // Semantic
+  static const teal      = Color(0xFF22D4A6);   // income / positive
+  static const rose      = Color(0xFFFF4757);   // expense / negative / danger
+  static const sky       = Color(0xFF5E9BFF);   // transfer / info
+  static const orange    = Color(0xFFFF9F43);   // warning / near-limit (80%)
+  static const lilac     = Color(0xFFA78BFA);   // goals / multi-currency accent
 
   // Text
-  static const textPrimary  = Color(0xFFF0F0F8);
-  static const textMuted    = Color(0x73FFFFFF); // ~45% white
-  static const textDisabled = Color(0x40FFFFFF); // ~25% white
+  static const textPrimary  = Color(0xFFEEF0FB);
+  static const textMuted    = Color(0x6BEEF0FB); // ~42% white
+  static const textDim      = Color(0x38EEF0FB); // ~22% white
 
   // Borders
-  static const border    = Color(0x14FFFFFF);   // 8% white hairline
-  static const borderMid = Color(0x1AFFFFFF);   // 10% white
+  static const border    = Color(0x12FFFFFF);   // 7% white hairline
 }
 ```
 
@@ -76,6 +81,19 @@ fonts:
 // GoogleFonts.inter(...)
 // GoogleFonts.jetBrainsMono(...)
 ```
+
+---
+
+## 3b. Color Intent Summary
+
+| Token | Usage |
+|-------|-------|
+| `gold` | FAB, active nav indicator, CTA buttons, primary actions |
+| `teal` | Income amounts, positive balances, success states |
+| `rose` | Expense amounts, negative balances, danger/delete |
+| `sky` | Transfer type, info banners, multi-currency |
+| `orange` | Budget warning (80–99% used) |
+| `lilac` | Goals, secondary accents, user avatar |
 
 ---
 
@@ -355,6 +373,64 @@ FloatingActionButton(
   - Footer: "Sisa Rp X" or "Melebihi Rp X"
 
 ### 8.5 More Screen (`/more`)
+
+Menu list with `MenuRow` (icon + color-tinted bg, title, subtitle, chevron). Items:
+- Target Tabungan → GoalsScreen
+- Hutang & Piutang → DebtsScreen
+- Transfer → TransferScreen
+- Analitik → AnalyticsScreen
+- Kategori → CategoriesScreen
+- **Pengaturan** → SettingsScreen
+- **Tentang Aplikasi** → AboutScreen
+
+Currency selector: horizontal wrap of pill buttons (one per currency, active = lilac).
+
+### 8.10 Settings Screen
+
+**Profile card**: avatar (lilac/sky gradient), name (editable inline), email. "Edit" button toggles inline text field.
+
+**Notifikasi section** (grouped card):
+- Transaksi Baru — toggle
+- Budget Mendekati Limit — toggle
+
+**Keamanan section** (grouped card):
+- Biometrik / PIN — toggle
+- Ganti PIN — chevron row
+
+**Data section** (grouped card):
+- Ekspor Data (sky icon) — chevron
+- Backup ke Cloud (teal icon) — chevron
+
+**Danger section** (rose-border card):
+- Hapus Semua Data — rose text, trash icon
+
+All toggles: pill shape `44×24`, active = `gold` bg, knob slides left↔right with CSS transition.
+
+### 8.11 About Screen
+
+**App identity block** (centered):
+- Icon: 💰 in navy gradient card with gold border glow
+- App name: Outfit ExtraBold 22
+- Version: JetBrains Mono 12 muted
+- "● STABLE" badge: gold tinted pill
+
+**Stats row** (3-column grid cards):
+- Jumlah transaksi (sky)
+- Jumlah akun (teal)
+- Jumlah kategori (lilac)
+
+**Links section** (grouped card, chevron rows):
+- Kebijakan Privasi (shield icon, sky)
+- Syarat & Ketentuan (info icon, lilac)
+- Beri Rating Bintang 5 ⭐ (star icon, gold)
+- Laporkan Bug (flag icon, orange)
+
+**Credits footer**:
+- Heart icon + "Dibuat dengan sepenuh hati"
+- Copyright line
+- Tech stack in JetBrains Mono muted
+
+---
 
 Menu list with icon + title + subtitle + chevron. Items:
 - Target Tabungan → GoalsScreen

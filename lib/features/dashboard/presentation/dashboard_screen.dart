@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
@@ -184,11 +185,12 @@ class DashboardScreen extends ConsumerWidget {
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
+        clipBehavior: Clip.none,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 0.9,
+          childAspectRatio: 0.85,
         ),
         itemCount: actions.length,
         itemBuilder: (context, index) {
@@ -242,7 +244,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTransactionTile(BuildContext context, dynamic t, NumberFormat fmt) {
+  Widget _buildTransactionTile(BuildContext context, Transaction t, NumberFormat fmt) {
     final isIncome = t.type == 'income';
     final color = isIncome ? AppColors.emerald : AppColors.coral;
     final sign = isIncome ? '+' : '-';

@@ -121,7 +121,7 @@ class AccountsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAccountTile(BuildContext context, WidgetRef ref, account) {
+  Widget _buildAccountTile(BuildContext context, WidgetRef ref, Account account) {
     final config = _typeConfig[account.accountType];
     final color = config?.$3 ?? AppColors.emerald;
     final icon = config?.$2 ?? Icons.account_balance_wallet_outlined;
