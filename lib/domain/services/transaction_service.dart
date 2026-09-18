@@ -11,7 +11,7 @@ class TransactionService {
 
   Future<void> addIncome({
     required String accountId,
-    required String categoryId,
+    String? categoryId,
     required int amount,
     required String currencyCode,
     DateTime? date,
@@ -34,7 +34,7 @@ class TransactionService {
 
   Future<void> addExpense({
     required String accountId,
-    required String categoryId,
+    String? categoryId,
     required int amount,
     required String currencyCode,
     DateTime? date,

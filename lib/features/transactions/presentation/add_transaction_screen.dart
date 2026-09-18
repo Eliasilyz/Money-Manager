@@ -158,7 +158,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       if (_type == 'income') {
         await service.addIncome(
           accountId: _selectedAccountId!,
-          categoryId: _selectedCategoryId ?? '',
+          categoryId: _selectedCategoryId,
           amount: amount,
           currencyCode: 'IDR',
           date: _selectedDate,
@@ -167,7 +167,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       } else {
         await service.addExpense(
           accountId: _selectedAccountId!,
-          categoryId: _selectedCategoryId ?? '',
+          categoryId: _selectedCategoryId,
           amount: amount,
           currencyCode: 'IDR',
           date: _selectedDate,
