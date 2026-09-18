@@ -32,6 +32,12 @@ class DashboardScreen extends StatelessWidget {
               onTap: () => context.push('/budgets'),
             ),
             const SizedBox(height: 12),
+            _QuickActionCard(
+              icon: Icons.flag,
+              label: 'Goals',
+              onTap: () => context.push('/goals'),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
