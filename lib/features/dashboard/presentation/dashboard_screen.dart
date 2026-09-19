@@ -7,34 +7,19 @@ import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
-class DashboardScreen extends ConsumerStatefulWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
-  @override
-  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  int _selectedPeriod = 0; // 0=this month, 1=3 months, 2=this year
-
-  static const _periods = ['Bulan Ini', '3 Bulan Terakhir', 'Tahun Ini'];
+  static const _periods = [
+    (DashboardPeriod.thisMonth, 'Bulan Ini'),
+    (DashboardPeriod.threeMonths, '3 Bulan Terakhir'),
+    (DashboardPeriod.thisYear, 'Tahun Ini'),
+  ];
 
   @override
-  Widget build(BuildContext context) {
-    final now = DateTime.now();
-    DateTime start;
-    switch (_selectedPeriod) {
-      case 1:
-        start = DateTime(now.year, now.month - 3, 1);
-        break;
-      case 2:
-        start = DateTime(now.year, 1, 1);
-        break;
-      default:
-        start = DateTime(now.year, now.month, 1);
-    }
-
-    final dashboardAsync = ref.watch(dashboardFilteredProvider((start, now)));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dashboardAsync = ref.watch(dashboardProvider);
+    final currentPeriod = ref.watch(dashboardPeriodProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -42,7 +27,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           data: (data) {
             final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
             return RefreshIndicator(
-              onRefresh: () async => ref.invalidate(dashboardFilteredProvider((start, now))),
+              onRefresh: () async => ref.invalidate(dashboardProvider),
               color: AppColors.gold,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -52,7 +37,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     _buildHeader(context),
                     _buildBalanceCard(context, data, fmt),
                     const SizedBox(height: 16),
-                    _buildPeriodSelector(),
+                    _buildPeriodSelector(ref, currentPeriod),
                     const SizedBox(height: 16),
                     if (data.expenseBreakdown.isNotEmpty)
                       _buildExpenseChart(context, data.expenseBreakdown),
@@ -101,13 +86,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
                 colors: [AppColors.lilac, AppColors.sky],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(12),
             ),
             child: const Center(
               child: Icon(Icons.person, color: Colors.white, size: 20),
@@ -167,43 +152,44 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildPeriodSelector() {
+  Widget _buildPeriodSelector(WidgetRef ref, DashboardPeriod current) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border),
         ),
         child: Row(
-          children: [
-            for (int i = 0; i < _periods.length; i++)
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedPeriod = i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: _selectedPeriod == i ? AppColors.gold : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        _periods[i],
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: _selectedPeriod == i ? FontWeight.w600 : FontWeight.w400,
-                          color: _selectedPeriod == i ? AppColors.bg : AppColors.textMuted,
-                        ),
+          children: _periods.map((p) {
+            final selected = current == p.$1;
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => ref.read(dashboardPeriodProvider.notifier).state = p.$1,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: selected ? AppColors.gold : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      p.$2,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                        color: selected ? AppColors.bg : AppColors.textMuted,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
               ),
-          ],
+            );
+          }).toList(),
         ),
       ),
     );
@@ -215,7 +201,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      height: 200,
+      height: 180,
       child: Row(
         children: [
           Expanded(
@@ -223,15 +209,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             child: PieChart(
               PieChartData(
                 sectionsSpace: 2,
-                centerSpaceRadius: 40,
+                centerSpaceRadius: 36,
                 sections: breakdown.map((e) {
                   final pct = e.amount / total;
                   return PieChartSectionData(
                     value: e.amount.toDouble(),
                     color: _getCategoryColor(e.categoryName),
                     title: pct > 0.05 ? '${(pct * 100).toStringAsFixed(0)}%' : '',
-                    radius: 30,
-                    badgeWidget: null,
+                    titleStyle: GoogleFonts.jetBrainsMono(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+                    radius: 28,
                   );
                 }).toList(),
               ),
@@ -240,15 +226,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           const SizedBox(width: 16),
           Expanded(
             flex: 2,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Total: ${NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0).format(total)}',
-                    style: GoogleFonts.jetBrainsMono(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-                const SizedBox(height: 8),
-                ...breakdown.map((e) => _buildLegendItem(e)),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Total: ${NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0).format(total)}',
+                      style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                  const SizedBox(height: 6),
+                  ...breakdown.map((e) => _buildLegendItem(e)),
+                ],
+              ),
             ),
           ),
         ],
@@ -257,21 +245,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Color _getCategoryColor(String name) {
-    final colors = [AppColors.gold, AppColors.teal, AppColors.rose, AppColors.sky, AppColors.lilac, AppColors.orange, AppColors.blue];
+    final colors = [AppColors.gold, AppColors.teal, AppColors.rose, AppColors.sky, AppColors.lilac, AppColors.orange];
     final index = name.hashCode % colors.length;
     return colors[index.abs()];
   }
 
-   Widget _buildLegendItem(CategoryExpense e) {
+  Widget _buildLegendItem(CategoryExpense e) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: _getCategoryColor(e.categoryName))),
-          const SizedBox(width: 8),
-          Expanded(child: Text(e.categoryName, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted))),
+          const SizedBox(width: 6),
+          Expanded(child: Text(e.categoryName, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted), overflow: TextOverflow.ellipsis)),
           Text(NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0).format(e.amount),
-              style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+              style: GoogleFonts.jetBrainsMono(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
         ],
       ),
     );
@@ -336,7 +324,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(t.note ?? '', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+              if (t.note != null && t.note!.isNotEmpty)
+                Text(t.note!, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
               const SizedBox(height: 2),
               Text(DateFormat('dd MMM yyyy, HH:mm').format(t.date), style: GoogleFonts.inter(fontSize: 10, color: AppColors.textDim)),
             ],

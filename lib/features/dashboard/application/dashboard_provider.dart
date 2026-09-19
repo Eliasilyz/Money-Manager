@@ -5,6 +5,8 @@ import 'package:money_manager/features/accounts/application/account_provider.dar
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 
+enum DashboardPeriod { thisMonth, threeMonths, thisYear }
+
 class CategoryExpense {
   final String categoryName;
   final String categoryIcon;
@@ -34,7 +36,10 @@ class DashboardData {
   });
 }
 
+final dashboardPeriodProvider = StateProvider<DashboardPeriod>((ref) => DashboardPeriod.thisMonth);
+
 final dashboardProvider = FutureProvider<DashboardData>((ref) async {
+  final period = ref.watch(dashboardPeriodProvider);
   final accountRepo = ref.watch(accountRepositoryProvider);
   final txRepo = ref.watch(transactionRepositoryProvider);
   final catRepo = ref.watch(categoryRepositoryProvider);
@@ -42,8 +47,20 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
   final accounts = await accountRepo.getAllAccounts();
 
   final now = DateTime.now();
-  final periodStart = DateTime(now.year, now.month, 1);
-  final periodEnd = now;
+  final periodEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
+  DateTime periodStart;
+
+  switch (period) {
+    case DashboardPeriod.threeMonths:
+      periodStart = DateTime(now.year, now.month - 3, 1);
+      break;
+    case DashboardPeriod.thisYear:
+      periodStart = DateTime(now.year, 1, 1);
+      break;
+    case DashboardPeriod.thisMonth:
+      periodStart = DateTime(now.year, now.month, 1);
+      break;
+  }
 
   final transactions = await txRepo.getTransactionsByDateRange(periodStart, periodEnd);
 
@@ -78,47 +95,5 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
     expenseBreakdown: expenseBreakdown,
     periodStart: periodStart,
     periodEnd: periodEnd,
-  );
-});
-
-final dashboardFilteredProvider = FutureProvider.family<DashboardData, (DateTime start, DateTime end)>((ref, dates) async {
-  final accountRepo = ref.watch(accountRepositoryProvider);
-  final txRepo = ref.watch(transactionRepositoryProvider);
-  final catRepo = ref.watch(categoryRepositoryProvider);
-
-  final accounts = await accountRepo.getAllAccounts();
-  final transactions = await txRepo.getTransactionsByDateRange(dates.$1, dates.$2);
-
-  final totalBalance = accounts.fold<int>(0, (sum, a) => sum + a.initialBalance);
-  final totalIncome = transactions
-      .where((t) => t.type == 'income')
-      .fold<int>(0, (sum, t) => sum + t.amount);
-  final totalExpenses = transactions
-      .where((t) => t.type == 'expense')
-      .fold<int>(0, (sum, t) => sum + t.amount);
-
-  final expenseMap = <String, CategoryExpense>{};
-  for (final t in transactions.where((t) => t.type == 'expense')) {
-    final cat = t.categoryId != null ? await catRepo.getCategoryById(t.categoryId!) : null;
-    final name = cat?.name ?? 'Uncategorized';
-    final icon = cat?.icon ?? '📁';
-    expenseMap.update(name, (val) => CategoryExpense(name, icon, val.amount + t.amount),
-        ifAbsent: () => CategoryExpense(name, icon, t.amount));
-  }
-  final expenseBreakdown = expenseMap.values.toList()
-    ..sort((a, b) => b.amount.compareTo(a.amount));
-
-  final recent = List<Transaction>.from(transactions)
-    ..sort((a, b) => b.date.compareTo(a.date));
-
-  return DashboardData(
-    totalBalance: totalBalance + totalIncome - totalExpenses,
-    totalIncome: totalIncome,
-    totalExpenses: totalExpenses,
-    recentTransactions: recent.take(10).toList(),
-    accounts: accounts,
-    expenseBreakdown: expenseBreakdown,
-    periodStart: dates.$1,
-    periodEnd: dates.$2,
   );
 });
