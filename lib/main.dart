@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:money_manager/database/database.dart';
 import 'package:money_manager/data/repositories/drift_account_repository.dart';
 import 'package:money_manager/data/repositories/drift_budget_repository.dart';
@@ -24,6 +25,7 @@ import 'package:uuid/uuid.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   final db = AppDatabase();
 
   final accountRepo = DriftAccountRepository(db);

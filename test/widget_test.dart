@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:money_manager/data/repositories/drift_account_repository.dart';
 import 'package:money_manager/data/repositories/drift_budget_repository.dart';
 import 'package:money_manager/data/repositories/drift_category_repository.dart';
@@ -22,6 +23,7 @@ import 'package:money_manager/main.dart';
 
 void main() {
   testWidgets('MoneyManager app loads with in-memory DB', (WidgetTester tester) async {
+    await initializeDateFormatting('id_ID', null);
     final db = AppDatabase.memory();
 
     await tester.pumpWidget(
