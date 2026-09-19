@@ -1,8 +1,10 @@
+import 'package:uuid/uuid.dart';
 import 'package:money_manager/domain/entities/account.dart';
 import 'package:money_manager/domain/repositories/account_repository.dart';
 
 class AccountService {
   final IAccountRepository _accountRepository;
+  static const _uuid = Uuid();
 
   AccountService(this._accountRepository);
 
@@ -20,8 +22,9 @@ class AccountService {
     String? color,
     String? note,
   }) async {
+    final now = DateTime.now();
     final account = Account(
-      id: _generateId(),
+      id: _uuid.v4(),
       name: name,
       accountType: accountType,
       currencyCode: currencyCode,
@@ -30,8 +33,8 @@ class AccountService {
       color: color,
       note: note,
       isArchived: false,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      createdAt: now,
+      updatedAt: now,
     );
     await _accountRepository.insertAccount(account);
   }
@@ -40,5 +43,3 @@ class AccountService {
   Future<void> deleteAccount(String id) => _accountRepository.deleteAccount(id);
   Future<void> archiveAccount(String id, bool archived) => _accountRepository.archiveAccount(id, archived);
 }
-
-String _generateId() => DateTime.now().millisecondsSinceEpoch.toString();
