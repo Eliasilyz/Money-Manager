@@ -82,4 +82,20 @@ class DriftCategoryRepository implements ICategoryRepository {
   Future<void> deleteCategory(String id) async {
     await _db.categoriesDao.deleteCategory(id);
   }
+
+  @override
+  Future<domain.Category?> getCategoryById(String id) async {
+    final categories = await _db.categoriesDao.getAllCategories();
+    final match = categories.where((c) => c.id == id).firstOrNull;
+    if (match == null) return null;
+    return domain.Category(
+      id: match.id,
+      name: match.name,
+      icon: match.icon,
+      type: match.type,
+      parentId: match.parentId,
+      createdAt: match.createdAt,
+      updatedAt: match.updatedAt,
+    );
+  }
 }

@@ -7,4 +7,5 @@ abstract class ICategoryRepository {
   Future<void> insertCategory(Category category);
   Future<void> updateCategory(Category category);
   Future<void> deleteCategory(String id);
+  Future<Category?> getCategoryById(String id);
 }
