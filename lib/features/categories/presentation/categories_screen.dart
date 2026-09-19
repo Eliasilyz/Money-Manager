@@ -81,6 +81,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'categories_fab',
         onPressed: () => context.push('/add-category'),
         backgroundColor: AppColors.gold,
         foregroundColor: AppColors.bg,

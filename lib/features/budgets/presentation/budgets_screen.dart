@@ -44,6 +44,7 @@ class BudgetsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'budgets_fab',
         onPressed: () => context.push('/add-budget'),
         child: const Icon(Icons.add),
       ),

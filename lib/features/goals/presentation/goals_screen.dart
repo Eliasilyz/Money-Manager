@@ -44,6 +44,7 @@ class GoalsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'goals_fab',
         onPressed: () => context.push('/add-goal'),
         child: const Icon(Icons.add),
       ),

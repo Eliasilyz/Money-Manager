@@ -55,6 +55,7 @@ class AccountsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'accounts_fab',
         onPressed: () => context.push('/add-account'),
         backgroundColor: AppColors.gold,
         foregroundColor: AppColors.bg,

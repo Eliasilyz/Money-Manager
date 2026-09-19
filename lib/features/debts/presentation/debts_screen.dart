@@ -45,6 +45,7 @@ class DebtsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'debts_fab',
         onPressed: () => context.push('/add-debt'),
         child: const Icon(Icons.add),
       ),

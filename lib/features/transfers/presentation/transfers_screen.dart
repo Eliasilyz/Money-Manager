@@ -36,6 +36,7 @@ class TransfersScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'transfers_fab',
         onPressed: () => context.push('/add-transfer'),
         child: const Icon(Icons.add),
       ),

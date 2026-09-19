@@ -72,6 +72,7 @@ class TransactionsScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'transactions_fab',
         onPressed: () => context.push('/add-transaction'),
         child: const Icon(Icons.add),
       ),
