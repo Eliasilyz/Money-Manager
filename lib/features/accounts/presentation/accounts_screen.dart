@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/domain/entities/account.dart';
+import 'package:money_manager/features/accounts/application/account_provider.dart';
+import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
 class AccountsScreen extends ConsumerWidget {
@@ -21,6 +22,7 @@ class AccountsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accountsAsync = ref.watch(accountsNotifierProvider);
+    final transactionsAsync = ref.watch(transactionsNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,7 +34,20 @@ class AccountsScreen extends ConsumerWidget {
             return _buildEmpty(context);
           }
 
-          final grouped = <String, List<dynamic>>{};
+          final transactions = transactionsAsync.valueOrNull ?? [];
+
+          // Compute real balance per account: initialBalance + income - expense
+          final accountBalances = <String, int>{};
+          for (final a in accounts) {
+            final txForAccount = transactions.where((t) => t.accountId == a.id);
+            final income = txForAccount.where((t) => t.type == 'income').fold<int>(0, (sum, t) => sum + t.amount);
+            final expense = txForAccount.where((t) => t.type == 'expense').fold<int>(0, (sum, t) => sum + t.amount);
+            accountBalances[a.id] = a.initialBalance + income - expense;
+          }
+
+          final totalBalance = accountBalances.values.fold<int>(0, (sum, b) => sum + b);
+
+          final grouped = <String, List<Account>>{};
           for (final a in accounts) {
             grouped.putIfAbsent(a.accountType, () => []).add(a);
           }
@@ -40,12 +55,12 @@ class AccountsScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
             children: [
-              _buildTotalBalance(context, accounts),
+              _buildTotalBalance(context, totalBalance),
               const SizedBox(height: 24),
               for (final entry in grouped.entries) ...[
                 _buildSectionHeader(entry.key),
                 const SizedBox(height: 8),
-                ...entry.value.map((a) => _buildAccountTile(context, ref, a)),
+                ...entry.value.map((a) => _buildAccountTile(context, ref, a, accountBalances[a.id] ?? a.initialBalance)),
                 const SizedBox(height: 16),
               ],
             ],
@@ -89,8 +104,7 @@ class AccountsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTotalBalance(BuildContext context, List<Account> accounts) {
-    final total = accounts.fold<int>(0, (sum, a) => sum + a.initialBalance);
+  Widget _buildTotalBalance(BuildContext context, int total) {
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
     return Container(
       padding: const EdgeInsets.all(20),
@@ -122,7 +136,7 @@ class AccountsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAccountTile(BuildContext context, WidgetRef ref, Account account) {
+  Widget _buildAccountTile(BuildContext context, WidgetRef ref, Account account, int currentBalance) {
     final config = _typeConfig[account.accountType];
     final color = config?.$3 ?? AppColors.gold;
     final icon = config?.$2 ?? Icons.account_balance_wallet_outlined;
@@ -182,8 +196,12 @@ class AccountsScreen extends ConsumerWidget {
               style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
             ),
             trailing: Text(
-              fmt.format(account.initialBalance),
-              style: GoogleFonts.jetBrainsMono(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+              fmt.format(currentBalance),
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: currentBalance < 0 ? AppColors.rose : AppColors.textPrimary,
+              ),
             ),
           ),
         ),

@@ -14,9 +14,11 @@ class TransactionService {
     String? categoryId,
     required int amount,
     required String currencyCode,
+    String? description,
     DateTime? date,
     String? note,
   }) async {
+    final now = DateTime.now();
     final transaction = Transaction(
       id: _uuid.v4(),
       type: 'income',
@@ -24,10 +26,11 @@ class TransactionService {
       categoryId: categoryId,
       amount: amount,
       currencyCode: currencyCode,
-      date: date ?? DateTime.now(),
+      description: description,
+      date: date ?? now,
       note: note,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      createdAt: now,
+      updatedAt: now,
     );
     await _transactionRepository.insertTransaction(transaction);
   }
@@ -37,9 +40,11 @@ class TransactionService {
     String? categoryId,
     required int amount,
     required String currencyCode,
+    String? description,
     DateTime? date,
     String? note,
   }) async {
+    final now = DateTime.now();
     final transaction = Transaction(
       id: _uuid.v4(),
       type: 'expense',
@@ -47,10 +52,11 @@ class TransactionService {
       categoryId: categoryId,
       amount: amount,
       currencyCode: currencyCode,
-      date: date ?? DateTime.now(),
+      description: description,
+      date: date ?? now,
       note: note,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      createdAt: now,
+      updatedAt: now,
     );
     await _transactionRepository.insertTransaction(transaction);
   }

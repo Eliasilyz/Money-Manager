@@ -215,6 +215,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     final match = accounts.where((a) => a.id == _selectedAccountId);
     if (match.isNotEmpty) currencyCode = match.first.currencyCode;
 
+    final description = _descriptionCtrl.text.isNotEmpty ? _descriptionCtrl.text : null;
+
     setState(() => _saving = true);
     try {
       final service = ref.read(transactionServiceProvider);
@@ -224,6 +226,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           categoryId: _selectedCategoryId,
           amount: amount,
           currencyCode: currencyCode,
+          description: description,
           date: _selectedDate,
           note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
         );
@@ -233,6 +236,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           categoryId: _selectedCategoryId,
           amount: amount,
           currencyCode: currencyCode,
+          description: description,
           date: _selectedDate,
           note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
         );
