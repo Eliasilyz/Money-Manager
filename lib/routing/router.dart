@@ -19,6 +19,8 @@ import 'package:money_manager/features/recurring/presentation/recurring_screen.d
 import 'package:money_manager/features/security/presentation/security_screen.dart';
 import 'package:money_manager/features/settings/presentation/backup_screen.dart';
 import 'package:money_manager/features/settings/presentation/settings_screen.dart';
+import 'package:money_manager/features/calendar/presentation/calendar_screen.dart';
+import 'package:money_manager/features/statistics/presentation/statistics_screen.dart';
 import 'package:money_manager/features/transactions/presentation/transactions_screen.dart';
 import 'package:money_manager/features/transactions/presentation/add_transaction_screen.dart';
 import 'package:money_manager/features/transfers/presentation/transfers_screen.dart';
@@ -62,6 +64,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/security', builder: (context, state) => const SecurityScreen()),
       GoRoute(path: '/recurring', builder: (context, state) => const RecurringScreen()),
       GoRoute(path: '/currencies', builder: (context, state) => const CurrenciesScreen()),
+      GoRoute(path: '/statistics', builder: (context, state) => const StatisticsScreen()),
+      GoRoute(path: '/calendar', builder: (context, state) => const CalendarScreen()),
     ],
   );
 });
