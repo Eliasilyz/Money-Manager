@@ -12,6 +12,7 @@ class RecurringTransactionsTable extends Table {
   DateTimeColumn get nextOccurrence => dateTime()();
   BoolColumn get autoCreate => boolean().withDefault(const Constant(true))();
   BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get isSubscription => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 

@@ -8,6 +8,7 @@ import 'package:money_manager/database/daos/categories_dao.dart';
 import 'package:money_manager/database/daos/currencies_dao.dart';
 import 'package:money_manager/database/daos/debts_dao.dart';
 import 'package:money_manager/database/daos/goals_dao.dart';
+import 'package:money_manager/database/daos/notes_dao.dart';
 import 'package:money_manager/database/daos/recurring_dao.dart';
 import 'package:money_manager/database/daos/transactions_dao.dart';
 import 'package:money_manager/database/tables/accounts_table.dart';
@@ -18,6 +19,7 @@ import 'package:money_manager/database/tables/debt_payments_table.dart';
 import 'package:money_manager/database/tables/debts_table.dart';
 import 'package:money_manager/database/tables/exchange_rates_table.dart';
 import 'package:money_manager/database/tables/goals_table.dart';
+import 'package:money_manager/database/tables/notes_table.dart';
 import 'package:money_manager/database/tables/recurring_transactions_table.dart';
 import 'package:money_manager/database/tables/transfers_table.dart';
 import 'package:money_manager/database/tables/transactions_table.dart';
@@ -37,6 +39,7 @@ part 'database.g.dart';
     DebtPaymentsTable,
     CurrenciesTable,
     ExchangeRatesTable,
+    NotesTable,
   ],
   daos: [
     AccountsDao,
@@ -47,6 +50,7 @@ part 'database.g.dart';
     DebtsDao,
     RecurringDao,
     CurrenciesDao,
+    NotesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -63,7 +67,16 @@ class AppDatabase extends _$AppDatabase {
           await m.createAll();
         },
         onUpgrade: (m, from, to) async {
-          // future migrations here
+          if (from < 2) {
+            await m.createTable(notesTable);
+            await m.addColumn(accountsTable, accountsTable.systemKey);
+            await m.addColumn(categoriesTable, categoriesTable.systemKey);
+            await m.addColumn(goalsTable, goalsTable.isPriority);
+            await m.addColumn(debtsTable, debtsTable.totalInstallments);
+            await m.addColumn(debtsTable, debtsTable.paidInstallments);
+            await m.addColumn(debtsTable, debtsTable.billingDay);
+            await m.addColumn(recurringTransactionsTable, recurringTransactionsTable.isSubscription);
+          }
         },
       );
 

@@ -14,6 +14,7 @@ class CategoriesScreen extends ConsumerStatefulWidget {
 }
 
 class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with SingleTickerProviderStateMixin {
+  AppColorsT get colors => AppColorsT.of(context);
   late final TabController _tabCtrl;
 
   static const _icons = {
@@ -59,6 +60,13 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
     return Scaffold(
       appBar: AppBar(
         title: Text('Kategori', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        actions: [
+          IconButton(
+            tooltip: 'Tambah Kategori',
+            icon: const Icon(Icons.add),
+            onPressed: () => context.push('/add-category'),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabCtrl,
           tabs: const [
@@ -80,14 +88,6 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'categories_fab',
-        onPressed: () => context.push('/add-category'),
-        backgroundColor: AppColors.gold,
-        foregroundColor: AppColors.bg,
-        icon: const Icon(Icons.add),
-        label: Text('Tambah Kategori', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-      ),
     );
   }
 
@@ -99,7 +99,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
           children: [
             const Text('📂', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
-            Text('Belum ada kategori', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
+            Text('Belum ada kategori', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
           ],
         ),
       );
@@ -112,7 +112,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
         final cat = categories[index];
         final lookup = _icons[cat.name.toLowerCase()];
         final emoji = lookup?.$1 ?? '📁';
-        final color = lookup?.$2 ?? AppColors.textMuted;
+        final color = lookup?.$2 ?? colors.textSecondary;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 6),
@@ -161,7 +161,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
                 ),
                 title: Text(
                   cat.name,
-                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary),
                 ),
                 subtitle: Text(
                   cat.type.toUpperCase(),

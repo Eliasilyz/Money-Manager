@@ -11,6 +11,7 @@ class AccountsTable extends Table {
   TextColumn? get color => text().nullable()();
   TextColumn? get note => text().nullable()();
   BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
+  TextColumn? get systemKey => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 

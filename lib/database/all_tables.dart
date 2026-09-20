@@ -1,0 +1,12 @@
+export 'tables/accounts_table.dart';
+export 'tables/budgets_table.dart';
+export 'tables/categories_table.dart';
+export 'tables/currencies_table.dart';
+export 'tables/debt_payments_table.dart';
+export 'tables/debts_table.dart';
+export 'tables/exchange_rates_table.dart';
+export 'tables/goals_table.dart';
+export 'tables/notes_table.dart';
+export 'tables/recurring_transactions_table.dart';
+export 'tables/transfers_table.dart';
+export 'tables/transactions_table.dart';

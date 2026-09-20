@@ -15,6 +15,13 @@ class DashboardScreen extends ConsumerWidget {
     final dashboardAsync = ref.watch(dashboardProvider);
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'dashboard_fab',
+        onPressed: () => context.push('/add-transaction'),
+        backgroundColor: AppColors.gold,
+        foregroundColor: AppColors.bg,
+        child: const Icon(Icons.add),
+      ),
       body: SafeArea(
         child: dashboardAsync.when(
           data: (data) {
@@ -51,6 +58,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final colors = AppColorsT.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Row(
@@ -61,12 +69,12 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               Text(
                 'Selamat Pagi 👋',
-                style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted),
+                style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary),
               ),
               const SizedBox(height: 2),
               Text(
                 'Money Manager',
-                style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary),
               ),
             ],
           ),
@@ -91,6 +99,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildBalanceCard(BuildContext context, DashboardData data, NumberFormat fmt) {
+    final colors = AppColorsT.of(context);
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.all(20),
@@ -121,22 +130,22 @@ class DashboardScreen extends ConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('TOTAL SALDO', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textMuted, letterSpacing: 0.8)),
+              Text('TOTAL SALDO', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500, color: colors.textSecondary, letterSpacing: 0.8)),
               const SizedBox(height: 6),
               Text(
                 fmt.format(data.totalBalance),
-                style: GoogleFonts.jetBrainsMono(fontSize: 26, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: GoogleFonts.jetBrainsMono(fontSize: 26, fontWeight: FontWeight.w700, color: colors.textPrimary),
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
-                    child: _buildMiniStat(Icons.arrow_downward, 'Pemasukan', fmt.format(data.totalIncome), AppColors.teal),
+                    child: _buildMiniStat(context, Icons.arrow_downward, 'Pemasukan', fmt.format(data.totalIncome), AppColors.teal),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _buildMiniStat(Icons.arrow_upward, 'Pengeluaran', fmt.format(data.totalExpenses), AppColors.rose),
+                    child: _buildMiniStat(context, Icons.arrow_upward, 'Pengeluaran', fmt.format(data.totalExpenses), AppColors.rose),
                   ),
                 ],
               ),
@@ -147,7 +156,8 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMiniStat(IconData icon, String label, String value, Color color) {
+  Widget _buildMiniStat(BuildContext context, IconData icon, String label, String value, Color color) {
+    final colors = AppColorsT.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -166,7 +176,7 @@ class DashboardScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted), overflow: TextOverflow.ellipsis),
+              Text(label, style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), overflow: TextOverflow.ellipsis),
               Text(value, style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.w600, color: color), overflow: TextOverflow.ellipsis),
             ],
           ),
@@ -176,6 +186,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
+    final colors = AppColorsT.of(context);
     final actions = [
       _Action('Transaksi', Icons.receipt_long_outlined, () => context.push('/transactions'), AppColors.teal),
       _Action('Transfer', Icons.swap_horiz_rounded, () => context.push('/transfers'), AppColors.sky),
@@ -220,7 +231,7 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(height: 6),
                 Text(
                   a.label,
-                  style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
+                  style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -233,6 +244,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildSection(BuildContext context, String title, VoidCallback? onSeeAll) {
+    final colors = AppColorsT.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 12, 10),
       child: Row(
@@ -240,7 +252,7 @@ class DashboardScreen extends ConsumerWidget {
         children: [
           Text(
             title.toUpperCase(),
-            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
+            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
           ),
           if (onSeeAll != null)
             TextButton(
@@ -253,6 +265,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildTransactionTile(BuildContext context, Transaction t, NumberFormat fmt) {
+    final colors = AppColorsT.of(context);
     final isIncome = t.type == 'income';
     final color = isIncome ? AppColors.teal : AppColors.rose;
     final sign = isIncome ? '+' : '-';
@@ -270,15 +283,15 @@ class DashboardScreen extends ConsumerWidget {
           ),
           title: Text(
             (t.description != null && t.description!.isNotEmpty) ? t.description! : (isIncome ? 'Pemasukan' : 'Pengeluaran'),
-            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+            style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (t.note != null && t.note!.isNotEmpty)
-                Text(t.note!, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted)),
+                Text(t.note!, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
               const SizedBox(height: 2),
-              Text(DateFormat('dd MMM yyyy, HH:mm').format(t.date), style: GoogleFonts.inter(fontSize: 10, color: AppColors.textDim)),
+              Text(DateFormat('dd MMM yyyy, HH:mm').format(t.date), style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
             ],
           ),
           trailing: Text(
@@ -291,6 +304,7 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildEmpty(BuildContext context, String message) {
+    final colors = AppColorsT.of(context);
     return Padding(
       padding: const EdgeInsets.all(40),
       child: Center(
@@ -298,7 +312,7 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             const Text('📭', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
-            Text(message, style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14)),
+            Text(message, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
           ],
         ),
       ),

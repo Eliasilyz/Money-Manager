@@ -7,6 +7,7 @@ class CategoriesTable extends Table {
   TextColumn? get icon => text().nullable()();
   TextColumn get type => text().withDefault(const Constant('expense'))();
   TextColumn? get parentId => text().nullable()();
+  TextColumn? get systemKey => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 

@@ -10,6 +10,7 @@ class GoalsTable extends Table {
   TextColumn? get linkedAccountId => text().nullable()();
   DateTimeColumn get startDate => dateTime()();
   DateTimeColumn? get targetDate => dateTime().nullable()();
+  BoolColumn get isPriority => boolean().withDefault(const Constant(false))();
   TextColumn get status => text().withDefault(const Constant('active'))();
   TextColumn? get note => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

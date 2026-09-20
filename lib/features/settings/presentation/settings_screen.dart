@@ -1,138 +1,119 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:money_manager/theme/app_theme.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
+import 'package:money_manager/features/budgets/application/budget_provider.dart';
+import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/goals/application/goal_provider.dart';
+import 'package:money_manager/features/recurring/application/recurring_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
+import 'package:money_manager/theme/app_colors.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = AppColorsT.of(context);
+    final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
+    final notif = ref.watch(notificationsEnabledProvider);
+    final categories = ref.watch(categoriesNotifierProvider).valueOrNull ?? [];
+    final budgets = ref.watch(budgetsNotifierProvider).valueOrNull ?? [];
+    final goals = ref.watch(goalsNotifierProvider).valueOrNull ?? [];
+    final recurring = ref.watch(recurringTransactionsNotifierProvider).valueOrNull ?? [];
+
+    final themeLabel = switch (themeMode) {
+      ThemeMode.light => 'Tema terang',
+      ThemeMode.dark => 'Tema gelap',
+      _ => 'Ikuti sistem',
+    };
+    final langLabel = locale.languageCode == 'id' ? 'Bahasa Indonesia' : 'English';
+
     return Scaffold(
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
           children: [
-            Text(
-              'Lainnya',
-              style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-            ),
-            const SizedBox(height: 24),
-            _buildSection('Pengelolaan'),
-            const SizedBox(height: 8),
-            _SettingsTile(
-              icon: Icons.account_balance_wallet_outlined,
-              label: 'Akun',
-              subtitle: 'Kelola rekening dan dompet',
-              color: AppColors.gold,
-              onTap: () => context.push('/accounts'),
-            ),
-            _SettingsTile(
-              icon: Icons.category_outlined,
-              label: 'Kategori',
-              subtitle: 'Kelola kategori pemasukan & pengeluaran',
-              color: AppColors.sky,
-              onTap: () => context.push('/categories'),
-            ),
-            _SettingsTile(
-              icon: Icons.pie_chart_outline,
-              label: 'Anggaran',
-              subtitle: 'Atur batas pengeluaran',
-              color: AppColors.orange,
-              onTap: () => context.push('/budgets'),
-            ),
-            _SettingsTile(
-              icon: Icons.flag_outlined,
-              label: 'Target Tabungan',
-              subtitle: 'Pantau pencapaian目標',
-              color: AppColors.lilac,
-              onTap: () => context.push('/goals'),
-            ),
-            _SettingsTile(
-              icon: Icons.money_off_rounded,
-              label: 'Hutang & Piutang',
-              subtitle: 'Kelola hutang dan piutang',
-              color: AppColors.rose,
-              onTap: () => context.push('/debts'),
-            ),
-            _SettingsTile(
-              icon: Icons.repeat_rounded,
-              label: 'Transaksi Berulang',
-              subtitle: 'Atur pemasukan & pengeluaran rutin',
-              color: AppColors.lilac,
-              onTap: () => context.push('/recurring'),
-            ),
-            _SettingsTile(
-              icon: Icons.swap_horiz_rounded,
-              label: 'Transfer',
-              subtitle: 'Transfer antar akun',
-              color: AppColors.sky,
-              onTap: () => context.push('/transfers'),
-            ),
-            _SettingsTile(
-              icon: Icons.monetization_on_outlined,
-              label: 'Mata Uang',
-              subtitle: 'Lihat mata uang yang tersedia',
-              color: AppColors.gold,
-              onTap: () => context.push('/currencies'),
-            ),
-            const SizedBox(height: 24),
-            _buildSection('Tentang'),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Text('Lainnya', style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            Text('Pengaturan & fitur', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+            const SizedBox(height: 16),
+
+            HeroCard(
+              backgroundColor: colors.primaryDark,
+              child: Row(
                 children: [
-                  Row(
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: colors.primary,
+                    child: Text('ME', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 16)),
+                  ),
+                  const SizedBox(width: 14),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.gold, AppColors.sky],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(Icons.account_balance_wallet, color: Colors.white, size: 22),
-                      ),
-                      const SizedBox(width: 14),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Money Manager',
-                            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                          ),
-                          Text(
-                            'Personal Finance Tracker',
-                            style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
-                          ),
-                        ],
-                      ),
+                      Text('Money Manager', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+                      Text('user@email.com', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Aplikasi pencatatan keuangan pribadi yang sederhana dan powerful. '
-                    'Pantau pemasukan, pengeluaran, transfer, anggaran, target tabungan, '
-                    'dan hutang dalam satu tempat.',
-                    style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted, height: 1.5),
-                  ),
-                  const SizedBox(height: 16),
-                  const Divider(color: AppColors.border),
-                  const SizedBox(height: 12),
-                  _infoRow('Versi', '1.0.0 (Build 1)'),
-                  const SizedBox(height: 8),
-                  _infoRow('Dibuat dengan', 'Flutter · Drift · Riverpod'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            Text('Kelola keuangan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            const SizedBox(height: 8),
+            Card(
+              child: Column(
+                children: [
+                  _tile(context, Icons.category_outlined, 'Kategori', '${categories.length} kategori', () => context.push('/categories')),
+                  const Divider(height: 1),
+                  _tile(context, Icons.repeat_rounded, 'Transaksi Berulang', '${recurring.length} transaksi aktif', () => context.push('/recurring')),
+                  const Divider(height: 1),
+                  _tile(context, Icons.pie_chart_outline, 'Anggaran & Target', '${budgets.length} anggaran • ${goals.length} target', () => context.push('/budgets')),
+                  const Divider(height: 1),
+                  _tile(context, Icons.sticky_note_2_outlined, 'Catatan', 'Catatan pribadi', () => context.push('/notes')),
+                  const Divider(height: 1),
+                  _tile(context, Icons.cloud_sync_outlined, 'Backup & Restore', 'Cadangkan & pulihkan data', () => context.push('/backup')),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            Text('Preferensi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            const SizedBox(height: 8),
+            Card(
+              child: Column(
+                children: [
+                  _tile(context, Icons.monetization_on_outlined, 'Mata uang', 'Rupiah Indonesia (IDR)', () => context.push('/currencies')),
+                  const Divider(height: 1),
+                  _tile(context, Icons.notifications_none_outlined, 'Notifikasi', notif ? 'Pengingat aktif' : 'Pengingat nonaktif', () {
+                    final n = !notif;
+                    ref.read(notificationsEnabledProvider.notifier).state = n;
+                    ref.read(settingsServiceProvider).saveNotificationsEnabled(n);
+                    final svc = ref.read(notificationServiceProvider);
+                    if (n) {
+                      svc.scheduleDaily();
+                    } else {
+                      svc.cancelAll();
+                    }
+                  }),
+                  const Divider(height: 1),
+                  _tile(context, Icons.palette_outlined, 'Tampilan', '$themeLabel • $langLabel', () => _showAppearanceDialog(context, ref)),
+                  const Divider(height: 1),
+                  _tile(context, Icons.security_outlined, 'Keamanan & privasi', 'PIN dan biometrik', () => context.push('/security')),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            Text('Tentang aplikasi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            const SizedBox(height: 8),
+            Card(
+              child: Column(
+                children: [
+                  _tile(context, Icons.info_outline, 'Tentang Money Manager', 'Versi 1.0.0 (Build 1)', () => _showAboutDialog(context)),
                 ],
               ),
             ),
@@ -142,72 +123,114 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title) {
-    return Text(
-      title.toUpperCase(),
-      style: GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textMuted,
-        letterSpacing: 0.8,
+  Widget _tile(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap) {
+    final colors = AppColorsT.of(context);
+    return ListTile(
+      onTap: onTap,
+      leading: Icon(icon, color: colors.primary, size: 22),
+      title: Text(title, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary)),
+      subtitle: Text(subtitle, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+      trailing: Icon(Icons.chevron_right, color: colors.textSecondary, size: 18),
+    );
+  }
+
+  void _showAppearanceDialog(BuildContext context, WidgetRef ref) {
+    final colors = AppColorsT.of(context);
+    final themeMode = ref.read(themeModeProvider);
+    final locale = ref.read(localeProvider);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Tampilan', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('TEMA', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                _themeOption(ctx, ref, 'Terang', ThemeMode.light, themeMode == ThemeMode.light),
+                const SizedBox(width: 8),
+                _themeOption(ctx, ref, 'Gelap', ThemeMode.dark, themeMode == ThemeMode.dark),
+                const SizedBox(width: 8),
+                _themeOption(ctx, ref, 'Sistem', ThemeMode.system, themeMode == ThemeMode.system),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text('BAHASA', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                _langOption(ctx, ref, 'Indonesia', const Locale('id'), locale.languageCode == 'id'),
+                const SizedBox(width: 8),
+                _langOption(ctx, ref, 'English', const Locale('en'), locale.languageCode == 'en'),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Tutup')),
+        ],
       ),
     );
   }
 
-  Widget _infoRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
-        Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
-      ],
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String subtitle;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _SettingsTile({
-    required this.icon,
-    required this.label,
-    required this.subtitle,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      child: Card(
-        child: ListTile(
-          onTap: onTap,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          leading: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 18),
+  Widget _themeOption(BuildContext ctx, WidgetRef ref, String label, ThemeMode mode, bool selected) {
+    final colors = AppColorsT.of(ctx);
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          ref.read(themeModeProvider.notifier).state = mode;
+          ref.read(settingsServiceProvider).saveThemeMode(mode);
+          Navigator.pop(ctx);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? colors.primary : colors.surfaceRaised,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: selected ? colors.primary : colors.border),
           ),
-          title: Text(
-            label,
-            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+          child: Center(
+            child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
           ),
-          subtitle: Text(
-            subtitle,
-            style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
-          ),
-          trailing: const Icon(Icons.chevron_right, color: AppColors.textDisabled, size: 20),
         ),
       ),
+    );
+  }
+
+  Widget _langOption(BuildContext ctx, WidgetRef ref, String label, Locale loc, bool selected) {
+    final colors = AppColorsT.of(ctx);
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          ref.read(localeProvider.notifier).state = loc;
+          ref.read(settingsServiceProvider).saveLocale(loc);
+          Navigator.pop(ctx);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? colors.primary : colors.surfaceRaised,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: selected ? colors.primary : colors.border),
+          ),
+          child: Center(
+            child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showAboutDialog(
+      context: context,
+      applicationName: 'Money Manager',
+      applicationVersion: '1.0.0 (Build 1)',
+      applicationLegalese: '© 2026 Money Manager. Hak cipta dilindungi.',
     );
   }
 }

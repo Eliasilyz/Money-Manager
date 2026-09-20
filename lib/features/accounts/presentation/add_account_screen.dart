@@ -16,6 +16,7 @@ class AddAccountScreen extends ConsumerStatefulWidget {
 }
 
 class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
+  AppColorsT get colors => AppColorsT.of(context);
   final _nameCtrl = TextEditingController();
   final _balanceCtrl = TextEditingController(text: '0');
   final _noteCtrl = TextEditingController();
@@ -69,15 +70,15 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
             children: [
               Text(
                 'NAMA AKUN',
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
+                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _nameCtrl,
-                style: GoogleFonts.inter(color: AppColors.textPrimary),
-                decoration: const InputDecoration(
+                style: GoogleFonts.inter(color: colors.textPrimary),
+                decoration: InputDecoration(
                   hintText: 'Contoh: BCA Utama',
-                  prefixIcon: Icon(Icons.label_outline, color: AppColors.textMuted),
+                  prefixIcon: Icon(Icons.label_outline, color: colors.textSecondary),
                 ),
                 textCapitalization: TextCapitalization.words,
               ),
@@ -85,7 +86,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
 
               Text(
                 'TIPE AKUN',
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
+                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -99,24 +100,24 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: selected ? t.$4.withValues(alpha: 0.15) : AppColors.card,
+                        color: selected ? t.$4.withValues(alpha: 0.15) : colors.surface,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: selected ? t.$4 : AppColors.border,
+                          color: selected ? t.$4 : colors.border,
                           width: selected ? 1.5 : 1,
                         ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(t.$3, size: 16, color: selected ? t.$4 : AppColors.textMuted),
+                          Icon(t.$3, size: 16, color: selected ? t.$4 : colors.textSecondary),
                           const SizedBox(width: 6),
                           Text(
                             t.$2,
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                              color: selected ? t.$4 : AppColors.textMuted,
+                              color: selected ? t.$4 : colors.textSecondary,
                             ),
                           ),
                         ],
@@ -129,50 +130,50 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
 
               Text(
                 'MATA UANG',
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
+                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: selectedCurrency,
-                dropdownColor: AppColors.card2,
+                dropdownColor: colors.surfaceRaised,
                 items: currencies.map((c) => DropdownMenuItem(
                   value: c.code,
-                  child: Text('${c.code} — ${c.name}', style: GoogleFonts.inter(color: AppColors.textPrimary)),
+                  child: Text('${c.code} — ${c.name}', style: GoogleFonts.inter(color: colors.textPrimary)),
                 )).toList(),
                 onChanged: (val) => setState(() => _currencyCode = val ?? 'IDR'),
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.monetization_on_outlined, color: AppColors.textMuted),
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.monetization_on_outlined, color: colors.textSecondary),
                 ),
               ),
               const SizedBox(height: 24),
 
               Text(
                 'SALDO AWAL',
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
+                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _balanceCtrl,
                 keyboardType: TextInputType.number,
-                style: GoogleFonts.jetBrainsMono(color: AppColors.textPrimary, fontSize: 16),
-                decoration: const InputDecoration(
+                style: GoogleFonts.jetBrainsMono(color: colors.textPrimary, fontSize: 16),
+                decoration: InputDecoration(
                   hintText: '0',
-                  prefixIcon: Icon(Icons.account_balance_wallet_outlined, color: AppColors.textMuted),
+                  prefixIcon: Icon(Icons.account_balance_wallet_outlined, color: colors.textSecondary),
                 ),
               ),
               const SizedBox(height: 24),
 
               Text(
                 'CATATAN',
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
+                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _noteCtrl,
-                style: GoogleFonts.inter(color: AppColors.textPrimary),
-                decoration: const InputDecoration(
+                style: GoogleFonts.inter(color: colors.textPrimary),
+                decoration: InputDecoration(
                   hintText: 'Opsional',
-                  prefixIcon: Icon(Icons.note_outlined, color: AppColors.textMuted),
+                  prefixIcon: Icon(Icons.note_outlined, color: colors.textSecondary),
                 ),
                 maxLines: 2,
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/features/accounts/presentation/accounts_screen.dart';
 import 'package:money_manager/features/accounts/presentation/add_account_screen.dart';
 import 'package:money_manager/features/budgets/presentation/budgets_screen.dart';
@@ -13,7 +14,10 @@ import 'package:money_manager/features/debts/presentation/debts_screen.dart';
 import 'package:money_manager/features/debts/presentation/add_debt_screen.dart';
 import 'package:money_manager/features/goals/presentation/goals_screen.dart';
 import 'package:money_manager/features/goals/presentation/add_goal_screen.dart';
+import 'package:money_manager/features/notes/presentation/notes_screen.dart';
 import 'package:money_manager/features/recurring/presentation/recurring_screen.dart';
+import 'package:money_manager/features/security/presentation/security_screen.dart';
+import 'package:money_manager/features/settings/presentation/backup_screen.dart';
 import 'package:money_manager/features/settings/presentation/settings_screen.dart';
 import 'package:money_manager/features/transactions/presentation/transactions_screen.dart';
 import 'package:money_manager/features/transactions/presentation/add_transaction_screen.dart';
@@ -41,8 +45,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ]),
         ],
       ),
-      GoRoute(path: '/add-account', builder: (context, state) => const AddAccountScreen()),
       GoRoute(path: '/add-transaction', builder: (context, state) => const AddTransactionScreen()),
+      GoRoute(path: '/add-account', builder: (context, state) => const AddAccountScreen()),
       GoRoute(path: '/transfers', builder: (context, state) => const TransfersScreen()),
       GoRoute(path: '/add-transfer', builder: (context, state) => const AddTransferScreen()),
       GoRoute(path: '/budgets', builder: (context, state) => const BudgetsScreen()),
@@ -53,6 +57,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/add-debt', builder: (context, state) => const AddDebtScreen()),
       GoRoute(path: '/categories', builder: (context, state) => const CategoriesScreen()),
       GoRoute(path: '/add-category', builder: (context, state) => const AddCategoryScreen()),
+      GoRoute(path: '/notes', builder: (context, state) => const NotesScreen()),
+      GoRoute(path: '/backup', builder: (context, state) => const BackupScreen()),
+      GoRoute(path: '/security', builder: (context, state) => const SecurityScreen()),
       GoRoute(path: '/recurring', builder: (context, state) => const RecurringScreen()),
       GoRoute(path: '/currencies', builder: (context, state) => const CurrenciesScreen()),
     ],
@@ -67,16 +74,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) => navigationShell.goBranch(index),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.receipt_long), label: 'Transactions'),
-          NavigationDestination(icon: Icon(Icons.account_balance_wallet), label: 'Accounts'),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-      ),
+      bottomNavigationBar: AppBottomNav(navigationShell: navigationShell),
     );
   }
 }

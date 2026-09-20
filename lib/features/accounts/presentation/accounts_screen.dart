@@ -27,6 +27,13 @@ class AccountsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Akun', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        actions: [
+          IconButton(
+            tooltip: 'Tambah Akun',
+            icon: const Icon(Icons.add),
+            onPressed: () => context.push('/add-account'),
+          ),
+        ],
       ),
       body: accountsAsync.when(
         data: (accounts) {
@@ -58,7 +65,7 @@ class AccountsScreen extends ConsumerWidget {
               _buildTotalBalance(context, totalBalance),
               const SizedBox(height: 24),
               for (final entry in grouped.entries) ...[
-                _buildSectionHeader(entry.key),
+                _buildSectionHeader(context, entry.key),
                 const SizedBox(height: 8),
                 ...entry.value.map((a) => _buildAccountTile(context, ref, a, accountBalances[a.id] ?? a.initialBalance)),
                 const SizedBox(height: 16),
@@ -69,18 +76,11 @@ class AccountsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'accounts_fab',
-        onPressed: () => context.push('/add-account'),
-        backgroundColor: AppColors.gold,
-        foregroundColor: AppColors.bg,
-        icon: const Icon(Icons.add),
-        label: Text('Tambah Akun', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-      ),
     );
   }
 
   Widget _buildEmpty(BuildContext context) {
+    final colors = AppColorsT.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -89,34 +89,35 @@ class AccountsScreen extends ConsumerWidget {
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: colors.border),
             ),
-            child: const Icon(Icons.account_balance_wallet_outlined, size: 32, color: AppColors.textDisabled),
+            child: Icon(Icons.account_balance_wallet_outlined, size: 32, color: colors.textSecondary),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada akun', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+          Text('Belum ada akun', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600, color: colors.textPrimary)),
           const SizedBox(height: 6),
-          Text('Tap + untuk membuat akun pertama', style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13)),
+          Text('Tap + untuk membuat akun pertama', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 13)),
         ],
       ),
     );
   }
 
   Widget _buildTotalBalance(BuildContext context, int total) {
+    final colors = AppColorsT.of(context);
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        color: AppColors.card,
+        border: Border.all(color: colors.border),
+        color: colors.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('TOTAL SALDO', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 1)),
+          Text('TOTAL SALDO', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 1)),
           const SizedBox(height: 6),
           Text(
             fmt.format(total),
@@ -127,16 +128,18 @@ class AccountsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(String type) {
+  Widget _buildSectionHeader(BuildContext context, String type) {
+    final colors = AppColorsT.of(context);
     final config = _typeConfig[type];
     final label = config?.$1 ?? type.toUpperCase();
     return Text(
       label.toUpperCase(),
-      style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8),
+      style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
     );
   }
 
   Widget _buildAccountTile(BuildContext context, WidgetRef ref, Account account, int currentBalance) {
+    final colors = AppColorsT.of(context);
     final config = _typeConfig[account.accountType];
     final color = config?.$3 ?? AppColors.gold;
     final icon = config?.$2 ?? Icons.account_balance_wallet_outlined;
@@ -189,18 +192,18 @@ class AccountsScreen extends ConsumerWidget {
             ),
             title: Text(
               account.name,
-              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary),
             ),
             subtitle: Text(
               account.currencyCode,
-              style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted),
+              style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary),
             ),
             trailing: Text(
               fmt.format(currentBalance),
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: currentBalance < 0 ? AppColors.rose : AppColors.textPrimary,
+                color: currentBalance < 0 ? AppColors.rose : colors.textPrimary,
               ),
             ),
           ),

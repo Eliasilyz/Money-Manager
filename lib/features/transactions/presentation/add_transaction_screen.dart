@@ -17,6 +17,7 @@ class AddTransactionScreen extends ConsumerStatefulWidget {
 }
 
 class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
+  AppColorsT get colors => AppColorsT.of(context);
   String _type = 'expense';
   String? _selectedAccountId;
   String? _selectedCategoryId;
@@ -61,9 +62,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: colors.border),
                 ),
                 child: Row(
                   children: [
@@ -86,7 +87,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: _type == 'expense' ? Colors.white : AppColors.textMuted,
+                                color: _type == 'expense' ? Colors.white : colors.textSecondary,
                               ),
                             ),
                           ),
@@ -112,7 +113,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: _type == 'income' ? AppColors.bg : AppColors.textMuted,
+                                color: _type == 'income' ? AppColors.bg : colors.textSecondary,
                               ),
                             ),
                           ),
@@ -132,15 +133,15 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                     return Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.card,
+                        color: colors.surface,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: colors.border),
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.account_balance_wallet_outlined, size: 28, color: AppColors.textDim),
+                          Icon(Icons.account_balance_wallet_outlined, size: 28, color: colors.textSecondary),
                           const SizedBox(height: 6),
-                          Text('Belum ada akun', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
+                          Text('Belum ada akun', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
                           const SizedBox(height: 8),
                           TextButton(
                             onPressed: () => context.push('/add-account'),
@@ -156,19 +157,19 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       : null;
 
                   return DropdownButtonFormField<String>(
-                    value: validAccountId,
-                    dropdownColor: AppColors.card2,
-                    hint: Text('Pilih Akun', style: GoogleFonts.inter(color: AppColors.textMuted)),
+                    initialValue: validAccountId,
+                    dropdownColor: colors.surfaceRaised,
+                    hint: Text('Pilih Akun', style: GoogleFonts.inter(color: colors.textSecondary)),
                     items: active.map((a) => DropdownMenuItem(
                       value: a.id,
-                      child: Text('${a.name} (${a.currencyCode})', style: GoogleFonts.inter(color: AppColors.textPrimary)),
+                      child: Text('${a.name} (${a.currencyCode})', style: GoogleFonts.inter(color: colors.textPrimary)),
                     )).toList(),
                     onChanged: (val) => setState(() {
                       _selectedAccountId = val;
                     }),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Akun',
-                      prefixIcon: Icon(Icons.account_balance_wallet_outlined, color: AppColors.textMuted),
+                      prefixIcon: Icon(Icons.account_balance_wallet_outlined, color: colors.textSecondary),
                     ),
                   );
                 },
@@ -189,17 +190,17 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       : null;
 
                   return DropdownButtonFormField<String>(
-                    value: validCatId,
-                    dropdownColor: AppColors.card2,
-                    hint: Text('Pilih Kategori (opsional)', style: GoogleFonts.inter(color: AppColors.textMuted)),
+                    initialValue: validCatId,
+                    dropdownColor: colors.surfaceRaised,
+                    hint: Text('Pilih Kategori (opsional)', style: GoogleFonts.inter(color: colors.textSecondary)),
                     items: filtered.map((c) => DropdownMenuItem(
                       value: c.id,
-                      child: Text(c.name, style: GoogleFonts.inter(color: AppColors.textPrimary)),
+                      child: Text(c.name, style: GoogleFonts.inter(color: colors.textPrimary)),
                     )).toList(),
                     onChanged: (val) => setState(() => _selectedCategoryId = val),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Kategori',
-                      prefixIcon: Icon(Icons.category_outlined, color: AppColors.textMuted),
+                      prefixIcon: Icon(Icons.category_outlined, color: colors.textSecondary),
                     ),
                   );
                 },
@@ -212,12 +213,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               TextField(
                 controller: _amountCtrl,
                 keyboardType: TextInputType.number,
-                style: GoogleFonts.jetBrainsMono(fontSize: 16, color: AppColors.textPrimary),
+                style: GoogleFonts.jetBrainsMono(fontSize: 16, color: colors.textPrimary),
                 decoration: InputDecoration(
                   labelText: 'Nominal',
                   prefixText: '${accountCurrency ?? 'Rp'} ',
                   prefixStyle: GoogleFonts.jetBrainsMono(color: AppColors.gold, fontWeight: FontWeight.w600),
-                  prefixIcon: const Icon(Icons.attach_money, color: AppColors.textMuted),
+                  prefixIcon: Icon(Icons.attach_money, color: colors.textSecondary),
                 ),
               ),
               const SizedBox(height: 16),
@@ -225,11 +226,11 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               // Description
               TextField(
                 controller: _descriptionCtrl,
-                style: GoogleFonts.inter(color: AppColors.textPrimary),
-                decoration: const InputDecoration(
+                style: GoogleFonts.inter(color: colors.textPrimary),
+                decoration: InputDecoration(
                   labelText: 'Deskripsi / Untuk apa',
                   hintText: 'Contoh: Nasi Padang Siang',
-                  prefixIcon: Icon(Icons.description_outlined, color: AppColors.textMuted),
+                  prefixIcon: Icon(Icons.description_outlined, color: colors.textSecondary),
                 ),
                 textCapitalization: TextCapitalization.sentences,
               ),
@@ -238,11 +239,11 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               // Note
               TextField(
                 controller: _noteCtrl,
-                style: GoogleFonts.inter(color: AppColors.textPrimary),
-                decoration: const InputDecoration(
+                style: GoogleFonts.inter(color: colors.textPrimary),
+                decoration: InputDecoration(
                   labelText: 'Catatan tambahan (opsional)',
                   hintText: 'Contoh: Dibayar pakai QRIS',
-                  prefixIcon: Icon(Icons.note_outlined, color: AppColors.textMuted),
+                  prefixIcon: Icon(Icons.note_outlined, color: colors.textSecondary),
                 ),
                 maxLines: 2,
               ),
@@ -251,18 +252,18 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               // Date Picker Card
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: colors.border),
                 ),
                 child: ListTile(
                   leading: const Icon(Icons.calendar_today_outlined, color: AppColors.gold, size: 20),
-                  title: Text('Tanggal & Waktu', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMuted)),
+                  title: Text('Tanggal & Waktu', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                   subtitle: Text(
                     DateFormat('dd MMMM yyyy, HH:mm').format(_selectedDate),
-                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
                   ),
-                  trailing: const Icon(Icons.chevron_right, color: AppColors.textDim),
+                  trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
                   onTap: () async {
                     final pickedDate = await showDatePicker(
                       context: context,
@@ -271,10 +272,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       lastDate: DateTime.now().add(const Duration(days: 1)),
                     );
                     if (pickedDate != null) {
+                      if (!context.mounted) return;
                       final pickedTime = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.fromDateTime(_selectedDate),
                       );
+                      if (!context.mounted) return;
                       setState(() {
                         _selectedDate = DateTime(
                           pickedDate.year,

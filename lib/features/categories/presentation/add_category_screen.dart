@@ -15,6 +15,7 @@ class AddCategoryScreen extends ConsumerStatefulWidget {
 }
 
 class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
+  AppColorsT get colors => AppColorsT.of(context);
   final _nameCtrl = TextEditingController();
   String _type = 'expense';
   bool _saving = false;
@@ -49,7 +50,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('TIPE', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
+            Text('TIPE', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -60,20 +61,20 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
             ),
             const SizedBox(height: 24),
 
-            Text('NAMA KATEGORI', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
+            Text('NAMA KATEGORI', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
             const SizedBox(height: 8),
             TextField(
               controller: _nameCtrl,
-              style: GoogleFonts.inter(color: AppColors.textPrimary),
-              decoration: const InputDecoration(
+              style: GoogleFonts.inter(color: colors.textPrimary),
+              decoration: InputDecoration(
                 hintText: 'Contoh: Makanan & Minuman',
-                prefixIcon: Icon(Icons.label_outline, color: AppColors.textMuted),
+                prefixIcon: Icon(Icons.label_outline, color: colors.textSecondary),
               ),
               textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 24),
 
-            Text('CEPAT TAMBAH', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textMuted, letterSpacing: 0.8)),
+            Text('CEPAT TAMBAH', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -93,7 +94,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
                       children: [
                         Text(p.$2, style: const TextStyle(fontSize: 14)),
                         const SizedBox(width: 6),
-                        Text(p.$1, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary)),
+                        Text(p.$1, style: GoogleFonts.inter(fontSize: 13, color: colors.textPrimary)),
                       ],
                     ),
                   ),
@@ -130,10 +131,10 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.15) : AppColors.card,
+          color: selected ? color.withValues(alpha: 0.15) : colors.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? color : AppColors.border,
+            color: selected ? color : colors.border,
             width: selected ? 1.5 : 1,
           ),
         ),
@@ -143,7 +144,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-              color: selected ? color : AppColors.textMuted,
+              color: selected ? color : colors.textSecondary,
             ),
           ),
         ),

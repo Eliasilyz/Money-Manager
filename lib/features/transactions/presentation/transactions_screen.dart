@@ -21,6 +21,7 @@ class TransactionsScreen extends ConsumerStatefulWidget {
 
 class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     with SingleTickerProviderStateMixin {
+  AppColorsT get colors => AppColorsT.of(context);
   late TabController _tabController;
 
   // Calendar State
@@ -82,7 +83,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           tabAlignment: TabAlignment.start,
           indicatorColor: AppColors.gold,
           labelColor: AppColors.gold,
-          unselectedLabelColor: AppColors.textMuted,
+          unselectedLabelColor: colors.textSecondary,
           labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
           unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 13),
           tabs: const [
@@ -171,9 +172,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: colors.border),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +192,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -203,14 +204,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: colors.textPrimary,
                               ),
                             ),
                             Text(
                               DateFormat('MMM yyyy', 'id_ID').format(firstDate),
                               style: GoogleFonts.inter(
                                 fontSize: 10,
-                                color: AppColors.textDim,
+                                color: colors.textSecondary,
                               ),
                             ),
                           ],
@@ -244,7 +245,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   ],
                 ),
               ),
-              const Divider(height: 1, color: AppColors.border),
+              Divider(height: 1, color: colors.border),
               // Transaction Items
               ...txList.map((tx) => _buildTransactionItem(tx, catMap, accMap)),
             ],
@@ -307,9 +308,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: colors.border),
           ),
           child: Column(
             children: [
@@ -322,7 +323,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                       AppColors.teal,
                     ),
                   ),
-                  Container(width: 1, height: 32, color: AppColors.border),
+                  Container(width: 1, height: 32, color: colors.border),
                   Expanded(
                     child: _buildSummaryMetric(
                       'Pengeluaran',
@@ -330,7 +331,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                       AppColors.rose,
                     ),
                   ),
-                  Container(width: 1, height: 32, color: AppColors.border),
+                  Container(width: 1, height: 32, color: colors.border),
                   Expanded(
                     child: _buildSummaryMetric(
                       'Bersih',
@@ -361,9 +362,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: AppColors.card,
+                color: colors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: colors.border),
               ),
               child: Column(
                 children: [
@@ -377,7 +378,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textMuted,
+                            color: colors.textSecondary,
                           ),
                         ),
                         Row(
@@ -403,7 +404,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                       ],
                     ),
                   ),
-                  const Divider(height: 1, color: AppColors.border),
+                  Divider(height: 1, color: colors.border),
                   ...txList.map((tx) => _buildTransactionItem(tx, catMap, accMap)),
                 ],
               ),
@@ -460,7 +461,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: colors.border),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,7 +471,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 style: GoogleFonts.inter(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textMuted,
+                  color: colors.textSecondary,
                   letterSpacing: 0.8,
                 ),
               ),
@@ -520,7 +521,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: AppColors.textMuted,
+            color: colors.textSecondary,
             letterSpacing: 0.8,
           ),
         ),
@@ -531,9 +532,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: colors.border),
             ),
             child: Column(
               children: sortedCatExpense.take(5).map((e) {
@@ -551,7 +552,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
+                              color: colors.textPrimary,
                             ),
                           ),
                           Text(
@@ -567,7 +568,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                       const SizedBox(height: 4),
                       LinearProgressIndicator(
                         value: pct,
-                        backgroundColor: AppColors.card2,
+                        backgroundColor: colors.surfaceRaised,
                         valueColor: const AlwaysStoppedAnimation(AppColors.rose),
                         minHeight: 5,
                         borderRadius: BorderRadius.circular(4),
@@ -586,7 +587,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           style: GoogleFonts.inter(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: AppColors.textMuted,
+            color: colors.textSecondary,
             letterSpacing: 0.8,
           ),
         ),
@@ -597,9 +598,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: colors.border),
             ),
             child: Column(
               children: sortedCatIncome.take(5).map((e) {
@@ -617,7 +618,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
+                              color: colors.textPrimary,
                             ),
                           ),
                           Text(
@@ -633,7 +634,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                       const SizedBox(height: 4),
                       LinearProgressIndicator(
                         value: pct,
-                        backgroundColor: AppColors.card2,
+                        backgroundColor: colors.surfaceRaised,
                         valueColor: const AlwaysStoppedAnimation(AppColors.teal),
                         minHeight: 5,
                         borderRadius: BorderRadius.circular(4),
@@ -719,9 +720,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: colors.border),
           ),
           child: Column(
             children: [
@@ -737,7 +738,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                               style: GoogleFonts.inter(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: d == 'Min' ? AppColors.rose : AppColors.textDim,
+                                color: d == 'Min' ? AppColors.rose : colors.textSecondary,
                               ),
                             ),
                           ),
@@ -745,7 +746,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                     .toList(),
               ),
               const SizedBox(height: 8),
-              const Divider(height: 1, color: AppColors.border),
+              Divider(height: 1, color: colors.border),
               const SizedBox(height: 8),
 
               // Calendar Days
@@ -784,14 +785,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                         color: isSelected
                             ? AppColors.gold.withValues(alpha: 0.2)
                             : isToday
-                                ? AppColors.card2
+                                ? colors.surfaceRaised
                                 : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: isSelected
                               ? AppColors.gold
                               : isToday
-                                  ? AppColors.border
+                                  ? colors.border
                                   : Colors.transparent,
                         ),
                       ),
@@ -807,7 +808,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                                   : FontWeight.w400,
                               color: isSelected
                                   ? AppColors.gold
-                                  : AppColors.textPrimary,
+                                  : colors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -856,12 +857,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textMuted,
+                color: colors.textSecondary,
               ),
             ),
             Text(
               '${selectedDayTx.length} transaksi',
-              style: GoogleFonts.inter(fontSize: 11, color: AppColors.textDim),
+              style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
             ),
           ],
         ),
@@ -912,13 +913,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 _noteSearchQuery = val.trim();
               });
             },
-            style: GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 13),
+            style: GoogleFonts.inter(color: colors.textPrimary, fontSize: 13),
             decoration: InputDecoration(
               hintText: 'Cari catatan, deskripsi, atau memo...',
-              prefixIcon: const Icon(Icons.search, color: AppColors.textDim, size: 20),
+              prefixIcon: Icon(Icons.search, color: colors.textSecondary, size: 20),
               suffixIcon: _noteSearchQuery.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear, color: AppColors.textDim, size: 18),
+                      icon: Icon(Icons.clear, color: colors.textSecondary, size: 18),
                       onPressed: () {
                         _noteSearchController.clear();
                         setState(() => _noteSearchQuery = '');
@@ -950,9 +951,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.card,
+                        color: colors.surface,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: colors.border),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -983,7 +984,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                                       '• ${acc.name}',
                                       style: GoogleFonts.inter(
                                         fontSize: 11,
-                                        color: AppColors.textDim,
+                                        color: colors.textSecondary,
                                       ),
                                     ),
                                   ],
@@ -1006,7 +1007,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: colors.textPrimary,
                               ),
                             ),
                           if (tx.note != null && tx.note!.isNotEmpty) ...[
@@ -1015,18 +1016,18 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                               tx.note!,
                               style: GoogleFonts.inter(
                                 fontSize: 12,
-                                color: AppColors.textMuted,
+                                color: colors.textSecondary,
                               ),
                             ),
                           ],
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              const Icon(Icons.access_time_rounded, size: 11, color: AppColors.textDim),
+                              Icon(Icons.access_time_rounded, size: 11, color: colors.textSecondary),
                               const SizedBox(width: 4),
                               Text(
                                 DateFormat('dd MMM yyyy, HH:mm').format(tx.date),
-                                style: GoogleFonts.inter(fontSize: 10, color: AppColors.textDim),
+                                style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary),
                               ),
                             ],
                           ),
@@ -1120,9 +1121,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: colors.border),
           ),
           child: Row(
             children: [
@@ -1142,7 +1143,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: _statsType == 'expense' ? Colors.white : AppColors.textMuted,
+                          color: _statsType == 'expense' ? Colors.white : colors.textSecondary,
                         ),
                       ),
                     ),
@@ -1165,7 +1166,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: _statsType == 'income' ? AppColors.bg : AppColors.textMuted,
+                          color: _statsType == 'income' ? AppColors.bg : colors.textSecondary,
                         ),
                       ),
                     ),
@@ -1194,7 +1195,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         // Date Range Label
         Text(
           'Periode: ${DateFormat('d MMM yyyy').format(start)} – ${DateFormat('d MMM yyyy').format(end)}',
-          style: GoogleFonts.inter(fontSize: 11, color: AppColors.textDim),
+          style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
         ),
         const SizedBox(height: 8),
 
@@ -1202,9 +1203,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.card,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: colors.border),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1217,7 +1218,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                     style: GoogleFonts.inter(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textMuted,
+                      color: colors.textSecondary,
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -1237,7 +1238,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 children: [
                   Text(
                     'Selisih Bersih',
-                    style: GoogleFonts.inter(fontSize: 10, color: AppColors.textDim),
+                    style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary),
                   ),
                   Text(
                     _formatCurrency(totalIncomeAll - totalExpenseAll),
@@ -1259,9 +1260,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: colors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1271,7 +1272,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textMuted,
+                    color: colors.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),
@@ -1334,7 +1335,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                                         cat.key,
                                         style: GoogleFonts.inter(
                                           fontSize: 11,
-                                          color: AppColors.textMuted,
+                                          color: colors.textSecondary,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -1344,7 +1345,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                                       style: GoogleFonts.jetBrainsMono(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
+                                        color: colors.textPrimary,
                                       ),
                                     ),
                                   ],
@@ -1368,7 +1369,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: AppColors.textMuted,
+              color: colors.textSecondary,
               letterSpacing: 0.8,
             ),
           ),
@@ -1376,9 +1377,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: colors.border),
             ),
             child: Column(
               children: sortedCats.asMap().entries.map((entry) {
@@ -1400,7 +1401,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
+                              color: colors.textPrimary,
                             ),
                           ),
                           Text(
@@ -1416,7 +1417,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                       const SizedBox(height: 4),
                       LinearProgressIndicator(
                         value: pct,
-                        backgroundColor: AppColors.card2,
+                        backgroundColor: colors.surfaceRaised,
                         valueColor: AlwaysStoppedAnimation(color),
                         minHeight: 6,
                         borderRadius: BorderRadius.circular(3),
@@ -1441,16 +1442,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: selected ? AppColors.gold : AppColors.card,
+          color: selected ? AppColors.gold : colors.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: selected ? AppColors.gold : AppColors.border),
+          border: Border.all(color: selected ? AppColors.gold : colors.border),
         ),
         child: Text(
           label,
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-            color: selected ? AppColors.bg : AppColors.textMuted,
+            color: selected ? AppColors.bg : colors.textSecondary,
           ),
         ),
       ),
@@ -1482,9 +1483,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: selected ? AppColors.gold : AppColors.card,
+          color: selected ? AppColors.gold : colors.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: selected ? AppColors.gold : AppColors.border),
+          border: Border.all(color: selected ? AppColors.gold : colors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1492,7 +1493,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             Icon(
               Icons.date_range,
               size: 14,
-              color: selected ? AppColors.bg : AppColors.textMuted,
+              color: selected ? AppColors.bg : colors.textSecondary,
             ),
             const SizedBox(width: 4),
             Text(
@@ -1500,7 +1501,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                color: selected ? AppColors.bg : AppColors.textMuted,
+                color: selected ? AppColors.bg : colors.textSecondary,
               ),
             ),
           ],
@@ -1520,15 +1521,15 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colors.border),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.chevron_left, color: AppColors.textMuted),
+            icon: Icon(Icons.chevron_left, color: colors.textSecondary),
             onPressed: onPrev,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -1538,11 +1539,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             style: GoogleFonts.outfit(
               fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: colors.textPrimary,
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+            icon: Icon(Icons.chevron_right, color: colors.textSecondary),
             onPressed: onNext,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -1557,7 +1558,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
       children: [
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMuted),
+          style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary),
         ),
         const SizedBox(height: 2),
         Text(
@@ -1620,7 +1621,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
         style: GoogleFonts.inter(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
+          color: colors.textPrimary,
         ),
       ),
       subtitle: Column(
@@ -1629,13 +1630,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           if (subtitleParts.isNotEmpty)
             Text(
               subtitleParts.join(' • '),
-              style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMuted),
+              style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
               overflow: TextOverflow.ellipsis,
             ),
           const SizedBox(height: 2),
           Text(
             DateFormat('HH:mm').format(tx.date),
-            style: GoogleFonts.inter(fontSize: 10, color: AppColors.textDim),
+            style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary),
           ),
         ],
       ),
@@ -1680,7 +1681,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             const SizedBox(height: 12),
             Text(
               message,
-              style: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13),
+              style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 13),
               textAlign: TextAlign.center,
             ),
           ],
@@ -1693,14 +1694,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colors.border),
       ),
       child: Center(
         child: Text(
           message,
-          style: GoogleFonts.inter(color: AppColors.textDim, fontSize: 12),
+          style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 12),
         ),
       ),
     );

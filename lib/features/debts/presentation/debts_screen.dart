@@ -1,53 +1,111 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:money_manager/features/debts/application/debt_provider.dart';
+import 'package:money_manager/theme/app_colors.dart';
 
 class DebtsScreen extends ConsumerWidget {
   const DebtsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = AppColorsT.of(context);
     final debtsAsync = ref.watch(debtsNotifierProvider);
+    final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Debts')),
+      appBar: AppBar(
+        title: Text('Hutang & Piutang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        actions: [
+          IconButton(
+            tooltip: 'Tambah Hutang',
+            icon: const Icon(Icons.add),
+            onPressed: () => context.push('/add-debt'),
+          ),
+        ],
+      ),
       body: debtsAsync.when(
         data: (debts) {
           if (debts.isEmpty) {
-            return const Center(child: Text('No debts tracked. Tap + to add one.'));
+            return _buildEmpty(context);
           }
-          return ListView.builder(
-            itemCount: debts.length,
-            itemBuilder: (context, index) {
-              final d = debts[index];
-              final isOverdue = d.status == 'unpaid' && d.dueDate.isBefore(DateTime.now());
-
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: isOverdue ? Colors.red.shade50 : null,
-                  child: Icon(d.type == 'borrowed' ? Icons.trending_up : Icons.trending_down),
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            children: debts.map((d) {
+              final isBorrowed = d.type == 'borrowed';
+              final isPaid = d.status == 'paid';
+              final isOverdue = !isPaid && d.dueDate.isBefore(DateTime.now());
+              final color = isPaid ? colors.textSecondary : (isOverdue ? colors.expense : (isBorrowed ? colors.expense : colors.income));
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: colors.border),
                 ),
-                title: Text('${d.type == 'borrowed' ? 'Borrowed from' : 'Lent to'} ${d.personName}'),
-                subtitle: Text('${d.remainingAmount} remaining · Due: ${d.dueDate.day}/${d.dueDate.month}/${d.dueDate.year}'),
-                trailing: Text(
-                  d.status.toUpperCase(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: d.status == 'paid' ? Colors.green : (isOverdue ? Colors.red : Colors.orange),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            d.personName,
+                            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          isBorrowed ? 'Hutang' : 'Piutang',
+                          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      fmt.format(d.remainingAmount),
+                      style: GoogleFonts.jetBrainsMono(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Jatuh tempo: ${DateFormat('dd MMM yyyy').format(d.dueDate)}',
+                      style: GoogleFonts.inter(fontSize: 11, color: isOverdue ? colors.expense : colors.textSecondary),
+                    ),
+                  ],
                 ),
               );
-            },
+            }).toList(),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
+        error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'debts_fab',
-        onPressed: () => context.push('/add-debt'),
-        child: const Icon(Icons.add),
+    );
+  }
+
+  Widget _buildEmpty(BuildContext context) {
+    final colors = AppColorsT.of(context);
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colors.border),
+            ),
+            child: const Icon(Icons.money_off_rounded, size: 32, color: AppColors.gold),
+          ),
+          const SizedBox(height: 16),
+          Text('Belum ada hutang atau piutang', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+        ],
       ),
     );
   }

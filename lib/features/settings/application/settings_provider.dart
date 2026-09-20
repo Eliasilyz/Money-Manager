@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_manager/features/settings/application/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final settingsServiceProvider = Provider((ref) => SettingsService());
+
+class SettingsService {
+  static const _themeKey = 'theme_mode';
+  static const _localeKey = 'locale';
+  static const _pinKey = 'pin_hash';
+  static const _saltKey = 'pin_salt';
+  static const _biometricKey = 'biometric_enabled';
+  static const _autoBackupKey = 'auto_backup';
+  static const _wifiOnlyKey = 'wifi_only';
+  static const _encryptKey = 'encrypt_backup';
+  static const _notificationsKey = 'notifications_enabled';
+
+  Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
+
+  Future<ThemeMode> getThemeMode() async {
+    final prefs = await _prefs;
+    final v = prefs.getString(_themeKey);
+    if (v == 'light') return ThemeMode.light;
+    if (v == 'dark') return ThemeMode.dark;
+    return ThemeMode.system;
+  }
+
+  Future<void> saveThemeMode(ThemeMode mode) async {
+    final prefs = await _prefs;
+    final s = switch (mode) {
+      ThemeMode.light => 'light',
+      ThemeMode.dark => 'dark',
+      _ => 'system',
+    };
+    await prefs.setString(_themeKey, s);
+  }
+
+  Future<Locale> getLocale() async {
+    final prefs = await _prefs;
+    final code = prefs.getString(_localeKey);
+    if (code == null) return const Locale('id');
+    return Locale(code);
+  }
+
+  Future<void> saveLocale(Locale locale) async {
+    final prefs = await _prefs;
+    await prefs.setString(_localeKey, locale.languageCode);
+  }
+
+  Future<String?> getPinHash() async => (await _prefs).getString(_pinKey);
+  Future<String?> getPinSalt() async => (await _prefs).getString(_saltKey);
+  Future<void> savePin(String hash, String salt) async {
+    final prefs = await _prefs;
+    await prefs.setString(_pinKey, hash);
+    await prefs.setString(_saltKey, salt);
+  }
+  Future<void> clearPin() async {
+    final prefs = await _prefs;
+    await prefs.remove(_pinKey);
+    await prefs.remove(_saltKey);
+  }
+
+  Future<bool> getBiometricEnabled() async => (await _prefs).getBool(_biometricKey) ?? false;
+  Future<void> saveBiometricEnabled(bool v) async => (await _prefs).setBool(_biometricKey, v);
+  Future<bool> getNotificationsEnabled() async => (await _prefs).getBool(_notificationsKey) ?? false;
+  Future<void> saveNotificationsEnabled(bool v) async => (await _prefs).setBool(_notificationsKey, v);
+  Future<bool> getAutoBackup() async => (await _prefs).getBool(_autoBackupKey) ?? false;
+  Future<void> saveAutoBackup(bool v) async => (await _prefs).setBool(_autoBackupKey, v);
+  Future<bool> getWifiOnly() async => (await _prefs).getBool(_wifiOnlyKey) ?? true;
+  Future<void> saveWifiOnly(bool v) async => (await _prefs).setBool(_wifiOnlyKey, v);
+  Future<bool> getEncryptBackup() async => (await _prefs).getBool(_encryptKey) ?? false;
+  Future<void> saveEncryptBackup(bool v) async => (await _prefs).setBool(_encryptKey, v);
+}
+
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+final localeProvider = StateProvider<Locale>((ref) => const Locale('id'));
+final notificationsEnabledProvider = StateProvider<bool>((ref) => false);
+
+final notificationServiceProvider = Provider<NotificationService>((ref) => NotificationService());
+
+final settingsInitProvider = FutureProvider<void>((ref) async {
+  final service = ref.read(settingsServiceProvider);
+  final tm = await service.getThemeMode();
+  final loc = await service.getLocale();
+  final notif = await service.getNotificationsEnabled();
+  ref.read(themeModeProvider.notifier).state = tm;
+  ref.read(localeProvider.notifier).state = loc;
+  ref.read(notificationsEnabledProvider.notifier).state = notif;
+  if (notif) {
+    await ref.read(notificationServiceProvider).scheduleDaily();
+  }
+});
