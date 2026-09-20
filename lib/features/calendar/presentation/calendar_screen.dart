@@ -78,6 +78,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         IconButton(
           onPressed: () => setState(() => _currentMonth = DateTime(_currentMonth.year, _currentMonth.month - 1)),
           icon: Icon(Icons.chevron_left, color: colors.textPrimary),
+          tooltip: 'Bulan sebelumnya',
         ),
         Text(
           DateFormat('MMMM yyyy', 'id').format(_currentMonth),
@@ -86,6 +87,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         IconButton(
           onPressed: () => setState(() => _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1)),
           icon: Icon(Icons.chevron_right, color: colors.textPrimary),
+          tooltip: 'Bulan berikutnya',
         ),
       ],
     );

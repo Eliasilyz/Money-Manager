@@ -90,6 +90,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   IconButton(
                     onPressed: () {},
                     icon: Icon(Icons.more_vert, color: colors.textSecondary, size: 20),
+                    tooltip: 'Opsi lain',
                   ),
                 ],
               ),
