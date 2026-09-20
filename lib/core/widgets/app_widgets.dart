@@ -340,13 +340,16 @@ class AppBottomNav extends StatelessWidget {
     final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
     return NavigationBar(
+      backgroundColor: const Color(0xFF0E3B2B),
+      indicatorColor: Colors.white.withValues(alpha: 0.15),
       selectedIndex: navigationShell.currentIndex,
       onDestinationSelected: (index) => navigationShell.goBranch(index),
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       destinations: [
-         NavigationDestination(icon: Icon(Icons.home_outlined, color: colors.textSecondary), selectedIcon: Icon(Icons.home, color: colors.primary), label: l10n.dashboard),
-        NavigationDestination(icon: Icon(Icons.receipt_long_outlined, color: colors.textSecondary), selectedIcon: Icon(Icons.receipt_long, color: colors.primary), label: l10n.transactions),
-        NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined, color: colors.textSecondary), selectedIcon: Icon(Icons.account_balance_wallet, color: colors.primary), label: l10n.accounts),
-        NavigationDestination(icon: Icon(Icons.more_outlined, color: colors.textSecondary), selectedIcon: Icon(Icons.more, color: colors.primary), label: l10n.settings),
+        NavigationDestination(icon: Icon(Icons.home_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.home, color: Colors.white), label: l10n.dashboard),
+        NavigationDestination(icon: Icon(Icons.receipt_long_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.receipt_long, color: Colors.white), label: l10n.transactions),
+        NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.account_balance_wallet, color: Colors.white), label: l10n.accounts),
+        NavigationDestination(icon: Icon(Icons.more_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.more, color: Colors.white), label: l10n.settings),
       ],
     );
   }
