@@ -124,6 +124,7 @@ class BudgetsScreen extends ConsumerWidget {
                     colors: [colors.primaryDark, colors.primary],
                   ),
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [BoxShadow(color: colors.primaryDark.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,6 +132,16 @@ class BudgetsScreen extends ConsumerWidget {
                     Text('Total anggaran tersisa', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
                     const SizedBox(height: 6),
                     Text(fmt.format(totalBudget - totalSpent), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
+                    const SizedBox(height: 10),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: (totalSpent / totalBudget).clamp(0.0, 1.0),
+                        backgroundColor: Colors.white.withValues(alpha: 0.2),
+                        color: Colors.white,
+                        minHeight: 6,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Text('Terpakai ${fmt.format(totalSpent)} dari ${fmt.format(totalBudget)}', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
                   ],
@@ -170,7 +181,7 @@ class BudgetsScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: Row(
         children: [

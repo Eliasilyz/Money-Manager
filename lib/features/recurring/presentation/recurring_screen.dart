@@ -64,6 +64,7 @@ class RecurringScreen extends ConsumerWidget {
                     colors: [colors.primaryDark, colors.primary],
                   ),
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [BoxShadow(color: colors.primaryDark.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +105,7 @@ class RecurringScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: colors.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: colors.border),
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
                   ),
                   child: Row(
                     children: [
@@ -142,6 +143,22 @@ class RecurringScreen extends ConsumerWidget {
                   ),
                 );
               }),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Langganan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                  Text('Kelola', style: GoogleFonts.inter(fontSize: 12, color: colors.primary)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _subscriptionCard('Netflix', Icons.movie_rounded, const Color(0xFFE50914), 'Rp 186 rb/bulan', colors),
+                  const SizedBox(width: 10),
+                  _subscriptionCard('Spotify', Icons.music_note_rounded, const Color(0xFF1DB954), 'Rp 55 rb/bulan', colors),
+                ],
+              ),
             ],
           );
         },
@@ -161,6 +178,37 @@ class RecurringScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
       child: Text(label, style: GoogleFonts.inter(fontSize: 11, color: Colors.white)),
+    );
+  }
+
+  Widget _subscriptionCard(String name, IconData icon, Color brandColor, String price, AppColorsT colors) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: brandColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(color: brandColor, borderRadius: BorderRadius.circular(10)),
+              child: Icon(icon, color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                  Text(price, style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
