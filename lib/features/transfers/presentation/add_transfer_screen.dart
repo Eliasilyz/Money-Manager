@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/features/transfers/application/transfer_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
 class AddTransferScreen extends ConsumerStatefulWidget {
@@ -35,11 +36,12 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final accountsAsync = ref.watch(accountsNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Transfer', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.addTransferTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -62,11 +64,11 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
                         children: [
                           Icon(Icons.account_balance_wallet_outlined, size: 28, color: colors.textSecondary),
                           const SizedBox(height: 6),
-                          Text('Belum ada akun', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
+                          Text(l10n.noAccounts, style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
                           const SizedBox(height: 8),
                           TextButton(
                             onPressed: () => context.push('/add-account'),
-                            child: Text('Buat Akun Baru', style: GoogleFonts.inter(color: AppColors.gold, fontWeight: FontWeight.w600)),
+                            child: Text(l10n.createNewAccount, style: GoogleFonts.inter(color: AppColors.gold, fontWeight: FontWeight.w600)),
                           ),
                         ],
                       ),
@@ -77,14 +79,14 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _fromAccountId,
                         dropdownColor: colors.surfaceRaised,
-                        hint: Text('Pilih Akun Asal', style: GoogleFonts.inter(color: colors.textSecondary)),
+                        hint: Text(l10n.selectFromAccount, style: GoogleFonts.inter(color: colors.textSecondary)),
                         items: active.map((a) => DropdownMenuItem(
                           value: a.id,
                           child: Text(a.name, style: GoogleFonts.inter(color: colors.textPrimary)),
                         )).toList(),
                         onChanged: (val) => setState(() => _fromAccountId = val),
                         decoration: InputDecoration(
-                          labelText: 'Dari Akun',
+                          labelText: l10n.fromAccount,
                           prefixIcon: Icon(Icons.call_made, color: colors.textSecondary),
                         ),
                       ),
@@ -92,14 +94,14 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
                       DropdownButtonFormField<String>(
                         initialValue: _toAccountId,
                         dropdownColor: colors.surfaceRaised,
-                        hint: Text('Pilih Akun Tujuan', style: GoogleFonts.inter(color: colors.textSecondary)),
+                        hint: Text(l10n.selectToAccount, style: GoogleFonts.inter(color: colors.textSecondary)),
                         items: active.map((a) => DropdownMenuItem(
                           value: a.id,
                           child: Text(a.name, style: GoogleFonts.inter(color: colors.textPrimary)),
                         )).toList(),
                         onChanged: (val) => setState(() => _toAccountId = val),
                         decoration: InputDecoration(
-                          labelText: 'Ke Akun',
+                          labelText: l10n.toAccount,
                           prefixIcon: Icon(Icons.call_received, color: colors.textSecondary),
                         ),
                       ),
@@ -112,7 +114,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'NOMINAL',
+                l10n.nominalLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -130,7 +132,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
               const SizedBox(height: 20),
 
               Text(
-                'KURS',
+                l10n.exchangeRateLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -146,7 +148,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
               const SizedBox(height: 20),
 
               Text(
-                'KETERANGAN',
+                l10n.descriptionLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -154,7 +156,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
                 controller: _descriptionCtrl,
                 style: GoogleFonts.inter(color: colors.textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'Opsional',
+                  hintText: l10n.optional,
                   prefixIcon: Icon(Icons.description_outlined, color: colors.textSecondary),
                 ),
               ),
@@ -168,7 +170,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
                 ),
                 child: ListTile(
                   leading: const Icon(Icons.calendar_today_outlined, color: AppColors.gold, size: 20),
-                  title: Text('Tanggal', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+                  title: Text(l10n.date, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                   subtitle: Text(
                     DateFormat('dd MMMM yyyy').format(_selectedDate),
                     style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
@@ -203,7 +205,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                         )
                       : Text(
-                          'Simpan Transfer',
+                          l10n.saveTransfer,
                           style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                         ),
                 ),
@@ -216,19 +218,20 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final amountText = _amountCtrl.text.trim();
     final amount = int.tryParse(amountText.replaceAll(RegExp(r'[^0-9]'), ''));
     final exchangeRate = double.tryParse(_exchangeRateCtrl.text.trim());
 
     if (amount == null || amount <= 0 || _fromAccountId == null || _toAccountId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Isi nominal dan pilih kedua akun', style: GoogleFonts.inter())),
+        SnackBar(content: Text(l10n.fillAmountAndSelectAccounts, style: GoogleFonts.inter())),
       );
       return;
     }
     if (_fromAccountId == _toAccountId) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Akun asal dan tujuan tidak boleh sama', style: GoogleFonts.inter())),
+        SnackBar(content: Text(l10n.accountsMustBeDifferent, style: GoogleFonts.inter())),
       );
       return;
     }
@@ -248,7 +251,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
       ref.read(transfersNotifierProvider.notifier).loadTransfers();
       if (mounted) context.pop();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e', style: GoogleFonts.inter())));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e', style: GoogleFonts.inter())));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

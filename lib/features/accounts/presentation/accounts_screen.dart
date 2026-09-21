@@ -63,14 +63,6 @@ class AccountsScreen extends ConsumerWidget {
                         Text(l10n.accountsSubtitle(accounts.length), style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                       ],
                     ),
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: () => context.push('/manage-accounts'),
-                          child: Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -81,10 +73,10 @@ class AccountsScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Daftar akun', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                    Text(l10n.accountList, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                     TextButton(
                       onPressed: () => context.push('/manage-accounts'),
-                      child: Text('Atur', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+                      child: Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                     ),
                   ],
                 ),
@@ -162,11 +154,11 @@ class AccountsScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total saldo bersih', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+          Text(l10n.totalNetBalance, style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
           const SizedBox(height: 6),
           Text(fmt.format(totalBalance), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
           const SizedBox(height: 8),
-          Text('Diperbarui 2 menit lalu', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
+          Text(l10n.lastUpdatedAgo(2), style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
         ],
       ),
     );

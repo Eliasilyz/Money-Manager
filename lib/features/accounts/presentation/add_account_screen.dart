@@ -7,6 +7,7 @@ import 'package:money_manager/domain/entities/currency.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/currencies/application/currency_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
 class AddAccountScreen extends ConsumerStatefulWidget {
@@ -37,13 +38,24 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
     Currency(code: 'JPY', name: 'Japanese Yen', symbol: '¥', decimalDigits: 0),
   ];
 
-  static const _accountTypes = [
-    ('wallet', 'Dompet', Icons.account_balance_wallet_outlined, AppColors.gold),
-    ('savings', 'Tabungan', Icons.savings_outlined, AppColors.sky),
-    ('credit', 'Kartu Kredit', Icons.credit_card_outlined, AppColors.rose),
-    ('cash', 'Tunai', Icons.payments_outlined, AppColors.orange),
-    ('investment', 'Investasi', Icons.trending_up_rounded, AppColors.lilac),
+  static const _accountTypeKeys = [
+    ('wallet', 'accountTypeWallet', Icons.account_balance_wallet_outlined, AppColors.gold),
+    ('savings', 'accountTypeSavings', Icons.savings_outlined, AppColors.sky),
+    ('credit', 'accountTypeCredit', Icons.credit_card_outlined, AppColors.rose),
+    ('cash', 'accountTypeCash', Icons.payments_outlined, AppColors.orange),
+    ('investment', 'accountTypeInvestment', Icons.trending_up_rounded, AppColors.lilac),
   ];
+
+  String _localizedAccountType(String key, AppLocalizations l10n) {
+    return switch (key) {
+      'accountTypeWallet' => l10n.accountTypeWallet,
+      'accountTypeSavings' => l10n.accountTypeSavings,
+      'accountTypeCredit' => l10n.accountTypeCredit,
+      'accountTypeCash' => l10n.accountTypeCash,
+      'accountTypeInvestment' => l10n.accountTypeInvestment,
+      _ => key,
+    };
+  }
 
   @override
   void initState() {
@@ -66,6 +78,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currenciesAsync = ref.watch(currenciesNotifierProvider);
 
     final rawCurrencies = currenciesAsync.valueOrNull ?? [];
@@ -76,7 +89,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Akun' : 'Tambah Akun', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(_isEditing ? l10n.editAccount : l10n.addAccountTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -85,7 +98,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'NAMA AKUN',
+                l10n.accountNameLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -93,7 +106,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                 controller: _nameCtrl,
                 style: GoogleFonts.inter(color: colors.textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'Contoh: BCA Utama',
+                  hintText: l10n.accountNameHint,
                   prefixIcon: Icon(Icons.label_outline, color: colors.textSecondary),
                 ),
                 textCapitalization: TextCapitalization.words,
@@ -101,14 +114,14 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'TIPE AKUN',
+                l10n.accountTypeLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _accountTypes.map((t) {
+                children: _accountTypeKeys.map((t) {
                   final selected = _accountType == t.$1;
                   return GestureDetector(
                     onTap: () => setState(() => _accountType = t.$1),
@@ -129,7 +142,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                           Icon(t.$3, size: 16, color: selected ? t.$4 : colors.textSecondary),
                           const SizedBox(width: 6),
                           Text(
-                            t.$2,
+                            _localizedAccountType(t.$2, l10n),
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
@@ -145,7 +158,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'MATA UANG',
+                l10n.currencyLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -164,7 +177,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'SALDO AWAL',
+                l10n.initialBalanceLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -180,7 +193,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'CATATAN',
+                l10n.noteLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -188,7 +201,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                 controller: _noteCtrl,
                 style: GoogleFonts.inter(color: colors.textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'Opsional',
+                  hintText: l10n.optional,
                   prefixIcon: Icon(Icons.note_outlined, color: colors.textSecondary),
                 ),
                 maxLines: 2,
@@ -211,7 +224,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                         )
                       : Text(
-                          _isEditing ? 'Simpan Perubahan' : 'Simpan Akun',
+                          _isEditing ? l10n.saveChanges : l10n.saveAccount,
                           style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                         ),
                 ),
@@ -224,10 +237,11 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Masukkan nama akun', style: GoogleFonts.inter())),
+        SnackBar(content: Text(l10n.accountNameRequired, style: GoogleFonts.inter())),
       );
       return;
     }

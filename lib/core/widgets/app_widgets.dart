@@ -231,19 +231,19 @@ class TransactionTile extends StatelessWidget {
     this.note,
   });
 
-  String _resolvedTitle() {
+  String _resolvedTitle({String? incomeLabel, String? expenseLabel, String? transferLabel}) {
     if (title != null && title!.isNotEmpty) return title!;
     if (isTransfer) {
       final from = fromAccountName ?? '?';
       final to = toAccountName ?? '?';
-      return 'Transfer: $from → $to';
+      return '${transferLabel ?? 'Transfer'}: $from → $to';
     }
     if (note != null && note!.isNotEmpty) return note!;
     if (categoryName != null && categoryName!.isNotEmpty) return categoryName!;
-    return isIncome ? 'Pemasukan' : 'Pengeluaran';
+    return isIncome ? (incomeLabel ?? 'Income') : (expenseLabel ?? 'Expense');
   }
 
-  String _resolvedSubtitle(String locale) {
+  String _resolvedSubtitle(String locale, {String? todayLabel, String? yesterdayLabel}) {
     final parts = <String>[];
     if (isTransfer) {
       final from = fromAccountName ?? '?';
@@ -253,19 +253,19 @@ class TransactionTile extends StatelessWidget {
       if (categoryName != null && categoryName!.isNotEmpty) parts.add(categoryName!);
       if (accountName != null && accountName!.isNotEmpty) parts.add(accountName!);
     }
-    parts.add(_formatDate(date, locale));
+    parts.add(_formatDate(date, locale: locale, todayLabel: todayLabel, yesterdayLabel: yesterdayLabel));
     return parts.where((p) => p.isNotEmpty).join(' • ');
   }
 
-  static String _formatDate(DateTime? d, [String locale = 'id']) {
+  static String _formatDate(DateTime? d, {String locale = 'id', String? todayLabel, String? yesterdayLabel}) {
     if (d == null) return '';
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final txDay = DateTime(d.year, d.month, d.day);
     final timeStr = '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 
-    if (txDay == today) return 'Hari ini • $timeStr';
-    if (txDay == today.subtract(const Duration(days: 1))) return 'Kemarin • $timeStr';
+    if (txDay == today) return '${todayLabel ?? 'Today'} • $timeStr';
+    if (txDay == today.subtract(const Duration(days: 1))) return '${yesterdayLabel ?? 'Yesterday'} • $timeStr';
     final monthStr = DateFormat('MMM', locale).format(d);
     return '${d.day} $monthStr ${d.year.toString().substring(2)} • $timeStr';
   }
@@ -275,6 +275,7 @@ class TransactionTile extends StatelessWidget {
     final colors = AppColorsT.of(context);
     final color = isIncome ? colors.income : colors.expense;
     final locale = Localizations.localeOf(context).languageCode;
+    final l10n = AppLocalizations.of(context);
 
     return Card(
       child: ListTile(
@@ -294,8 +295,16 @@ class TransactionTile extends StatelessWidget {
             size: 18,
           ),
         ),
-        title: Text(_resolvedTitle(), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(_resolvedSubtitle(locale), style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Text(
+          _resolvedTitle(incomeLabel: l10n.income, expenseLabel: l10n.expense, transferLabel: l10n.transfer),
+          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary),
+          maxLines: 1, overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          _resolvedSubtitle(locale, todayLabel: l10n.todayTitle, yesterdayLabel: l10n.yesterdayTitle),
+          style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary),
+          maxLines: 1, overflow: TextOverflow.ellipsis,
+        ),
         trailing: Text(amount, style: GoogleFonts.jetBrainsMono(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
       ),
     );

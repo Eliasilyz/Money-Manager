@@ -98,19 +98,19 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildTypeSelector(colors),
+              _buildTypeSelector(colors, l10n),
               const SizedBox(height: 24),
-              _buildCenteredAmount(colors),
+              _buildCenteredAmount(colors, l10n),
               const SizedBox(height: 32),
-              _buildFormRow(Icons.category_outlined, 'Kategori', _getCategoryLabel(categoriesAsync), colors, () => _showCategoryPicker(categoriesAsync, colors)),
-              _buildFormRow(Icons.account_balance_wallet_outlined, 'Dari Akun', _getAccountLabel(accountsAsync), colors, () => _showAccountPicker(accountsAsync, colors)),
-              _buildFormRow(Icons.calendar_today_outlined, 'Tanggal', DateFormat('dd MMMM yyyy • HH:mm', 'id').format(_selectedDate), colors, () => _pickDate()),
-              _buildFormRow(Icons.notes_outlined, 'Catatan', _noteCtrl.text.isEmpty ? 'Tambah catatan transaksi' : _noteCtrl.text, colors, () => _showNoteDialog(colors)),
+              _buildFormRow(Icons.category_outlined, l10n.category, _getCategoryLabel(categoriesAsync, l10n), colors, () => _showCategoryPicker(categoriesAsync, colors, l10n)),
+              _buildFormRow(Icons.account_balance_wallet_outlined, l10n.fromAccount, _getAccountLabel(accountsAsync, l10n), colors, () => _showAccountPicker(accountsAsync, colors, l10n)),
+              _buildFormRow(Icons.calendar_today_outlined, l10n.date, DateFormat('dd MMMM yyyy • HH:mm', 'id').format(_selectedDate), colors, () => _pickDate()),
+              _buildFormRow(Icons.notes_outlined, l10n.note, _noteCtrl.text.isEmpty ? l10n.addNoteHint : _noteCtrl.text, colors, () => _showNoteDialog(colors, l10n)),
               const SizedBox(height: 32),
               _buildSaveButton(colors, l10n),
               const SizedBox(height: 12),
               Text(
-                _isEditing ? '' : 'Anda masih bisa mengedit setelah menyimpan',
+                _isEditing ? '' : l10n.editAfterSave,
                 style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
                 textAlign: TextAlign.center,
               ),
@@ -121,8 +121,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     );
   }
 
-  String _getCategoryLabel(AsyncValue<List<Category>> categoriesAsync) {
-    if (!categoriesAsync.hasValue) return 'Pilih kategori';
+  String _getCategoryLabel(AsyncValue<List<Category>> categoriesAsync, AppLocalizations l10n) {
+    if (!categoriesAsync.hasValue) return l10n.selectCategory;
     final filtered = _type == 'income'
         ? categoriesAsync.value!.where((c) => c.type == 'income').toList()
         : categoriesAsync.value!.where((c) => c.type == 'expense').toList();
@@ -130,20 +130,20 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       final match = filtered.where((c) => c.id == _selectedCategoryId);
       if (match.isNotEmpty) return match.first.name;
     }
-    return 'Pilih kategori';
+    return l10n.selectCategory;
   }
 
-  String _getAccountLabel(AsyncValue<List<Account>> accountsAsync) {
-    if (!accountsAsync.hasValue) return 'Pilih akun';
+  String _getAccountLabel(AsyncValue<List<Account>> accountsAsync, AppLocalizations l10n) {
+    if (!accountsAsync.hasValue) return l10n.selectAccount;
     final active = accountsAsync.value!.where((a) => !a.isArchived).toList();
     if (_selectedAccountId != null) {
       final match = active.where((a) => a.id == _selectedAccountId);
       if (match.isNotEmpty) return match.first.name;
     }
-    return 'Pilih akun';
+    return l10n.selectAccount;
   }
 
-  Widget _buildTypeSelector(AppColorsT colors) {
+  Widget _buildTypeSelector(AppColorsT colors, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -153,9 +153,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       ),
       child: Row(
         children: [
-          _typeTab('Pengeluaran', 'expense', colors),
-          _typeTab('Pemasukan', 'income', colors),
-          _typeTab('Transfer', 'transfer', colors),
+          _typeTab(l10n.expense, 'expense', colors),
+          _typeTab(l10n.income, 'income', colors),
+          _typeTab(l10n.transfer, 'transfer', colors),
         ],
       ),
     );
@@ -185,7 +185,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     );
   }
 
-  Widget _buildCenteredAmount(AppColorsT colors) {
+  Widget _buildCenteredAmount(AppColorsT colors, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -195,7 +195,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       ),
       child: Column(
         children: [
-          Text('Jumlah transaksi', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+          Text(l10n.transactionAmount, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -269,14 +269,14 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         child: _saving
             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
             : Text(
-                _isEditing ? l10n.saveChanges : 'Simpan transaksi',
+                _isEditing ? l10n.saveChanges : l10n.saveTransaction,
                 style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
               ),
       ),
     );
   }
 
-  void _showCategoryPicker(AsyncValue<List<Category>> categoriesAsync, AppColorsT colors) {
+  void _showCategoryPicker(AsyncValue<List<Category>> categoriesAsync, AppColorsT colors, AppLocalizations l10n) {
     if (!categoriesAsync.hasValue || categoriesAsync.value!.isEmpty) return;
     final filtered = _type == 'income'
         ? categoriesAsync.value!.where((c) => c.type == 'income').toList()
@@ -290,7 +290,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pilih Kategori', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(l10n.selectCategory, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             ...filtered.map((c) => ListTile(
               title: Text(c.name, style: GoogleFonts.inter(fontSize: 14)),
@@ -306,7 +306,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     );
   }
 
-  void _showAccountPicker(AsyncValue<List<Account>> accountsAsync, AppColorsT colors) {
+  void _showAccountPicker(AsyncValue<List<Account>> accountsAsync, AppColorsT colors, AppLocalizations l10n) {
     if (!accountsAsync.hasValue || accountsAsync.value!.isEmpty) return;
     final active = accountsAsync.value!.where((a) => !a.isArchived).toList();
 
@@ -318,7 +318,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pilih Akun', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(l10n.selectAccount, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             ...active.map((a) => ListTile(
               title: Text(a.name, style: GoogleFonts.inter(fontSize: 14)),
@@ -331,7 +331,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
             )),
             ListTile(
               leading: Icon(Icons.add, color: colors.primary),
-              title: Text('Tambah akun baru', style: GoogleFonts.inter(fontSize: 14, color: colors.primary)),
+              title: Text(l10n.addNewAccount, style: GoogleFonts.inter(fontSize: 14, color: colors.primary)),
               onTap: () {
                 Navigator.pop(ctx);
                 context.push('/add-account');
@@ -343,12 +343,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     );
   }
 
-  void _showNoteDialog(AppColorsT colors) {
+  void _showNoteDialog(AppColorsT colors, AppLocalizations l10n) {
     final ctrl = TextEditingController(text: _noteCtrl.text);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Catatan', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.note, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         content: TextField(
           controller: ctrl,
           maxLines: 3,
@@ -361,13 +361,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           textCapitalization: TextCapitalization.sentences,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
           FilledButton(
             onPressed: () {
               setState(() => _noteCtrl.text = ctrl.text);
               Navigator.pop(ctx);
             },
-            child: const Text('Simpan'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -405,7 +405,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     if (amount == null || amount <= 0 || _selectedAccountId == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Pilih akun dan masukkan nominal yang valid', style: GoogleFonts.inter())),
+          SnackBar(content: Text(l10n.selectAccountAndAmount, style: GoogleFonts.inter())),
       );
       return;
     }

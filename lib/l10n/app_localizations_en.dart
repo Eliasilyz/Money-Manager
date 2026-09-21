@@ -749,6 +749,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get netWorth => 'Net Worth';
 
   @override
+  String get totalNetBalance => 'Total Net Balance';
+
+  @override
+  String lastUpdatedAgo(Object minutes) {
+    return 'Updated $minutes min ago';
+  }
+
+  @override
   String get totalBudget => 'Total Budget';
 
   @override
@@ -811,4 +819,155 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactionSaveError => 'Failed to save transaction';
+
+  @override
+  String get analytics => 'Analytics';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get expensePerCategory => 'Expense per category';
+
+  @override
+  String get netBalance => 'Net Balance';
+
+  @override
+  String get filterTransactions => 'Filter Transactions';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get thisWeekShort => 'This week';
+
+  @override
+  String get thisMonthShort => 'This month';
+
+  @override
+  String get applyFilter => 'Apply filter';
+
+  @override
+  String get transactionAmount => 'Transaction amount';
+
+  @override
+  String get addNoteHint => 'Add transaction note';
+
+  @override
+  String get editAfterSave => 'You can still edit after saving';
+
+  @override
+  String get addNewAccount => 'Add new account';
+
+  @override
+  String get selectAccountAndAmount =>
+      'Select an account and enter a valid amount';
+
+  @override
+  String get manageAccounts => 'Manage Accounts';
+
+  @override
+  String get activeAccounts => 'Active Accounts';
+
+  @override
+  String get archivedAccounts => 'Archived';
+
+  @override
+  String get editAccount => 'Edit Account';
+
+  @override
+  String get adjustBalance => 'Adjust Balance';
+
+  @override
+  String get archiveAccount => 'Archive';
+
+  @override
+  String get activateAccount => 'Reactivate';
+
+  @override
+  String get deleteAccountTitle => 'Delete Account';
+
+  @override
+  String accountHasTransactions(Object count) {
+    return 'This account has $count transactions. Use \"Archive\" to hide it.';
+  }
+
+  @override
+  String deleteAccountConfirm(Object name) {
+    return 'Account \"$name\" will be permanently deleted.';
+  }
+
+  @override
+  String get balanceTarget => 'Target balance';
+
+  @override
+  String get adjustmentNote => 'This will create an adjustment transaction.';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get balanceAdjusted => 'Balance adjusted';
+
+  @override
+  String get balanceAdjustmentDesc => 'Balance adjustment';
+
+  @override
+  String get addAccountTitle => 'Add Account';
+
+  @override
+  String get accountNameLabel => 'ACCOUNT NAME';
+
+  @override
+  String get accountNameHint => 'e.g. BCA Main';
+
+  @override
+  String get accountTypeLabel => 'ACCOUNT TYPE';
+
+  @override
+  String get currencyLabel => 'CURRENCY';
+
+  @override
+  String get initialBalanceLabel => 'INITIAL BALANCE';
+
+  @override
+  String get noteLabel => 'NOTE';
+
+  @override
+  String get saveAccount => 'Save Account';
+
+  @override
+  String get accountNameRequired => 'Enter account name';
+
+  @override
+  String get addTransferTitle => 'Add Transfer';
+
+  @override
+  String get createNewAccount => 'Create New Account';
+
+  @override
+  String get selectFromAccount => 'Select source account';
+
+  @override
+  String get selectToAccount => 'Select destination account';
+
+  @override
+  String get nominalLabel => 'AMOUNT';
+
+  @override
+  String get exchangeRateLabel => 'EXCHANGE RATE';
+
+  @override
+  String get descriptionLabel => 'DESCRIPTION';
+
+  @override
+  String get saveTransfer => 'Save Transfer';
+
+  @override
+  String get fillAmountAndSelectAccounts =>
+      'Enter amount and select both accounts';
+
+  @override
+  String get accountsMustBeDifferent =>
+      'Source and destination accounts must be different';
 }

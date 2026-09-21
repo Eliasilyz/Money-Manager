@@ -1472,6 +1472,18 @@ abstract class AppLocalizations {
   /// **'Kekayaan Bersih'**
   String get netWorth;
 
+  /// No description provided for @totalNetBalance.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Saldo Bersih'**
+  String get totalNetBalance;
+
+  /// No description provided for @lastUpdatedAgo.
+  ///
+  /// In id, this message translates to:
+  /// **'Diperbarui {minutes} mnt lalu'**
+  String lastUpdatedAgo(Object minutes);
+
   /// No description provided for @totalBudget.
   ///
   /// In id, this message translates to:
@@ -1591,6 +1603,294 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Gagal menyimpan transaksi'**
   String get transactionSaveError;
+
+  /// No description provided for @analytics.
+  ///
+  /// In id, this message translates to:
+  /// **'Analitik'**
+  String get analytics;
+
+  /// No description provided for @reset.
+  ///
+  /// In id, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @expensePerCategory.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengeluaran per kategori'**
+  String get expensePerCategory;
+
+  /// No description provided for @netBalance.
+  ///
+  /// In id, this message translates to:
+  /// **'Saldo bersih'**
+  String get netBalance;
+
+  /// No description provided for @filterTransactions.
+  ///
+  /// In id, this message translates to:
+  /// **'Filter Transaksi'**
+  String get filterTransactions;
+
+  /// No description provided for @type.
+  ///
+  /// In id, this message translates to:
+  /// **'Tipe'**
+  String get type;
+
+  /// No description provided for @thisWeekShort.
+  ///
+  /// In id, this message translates to:
+  /// **'Minggu ini'**
+  String get thisWeekShort;
+
+  /// No description provided for @thisMonthShort.
+  ///
+  /// In id, this message translates to:
+  /// **'Bulan ini'**
+  String get thisMonthShort;
+
+  /// No description provided for @applyFilter.
+  ///
+  /// In id, this message translates to:
+  /// **'Terapkan filter'**
+  String get applyFilter;
+
+  /// No description provided for @transactionAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah transaksi'**
+  String get transactionAmount;
+
+  /// No description provided for @addNoteHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah catatan transaksi'**
+  String get addNoteHint;
+
+  /// No description provided for @editAfterSave.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda masih bisa mengedit setelah menyimpan'**
+  String get editAfterSave;
+
+  /// No description provided for @addNewAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah akun baru'**
+  String get addNewAccount;
+
+  /// No description provided for @selectAccountAndAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih akun dan masukkan nominal yang valid'**
+  String get selectAccountAndAmount;
+
+  /// No description provided for @manageAccounts.
+  ///
+  /// In id, this message translates to:
+  /// **'Kelola Akun'**
+  String get manageAccounts;
+
+  /// No description provided for @activeAccounts.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun Aktif'**
+  String get activeAccounts;
+
+  /// No description provided for @archivedAccounts.
+  ///
+  /// In id, this message translates to:
+  /// **'Diarsipkan'**
+  String get archivedAccounts;
+
+  /// No description provided for @editAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Akun'**
+  String get editAccount;
+
+  /// No description provided for @adjustBalance.
+  ///
+  /// In id, this message translates to:
+  /// **'Sesuaikan Saldo'**
+  String get adjustBalance;
+
+  /// No description provided for @archiveAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Arsipkan'**
+  String get archiveAccount;
+
+  /// No description provided for @activateAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan Kembali'**
+  String get activateAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Akun'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @accountHasTransactions.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun ini memiliki {count} transaksi. Gunakan \"Arsipkan\" untuk menyembunyikan.'**
+  String accountHasTransactions(Object count);
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun \"{name}\" akan dihapus permanen.'**
+  String deleteAccountConfirm(Object name);
+
+  /// No description provided for @balanceTarget.
+  ///
+  /// In id, this message translates to:
+  /// **'Saldo target'**
+  String get balanceTarget;
+
+  /// No description provided for @adjustmentNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Akan membuat transaksi penyesuaian.'**
+  String get adjustmentNote;
+
+  /// No description provided for @apply.
+  ///
+  /// In id, this message translates to:
+  /// **'Terapkan'**
+  String get apply;
+
+  /// No description provided for @balanceAdjusted.
+  ///
+  /// In id, this message translates to:
+  /// **'Saldo disesuaikan'**
+  String get balanceAdjusted;
+
+  /// No description provided for @balanceAdjustmentDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Penyesuaian saldo'**
+  String get balanceAdjustmentDesc;
+
+  /// No description provided for @addAccountTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Akun'**
+  String get addAccountTitle;
+
+  /// No description provided for @accountNameLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'NAMA AKUN'**
+  String get accountNameLabel;
+
+  /// No description provided for @accountNameHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: BCA Utama'**
+  String get accountNameHint;
+
+  /// No description provided for @accountTypeLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'TIPE AKUN'**
+  String get accountTypeLabel;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'MATA UANG'**
+  String get currencyLabel;
+
+  /// No description provided for @initialBalanceLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'SALDO AWAL'**
+  String get initialBalanceLabel;
+
+  /// No description provided for @noteLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'CATATAN'**
+  String get noteLabel;
+
+  /// No description provided for @saveAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Akun'**
+  String get saveAccount;
+
+  /// No description provided for @accountNameRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan nama akun'**
+  String get accountNameRequired;
+
+  /// No description provided for @addTransferTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Transfer'**
+  String get addTransferTitle;
+
+  /// No description provided for @createNewAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat Akun Baru'**
+  String get createNewAccount;
+
+  /// No description provided for @selectFromAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Akun Asal'**
+  String get selectFromAccount;
+
+  /// No description provided for @selectToAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Akun Tujuan'**
+  String get selectToAccount;
+
+  /// No description provided for @nominalLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'NOMINAL'**
+  String get nominalLabel;
+
+  /// No description provided for @exchangeRateLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'KURS'**
+  String get exchangeRateLabel;
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'KETERANGAN'**
+  String get descriptionLabel;
+
+  /// No description provided for @saveTransfer.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Transfer'**
+  String get saveTransfer;
+
+  /// No description provided for @fillAmountAndSelectAccounts.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi nominal dan pilih kedua akun'**
+  String get fillAmountAndSelectAccounts;
+
+  /// No description provided for @accountsMustBeDifferent.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun asal dan tujuan tidak boleh sama'**
+  String get accountsMustBeDifferent;
 }
 
 class _AppLocalizationsDelegate

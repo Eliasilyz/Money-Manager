@@ -8,6 +8,7 @@ import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
@@ -30,12 +31,13 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final accountsAsync = ref.watch(accountsNotifierProvider);
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kelola Akun', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.manageAccounts, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'manage_accounts_fab',
@@ -47,7 +49,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
       ),
       body: accountsAsync.when(
         data: (accounts) {
-          if (accounts.isEmpty) return _buildEmpty(colors);
+          if (accounts.isEmpty) return _buildEmpty(colors, l10n);
 
           final transactions = transactionsAsync.valueOrNull ?? [];
           final sorted = List<Account>.from(accounts)
@@ -60,12 +62,12 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             onReorderItem: (movedKey, newIndex) => _onReorderItem(active, movedKey as String, newIndex),
             children: [
               if (active.isNotEmpty) ...[
-                _sectionHeader('Akun Aktif', active.length, colors),
-                ...active.map((a) => _accountTile(a, transactions, colors)),
+                _sectionHeader(l10n.activeAccounts, active.length, colors, l10n),
+                ...active.map((a) => _accountTile(a, transactions, colors, l10n)),
               ],
               if (archived.isNotEmpty) ...[
-                _sectionHeader('Diarsipkan', archived.length, colors),
-                ...archived.map((a) => _accountTile(a, transactions, colors)),
+                _sectionHeader(l10n.archivedAccounts, archived.length, colors, l10n),
+                ...archived.map((a) => _accountTile(a, transactions, colors, l10n)),
               ],
             ],
           );
@@ -88,18 +90,18 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
     ref.read(accountsNotifierProvider.notifier).updateSortOrders(orders);
   }
 
-  Widget _sectionHeader(String title, int count, AppColorsT colors) {
+  Widget _sectionHeader(String title, int count, AppColorsT colors, AppLocalizations l10n) {
     return Padding(
       key: ValueKey('section_$title'),
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: Text(
-        '$title ($count)',
+        '$title (${l10n.transactionCount(count)})',
         style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary),
       ),
     );
   }
 
-  Widget _accountTile(Account account, List<Transaction> transactions, AppColorsT colors) {
+  Widget _accountTile(Account account, List<Transaction> transactions, AppColorsT colors, AppLocalizations l10n) {
     final cfg = _typeIcons[account.accountType] ?? (Icons.account_circle_outlined, const Color(0xFFE1F1EA), const Color(0xFF1B6E4B));
     final txCount = transactions.where((t) => t.accountId == account.id).length;
 
@@ -118,7 +120,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
           child: Icon(cfg.$1, color: cfg.$3, size: 20),
         ),
         title: Text(account.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-        subtitle: Text('$txCount transaksi', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+        subtitle: Text(l10n.transactionCount(txCount), style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -127,16 +129,16 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             const SizedBox(width: 4),
             IconButton(
               icon: Icon(Icons.more_vert, color: colors.textSecondary, size: 20),
-              onPressed: () => _showActions(account, transactions, colors),
+              onPressed: () => _showActions(account, transactions, colors, l10n),
             ),
           ],
         ),
-        onTap: () => _showActions(account, transactions, colors),
+        onTap: () => _showActions(account, transactions, colors, l10n),
       ),
     );
   }
 
-  void _showActions(Account account, List<Transaction> transactions, AppColorsT colors) {
+  void _showActions(Account account, List<Transaction> transactions, AppColorsT colors, AppLocalizations l10n) {
     final txCount = transactions.where((t) => t.accountId == account.id).length;
     final hasTransactions = txCount > 0;
 
@@ -157,7 +159,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             ),
             ListTile(
               leading: Icon(Icons.edit_outlined, color: colors.primary),
-              title: Text('Edit Akun', style: GoogleFonts.inter(fontSize: 14)),
+              title: Text(l10n.editAccount, style: GoogleFonts.inter(fontSize: 14)),
               onTap: () {
                 Navigator.pop(ctx);
                 context.push('/add-account', extra: account);
@@ -166,16 +168,16 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             if (!account.isArchived)
               ListTile(
                 leading: const Icon(Icons.tune, color: AppColors.sky),
-                title: Text('Sesuaikan Saldo', style: GoogleFonts.inter(fontSize: 14)),
+                title: Text(l10n.adjustBalance, style: GoogleFonts.inter(fontSize: 14)),
                 onTap: () {
                   Navigator.pop(ctx);
-                  _showAdjustBalance(account, colors);
+                  _showAdjustBalance(account, colors, l10n);
                 },
               ),
             if (!account.isArchived)
               ListTile(
                 leading: Icon(Icons.archive_outlined, color: Colors.orange.shade700),
-                title: Text('Arsipkan', style: GoogleFonts.inter(fontSize: 14)),
+                title: Text(l10n.archiveAccount, style: GoogleFonts.inter(fontSize: 14)),
                 onTap: () {
                   Navigator.pop(ctx);
                   ref.read(accountsNotifierProvider.notifier).archiveAccount(account.id, true);
@@ -184,7 +186,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             if (account.isArchived)
               ListTile(
                 leading: const Icon(Icons.unarchive_outlined, color: AppColors.teal),
-                title: Text('Aktifkan Kembali', style: GoogleFonts.inter(fontSize: 14)),
+                title: Text(l10n.activateAccount, style: GoogleFonts.inter(fontSize: 14)),
                 onTap: () {
                   Navigator.pop(ctx);
                   ref.read(accountsNotifierProvider.notifier).archiveAccount(account.id, false);
@@ -193,17 +195,17 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             if (!hasTransactions)
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: AppColors.rose),
-                title: Text('Hapus Akun', style: GoogleFonts.inter(fontSize: 14, color: AppColors.rose)),
+                title: Text(l10n.deleteAccountTitle, style: GoogleFonts.inter(fontSize: 14, color: AppColors.rose)),
                 onTap: () {
                   Navigator.pop(ctx);
-                  _confirmDelete(account, colors);
+                  _confirmDelete(account, colors, l10n);
                 },
               ),
             if (hasTransactions)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Text(
-                  'Akun ini memiliki $txCount transaksi. Gunakan "Arsipkan" untuk menyembunyikan.',
+                  l10n.accountHasTransactions(txCount),
                   style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary),
                 ),
               ),
@@ -214,28 +216,28 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
     );
   }
 
-  void _confirmDelete(Account account, AppColorsT colors) {
+  void _confirmDelete(Account account, AppColorsT colors, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Hapus Akun?', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        content: Text('Akun "${account.name}" akan dihapus permanen.', style: GoogleFonts.inter()),
+        title: Text(l10n.deleteAccountTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        content: Text(l10n.deleteAccountConfirm(account.name), style: GoogleFonts.inter()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               ref.read(accountsNotifierProvider.notifier).deleteAccount(account.id);
               ref.invalidate(dashboardProvider);
             },
-            child: Text('Hapus', style: GoogleFonts.inter(color: AppColors.rose, fontWeight: FontWeight.w600)),
+            child: Text(l10n.delete, style: GoogleFonts.inter(color: AppColors.rose, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
     );
   }
 
-  void _showAdjustBalance(Account account, AppColorsT colors) {
+  void _showAdjustBalance(Account account, AppColorsT colors, AppLocalizations l10n) {
     final transactions = ref.read(transactionsNotifierProvider).valueOrNull ?? [];
     final txForAccount = transactions.where((t) => t.accountId == account.id);
     final income = txForAccount.where((t) => t.type == 'income').fold<int>(0, (sum, t) => sum + t.amount);
@@ -248,14 +250,14 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Sesuaikan Saldo', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.adjustBalance, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Saldo saat ini: ${fmt.format(currentBalance)}', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
+            Text('${l10n.currentBalance}: ${fmt.format(currentBalance)}', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
             const SizedBox(height: 12),
-            Text('Saldo target', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+            Text(l10n.balanceTarget, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
             const SizedBox(height: 4),
             TextField(
               controller: targetCtrl,
@@ -266,28 +268,28 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Akan membuat transaksi penyesuaian.',
+              l10n.adjustmentNote,
               style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
           FilledButton(
             onPressed: () {
               final target = int.tryParse(targetCtrl.text.replaceAll(RegExp(r'[^0-9\-]'), ''));
               if (target == null) return;
               Navigator.pop(ctx);
-              _applyAdjustment(account, currentBalance, target);
+              _applyAdjustment(account, currentBalance, target, l10n);
             },
-            child: const Text('Terapkan'),
+            child: Text(l10n.apply),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _applyAdjustment(Account account, int currentBalance, int targetBalance) async {
+  Future<void> _applyAdjustment(Account account, int currentBalance, int targetBalance, AppLocalizations l10n) async {
     final diff = targetBalance - currentBalance;
     if (diff == 0) return;
 
@@ -297,7 +299,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
         accountId: account.id,
         amount: diff,
         currencyCode: account.currencyCode,
-        description: 'Penyesuaian saldo',
+        description: l10n.balanceAdjustmentDesc,
         date: DateTime.now(),
       );
     } else {
@@ -305,7 +307,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
         accountId: account.id,
         amount: diff.abs(),
         currencyCode: account.currencyCode,
-        description: 'Penyesuaian saldo',
+        description: l10n.balanceAdjustmentDesc,
         date: DateTime.now(),
       );
     }
@@ -316,12 +318,12 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Saldo disesuaikan', style: GoogleFonts.inter())),
+        SnackBar(content: Text(l10n.balanceAdjusted, style: GoogleFonts.inter())),
       );
     }
   }
 
-  Widget _buildEmpty(AppColorsT colors) {
+  Widget _buildEmpty(AppColorsT colors, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -332,7 +334,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             child: const Icon(Icons.account_balance_wallet_outlined, size: 32, color: AppColors.gold),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada akun', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          Text(l10n.noAccounts, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
       ),
     );

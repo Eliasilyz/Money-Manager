@@ -750,6 +750,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get netWorth => 'Kekayaan Bersih';
 
   @override
+  String get totalNetBalance => 'Total Saldo Bersih';
+
+  @override
+  String lastUpdatedAgo(Object minutes) {
+    return 'Diperbarui $minutes mnt lalu';
+  }
+
+  @override
   String get totalBudget => 'Total Budget';
 
   @override
@@ -812,4 +820,153 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get transactionSaveError => 'Gagal menyimpan transaksi';
+
+  @override
+  String get analytics => 'Analitik';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get expensePerCategory => 'Pengeluaran per kategori';
+
+  @override
+  String get netBalance => 'Saldo bersih';
+
+  @override
+  String get filterTransactions => 'Filter Transaksi';
+
+  @override
+  String get type => 'Tipe';
+
+  @override
+  String get thisWeekShort => 'Minggu ini';
+
+  @override
+  String get thisMonthShort => 'Bulan ini';
+
+  @override
+  String get applyFilter => 'Terapkan filter';
+
+  @override
+  String get transactionAmount => 'Jumlah transaksi';
+
+  @override
+  String get addNoteHint => 'Tambah catatan transaksi';
+
+  @override
+  String get editAfterSave => 'Anda masih bisa mengedit setelah menyimpan';
+
+  @override
+  String get addNewAccount => 'Tambah akun baru';
+
+  @override
+  String get selectAccountAndAmount =>
+      'Pilih akun dan masukkan nominal yang valid';
+
+  @override
+  String get manageAccounts => 'Kelola Akun';
+
+  @override
+  String get activeAccounts => 'Akun Aktif';
+
+  @override
+  String get archivedAccounts => 'Diarsipkan';
+
+  @override
+  String get editAccount => 'Edit Akun';
+
+  @override
+  String get adjustBalance => 'Sesuaikan Saldo';
+
+  @override
+  String get archiveAccount => 'Arsipkan';
+
+  @override
+  String get activateAccount => 'Aktifkan Kembali';
+
+  @override
+  String get deleteAccountTitle => 'Hapus Akun';
+
+  @override
+  String accountHasTransactions(Object count) {
+    return 'Akun ini memiliki $count transaksi. Gunakan \"Arsipkan\" untuk menyembunyikan.';
+  }
+
+  @override
+  String deleteAccountConfirm(Object name) {
+    return 'Akun \"$name\" akan dihapus permanen.';
+  }
+
+  @override
+  String get balanceTarget => 'Saldo target';
+
+  @override
+  String get adjustmentNote => 'Akan membuat transaksi penyesuaian.';
+
+  @override
+  String get apply => 'Terapkan';
+
+  @override
+  String get balanceAdjusted => 'Saldo disesuaikan';
+
+  @override
+  String get balanceAdjustmentDesc => 'Penyesuaian saldo';
+
+  @override
+  String get addAccountTitle => 'Tambah Akun';
+
+  @override
+  String get accountNameLabel => 'NAMA AKUN';
+
+  @override
+  String get accountNameHint => 'Contoh: BCA Utama';
+
+  @override
+  String get accountTypeLabel => 'TIPE AKUN';
+
+  @override
+  String get currencyLabel => 'MATA UANG';
+
+  @override
+  String get initialBalanceLabel => 'SALDO AWAL';
+
+  @override
+  String get noteLabel => 'CATATAN';
+
+  @override
+  String get saveAccount => 'Simpan Akun';
+
+  @override
+  String get accountNameRequired => 'Masukkan nama akun';
+
+  @override
+  String get addTransferTitle => 'Tambah Transfer';
+
+  @override
+  String get createNewAccount => 'Buat Akun Baru';
+
+  @override
+  String get selectFromAccount => 'Pilih Akun Asal';
+
+  @override
+  String get selectToAccount => 'Pilih Akun Tujuan';
+
+  @override
+  String get nominalLabel => 'NOMINAL';
+
+  @override
+  String get exchangeRateLabel => 'KURS';
+
+  @override
+  String get descriptionLabel => 'KETERANGAN';
+
+  @override
+  String get saveTransfer => 'Simpan Transfer';
+
+  @override
+  String get fillAmountAndSelectAccounts => 'Isi nominal dan pilih kedua akun';
+
+  @override
+  String get accountsMustBeDifferent => 'Akun asal dan tujuan tidak boleh sama';
 }
