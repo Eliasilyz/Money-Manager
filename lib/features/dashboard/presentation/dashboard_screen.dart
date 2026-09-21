@@ -258,7 +258,7 @@ class DashboardScreen extends ConsumerWidget {
                                   child: Container(
                                     height: maxVal > 0 ? (expenses[i] / maxVal * 80) : 0,
                                     decoration: BoxDecoration(
-                                      color: AppColors.gold,
+                                      color: const Color(0xFFF59E0B),
                                       borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                                     ),
                                   ),
@@ -281,7 +281,7 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 _legendDot(AppColors.teal.withValues(alpha: 0.7), 'Pemasukan'),
                 const SizedBox(width: 16),
-                _legendDot(AppColors.gold, 'Pengeluaran'),
+                _legendDot(const Color(0xFFF59E0B), 'Pengeluaran'),
               ],
             ),
           ],
