@@ -15,6 +15,12 @@ class SettingsService {
   static const _wifiOnlyKey = 'wifi_only';
   static const _encryptKey = 'encrypt_backup';
   static const _notificationsKey = 'notifications_enabled';
+  static const _notifRecurringKey = 'notif_recurring_enabled';
+  static const _notifDebtKey = 'notif_debt_enabled';
+  static const _notifBudgetKey = 'notif_budget_enabled';
+  static const _notifDailyKey = 'notif_daily_enabled';
+  static const _notifBackupKey = 'notif_backup_enabled';
+  static const _notifDailyTimeKey = 'notif_daily_time';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -71,11 +77,31 @@ class SettingsService {
   Future<void> saveWifiOnly(bool v) async => (await _prefs).setBool(_wifiOnlyKey, v);
   Future<bool> getEncryptBackup() async => (await _prefs).getBool(_encryptKey) ?? false;
   Future<void> saveEncryptBackup(bool v) async => (await _prefs).setBool(_encryptKey, v);
+
+  // Per-type notification settings
+  Future<bool> getNotifRecurring() async => (await _prefs).getBool(_notifRecurringKey) ?? true;
+  Future<void> saveNotifRecurring(bool v) async => (await _prefs).setBool(_notifRecurringKey, v);
+  Future<bool> getNotifDebt() async => (await _prefs).getBool(_notifDebtKey) ?? true;
+  Future<void> saveNotifDebt(bool v) async => (await _prefs).setBool(_notifDebtKey, v);
+  Future<bool> getNotifBudget() async => (await _prefs).getBool(_notifBudgetKey) ?? true;
+  Future<void> saveNotifBudget(bool v) async => (await _prefs).setBool(_notifBudgetKey, v);
+  Future<bool> getNotifDaily() async => (await _prefs).getBool(_notifDailyKey) ?? true;
+  Future<void> saveNotifDaily(bool v) async => (await _prefs).setBool(_notifDailyKey, v);
+  Future<bool> getNotifBackup() async => (await _prefs).getBool(_notifBackupKey) ?? true;
+  Future<void> saveNotifBackup(bool v) async => (await _prefs).setBool(_notifBackupKey, v);
+  Future<String> getNotifDailyTime() async => (await _prefs).getString(_notifDailyTimeKey) ?? '19:00';
+  Future<void> saveNotifDailyTime(String v) async => (await _prefs).setString(_notifDailyTimeKey, v);
 }
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 final localeProvider = StateProvider<Locale>((ref) => const Locale('id'));
 final notificationsEnabledProvider = StateProvider<bool>((ref) => false);
+final notifRecurringProvider = StateProvider<bool>((ref) => true);
+final notifDebtProvider = StateProvider<bool>((ref) => true);
+final notifBudgetProvider = StateProvider<bool>((ref) => true);
+final notifDailyProvider = StateProvider<bool>((ref) => true);
+final notifBackupProvider = StateProvider<bool>((ref) => true);
+final notifDailyTimeProvider = StateProvider<String>((ref) => '19:00');
 
 final notificationServiceProvider = Provider<NotificationService>((ref) => NotificationService());
 
@@ -87,6 +113,12 @@ final settingsInitProvider = FutureProvider<void>((ref) async {
   ref.read(themeModeProvider.notifier).state = tm;
   ref.read(localeProvider.notifier).state = loc;
   ref.read(notificationsEnabledProvider.notifier).state = notif;
+  ref.read(notifRecurringProvider.notifier).state = await service.getNotifRecurring();
+  ref.read(notifDebtProvider.notifier).state = await service.getNotifDebt();
+  ref.read(notifBudgetProvider.notifier).state = await service.getNotifBudget();
+  ref.read(notifDailyProvider.notifier).state = await service.getNotifDaily();
+  ref.read(notifBackupProvider.notifier).state = await service.getNotifBackup();
+  ref.read(notifDailyTimeProvider.notifier).state = await service.getNotifDailyTime();
   if (notif) {
     await ref.read(notificationServiceProvider).scheduleDaily();
   }

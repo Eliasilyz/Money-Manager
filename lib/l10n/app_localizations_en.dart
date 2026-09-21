@@ -432,6 +432,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsInactive => 'Reminders inactive';
 
   @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get notificationSettingsExplanation => 'Reminders help you never miss bills and control your budget';
+
+  @override
+  String get notificationPermissionAllowed => 'Allowed';
+
+  @override
+  String get notificationPermissionDenied => 'Denied';
+
+  @override
+  String get notificationOpenSystemSettings => 'Open system settings';
+
+  @override
+  String get notificationTypeRecurring => 'Bills & recurring transactions';
+
+  @override
+  String get notificationTypeRecurringDesc => 'Reminder H-0, H-1, H-3 before due date';
+
+  @override
+  String get notificationTypeDebt => 'Debt/installment due date';
+
+  @override
+  String get notificationTypeDebtDesc => 'Reminder H-0, H-1, H-3 before due date';
+
+  @override
+  String get notificationTypeBudget => 'Budget alerts';
+
+  @override
+  String get notificationTypeBudgetDesc => 'Notification when budget reaches 80% and 100%';
+
+  @override
+  String get notificationTypeDailyReminder => 'Daily transaction reminder';
+
+  @override
+  String get notificationTypeDailyReminderDesc => 'Daily reminder, skipped if transactions already recorded';
+
+  @override
+  String get notificationTypeBackupStatus => 'Backup status';
+
+  @override
+  String get notificationTypeBackupStatusDesc => 'Notification if backup fails multiple times consecutively';
+
+  @override
+  String get notificationTestButton => 'Send test notification';
+
+  @override
+  String get notificationTestSent => 'Test notification sent';
+
+  @override
+  String notificationActiveCount(int count) => '$count reminders active';
+
+  @override
   String get view => 'Appearance';
 
   @override
@@ -711,4 +765,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountTypeInvestment => 'Investment';
+
+  @override
+  String get changelog => "What's New";
+
+  @override
+  String get donation => 'Support the Developer';
+
+  @override
+  String developerCredits(Object name) {
+    return 'Developed by $name';
+  }
+
+  @override
+  String get noChangelog => 'No changelog available yet.';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
 }

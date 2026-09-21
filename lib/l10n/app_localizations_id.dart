@@ -431,6 +431,60 @@ class AppLocalizationsId extends AppLocalizations {
   String get notificationsInactive => 'Pengingat nonaktif';
 
   @override
+  String get notificationSettings => 'Pengaturan Notifikasi';
+
+  @override
+  String get notificationSettingsExplanation => 'Pengingat membantu kamu tidak melewatkan tagihan dan mengontrol anggaran';
+
+  @override
+  String get notificationPermissionAllowed => 'Diizinkan';
+
+  @override
+  String get notificationPermissionDenied => 'Ditolak';
+
+  @override
+  String get notificationOpenSystemSettings => 'Buka pengaturan sistem';
+
+  @override
+  String get notificationTypeRecurring => 'Tagihan & transaksi berulang';
+
+  @override
+  String get notificationTypeRecurringDesc => 'Pengingat H-0, H-1, H-3 sebelum jatuh tempo';
+
+  @override
+  String get notificationTypeDebt => 'Jatuh tempo hutang/cicilan';
+
+  @override
+  String get notificationTypeDebtDesc => 'Pengingat H-0, H-1, H-3 sebelum jatuh tempo';
+
+  @override
+  String get notificationTypeBudget => 'Peringatan anggaran';
+
+  @override
+  String get notificationTypeBudgetDesc => 'Notifikasi saat anggaran mencapai 80% dan 100%';
+
+  @override
+  String get notificationTypeDailyReminder => 'Pengingat catat transaksi harian';
+
+  @override
+  String get notificationTypeDailyReminderDesc => 'Pengingat harian, dilewati jika sudah ada transaksi';
+
+  @override
+  String get notificationTypeBackupStatus => 'Status backup';
+
+  @override
+  String get notificationTypeBackupStatusDesc => 'Notifikasi jika backup gagal beberapa kali berturut-turut';
+
+  @override
+  String get notificationTestButton => 'Kirim notifikasi tes';
+
+  @override
+  String get notificationTestSent => 'Notifikasi tes terkirim';
+
+  @override
+  String notificationActiveCount(int count) => '$count pengingat aktif';
+
+  @override
   String get view => 'Tampilan';
 
   @override
@@ -711,4 +765,21 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get accountTypeInvestment => 'Investasi';
+
+  @override
+  String get changelog => 'Yang Baru';
+
+  @override
+  String get donation => 'Dukung Pengembang';
+
+  @override
+  String developerCredits(Object name) {
+    return 'Dikembangkan oleh $name';
+  }
+
+  @override
+  String get noChangelog => 'Belum ada catatan perubahan.';
+
+  @override
+  String get copiedToClipboard => 'Disalin ke clipboard';
 }

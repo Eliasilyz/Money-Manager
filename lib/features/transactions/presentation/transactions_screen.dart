@@ -20,7 +20,6 @@ class TransactionsScreen extends ConsumerStatefulWidget {
 }
 
 class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
-  final DateTime _calendarMonth = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime _selectedDate = DateTime.now();
   String _searchQuery = '';
   String _filterType = 'all';
@@ -56,49 +55,51 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 16, 12, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.transactionTitle, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                      Text(l10n.transactionSubtitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
-                    ],
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l10n.transactionTitle, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary), overflow: TextOverflow.ellipsis),
+                        Text(l10n.transactionSubtitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => context.push('/statistics'),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: colors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.bar_chart_rounded, color: colors.primary, size: 16),
-                              const SizedBox(width: 4),
-                              Text(l10n.statistics, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
-                            ],
-                          ),
-                        ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => context.push('/statistics'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      const SizedBox(width: 4),
-                      IconButton(
-                        onPressed: () => setState(() => _showSearch = !_showSearch),
-                        icon: Icon(Icons.search, color: colors.textSecondary, size: 22),
-                        tooltip: l10n.search,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.bar_chart_rounded, color: colors.primary, size: 16),
+                          const SizedBox(width: 4),
+                          Text(l10n.statistics, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.primary)),
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () => _showFilterSheet(context, colors, l10n),
-                        icon: Icon(Icons.filter_list_rounded, color: colors.textSecondary, size: 22),
-                        tooltip: 'Filter',
-                      ),
-                    ],
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  IconButton(
+                    onPressed: () => setState(() => _showSearch = !_showSearch),
+                    icon: Icon(Icons.search, color: colors.textSecondary, size: 22),
+                    tooltip: l10n.search,
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  ),
+                  IconButton(
+                    onPressed: () => _showFilterSheet(context, colors, l10n),
+                    icon: Icon(Icons.filter_list_rounded, color: colors.textSecondary, size: 22),
+                    tooltip: 'Filter',
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   ),
                 ],
               ),
@@ -165,7 +166,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             Expanded(
               child: transactionsAsync.when(
                 data: (allTx) {
-                  final filtered = _filterTransactions(allTx, l10n);
+                  final filtered = _filterTransactions(allTx, l10n, catMap);
                   if (filtered.isEmpty) return _buildEmpty(colors, l10n);
                   return _buildGroupedList(filtered, catMap, fmt, colors, locale);
                 },
@@ -187,9 +188,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   }
 
   Widget _buildCalendarStrip(AppColorsT colors, String locale) {
-    final daysInMonth = DateTime(_calendarMonth.year, _calendarMonth.month + 1, 0).day;
     final today = DateTime.now();
     final l10n = AppLocalizations.of(context);
+    final dayLabels = ['S', 'R', 'K', 'J', 'S', 'M', 'M'];
+    // Show 7 days: 3 before today, today, 3 after today
+    final startDay = today.subtract(Duration(days: today.weekday - 1));
+    final weekDays = List.generate(7, (i) => DateTime(startDay.year, startDay.month, startDay.day + i));
+
     return SizedBox(
       height: 72,
       child: Column(
@@ -200,8 +205,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(DateFormat('MMMM yyyy', locale).format(_calendarMonth), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-                Text(l10n.filterCalendar, style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
+                Text(DateFormat('MMMM yyyy', locale).format(today), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                GestureDetector(
+                  onTap: () => context.push('/calendar'),
+                  child: Text(l10n.filterCalendar, style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
+                ),
               ],
             ),
           ),
@@ -211,12 +219,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: daysInMonth,
+              itemCount: weekDays.length,
               itemBuilder: (context, index) {
-                final day = DateTime(_calendarMonth.year, _calendarMonth.month, index + 1);
+                final day = weekDays[index];
                 final isToday = day.year == today.year && day.month == today.month && day.day == today.day;
                 final isSelected = day.year == _selectedDate.year && day.month == _selectedDate.month && day.day == _selectedDate.day;
-                final dayLabels = ['S', 'R', 'K', 'J', 'S', 'M', 'M'];
                 return GestureDetector(
                   onTap: () => setState(() => _selectedDate = day),
                   child: Container(
@@ -244,13 +251,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     );
   }
 
-  List<Transaction> _filterTransactions(List<Transaction> all, AppLocalizations l10n) {
+  List<Transaction> _filterTransactions(List<Transaction> all, AppLocalizations l10n, Map<String, Category> catMap) {
     var list = all;
     if (_searchQuery.isNotEmpty) {
       list = list.where((t) {
         final desc = (t.description ?? '').toLowerCase();
         final note = (t.note ?? '').toLowerCase();
-        return desc.contains(_searchQuery) || note.contains(_searchQuery);
+        final catName = catMap[t.categoryId]?.name.toLowerCase() ?? '';
+        return desc.contains(_searchQuery) || note.contains(_searchQuery) || catName.contains(_searchQuery);
       }).toList();
     }
     if (_filterType == 'calendar') {

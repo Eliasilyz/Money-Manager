@@ -866,6 +866,114 @@ abstract class AppLocalizations {
   /// **'Pengingat nonaktif'**
   String get notificationsInactive;
 
+  /// No description provided for @notificationSettings.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengaturan Notifikasi'**
+  String get notificationSettings;
+
+  /// No description provided for @notificationSettingsExplanation.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat membantu kamu tidak melewatkan tagihan dan mengontrol anggaran'**
+  String get notificationSettingsExplanation;
+
+  /// No description provided for @notificationPermissionAllowed.
+  ///
+  /// In id, this message translates to:
+  /// **'Diizinkan'**
+  String get notificationPermissionAllowed;
+
+  /// No description provided for @notificationPermissionDenied.
+  ///
+  /// In id, this message translates to:
+  /// **'Ditolak'**
+  String get notificationPermissionDenied;
+
+  /// No description provided for @notificationOpenSystemSettings.
+  ///
+  /// In id, this message translates to:
+  /// **'Buka pengaturan sistem'**
+  String get notificationOpenSystemSettings;
+
+  /// No description provided for @notificationTypeRecurring.
+  ///
+  /// In id, this message translates to:
+  /// **'Tagihan & transaksi berulang'**
+  String get notificationTypeRecurring;
+
+  /// No description provided for @notificationTypeRecurringDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat H-0, H-1, H-3 sebelum jatuh tempo'**
+  String get notificationTypeRecurringDesc;
+
+  /// No description provided for @notificationTypeDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh tempo hutang/cicilan'**
+  String get notificationTypeDebt;
+
+  /// No description provided for @notificationTypeDebtDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat H-0, H-1, H-3 sebelum jatuh tempo'**
+  String get notificationTypeDebtDesc;
+
+  /// No description provided for @notificationTypeBudget.
+  ///
+  /// In id, this message translates to:
+  /// **'Peringatan anggaran'**
+  String get notificationTypeBudget;
+
+  /// No description provided for @notificationTypeBudgetDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi saat anggaran mencapai 80% dan 100%'**
+  String get notificationTypeBudgetDesc;
+
+  /// No description provided for @notificationTypeDailyReminder.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat catat transaksi harian'**
+  String get notificationTypeDailyReminder;
+
+  /// No description provided for @notificationTypeDailyReminderDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat harian, dilewati jika sudah ada transaksi'**
+  String get notificationTypeDailyReminderDesc;
+
+  /// No description provided for @notificationTypeBackupStatus.
+  ///
+  /// In id, this message translates to:
+  /// **'Status backup'**
+  String get notificationTypeBackupStatus;
+
+  /// No description provided for @notificationTypeBackupStatusDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi jika backup gagal beberapa kali berturut-turut'**
+  String get notificationTypeBackupStatusDesc;
+
+  /// No description provided for @notificationTestButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim notifikasi tes'**
+  String get notificationTestButton;
+
+  /// No description provided for @notificationTestSent.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi tes terkirim'**
+  String get notificationTestSent;
+
+  /// No description provided for @notificationActiveCount.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} pengingat aktif'**
+  String notificationActiveCount(int count);
+
   /// No description provided for @view.
   ///
   /// In id, this message translates to:
@@ -1411,6 +1519,21 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Investasi'**
   String get accountTypeInvestment;
+
+  /// No description provided for @changelog.
+  String get changelog;
+
+  /// No description provided for @donation.
+  String get donation;
+
+  /// No description provided for @developerCredits.
+  String developerCredits(Object name);
+
+  /// No description provided for @noChangelog.
+  String get noChangelog;
+
+  /// No description provided for @copiedToClipboard.
+  String get copiedToClipboard;
 }
 
 class _AppLocalizationsDelegate
