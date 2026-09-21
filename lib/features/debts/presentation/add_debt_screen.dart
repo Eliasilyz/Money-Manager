@@ -97,7 +97,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: _type == 'lent' ? AppColors.bg : colors.textSecondary,
+                                color: _type == 'lent' ? colors.textPrimary : colors.textSecondary,
                               ),
                             ),
                           ),

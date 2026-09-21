@@ -123,9 +123,9 @@ class AppColorsT extends ThemeExtension<AppColorsT> {
 }
 
 extension TextStyles on BuildContext {
-  TextStyle get outfitBold => GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppColors.textPrimary);
-  TextStyle get outfitMedium => GoogleFonts.outfit(fontWeight: FontWeight.w500, color: AppColors.textPrimary);
-  TextStyle get interRegular => GoogleFonts.inter(color: AppColors.textPrimary);
-  TextStyle get interMuted => GoogleFonts.inter(color: AppColors.textMuted);
-  TextStyle get mono => GoogleFonts.jetBrainsMono(fontWeight: FontWeight.w600, color: AppColors.textPrimary);
+  TextStyle get outfitBold => GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppColorsT.of(this).textPrimary);
+  TextStyle get outfitMedium => GoogleFonts.outfit(fontWeight: FontWeight.w500, color: AppColorsT.of(this).textPrimary);
+  TextStyle get interRegular => GoogleFonts.inter(color: AppColorsT.of(this).textPrimary);
+  TextStyle get interMuted => GoogleFonts.inter(color: AppColorsT.of(this).textSecondary);
+  TextStyle get mono => GoogleFonts.jetBrainsMono(fontWeight: FontWeight.w600, color: AppColorsT.of(this).textPrimary);
 }

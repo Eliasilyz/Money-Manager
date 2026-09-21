@@ -18,23 +18,6 @@ class GoalsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Target & Hutang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: FilledButton.icon(
-              onPressed: () => context.push('/add-goal'),
-              icon: const Icon(Icons.add, size: 16),
-              label: Text('Tambah', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.gold,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
-          ),
-        ],
       ),
       body: goalsAsync.when(
         data: (goals) {
@@ -158,6 +141,14 @@ class GoalsScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'goals_fab',
+        onPressed: () => context.push('/add-goal'),
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add, size: 26),
       ),
     );
   }

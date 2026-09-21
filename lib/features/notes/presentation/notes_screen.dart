@@ -8,24 +8,22 @@ import 'package:money_manager/features/notes/application/note_provider.dart';
 import 'package:money_manager/theme/app_colors.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
-class NotesScreen extends ConsumerWidget {
+class NotesScreen extends ConsumerStatefulWidget {
   const NotesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotesScreen> createState() => _NotesScreenState();
+}
+
+class _NotesScreenState extends ConsumerState<NotesScreen> {
+  @override
+  Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
     final notesAsync = ref.watch(notesNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Catatan', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        actions: [
-          IconButton(
-            tooltip: 'Tambah Catatan',
-            icon: const Icon(Icons.add),
-            onPressed: () => _showEditor(context, ref),
-          ),
-        ],
       ),
       body: notesAsync.when(
         data: (notes) {
@@ -91,6 +89,14 @@ class NotesScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'notes_fab',
+        onPressed: () => _showEditor(context, ref),
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add, size: 26),
       ),
     );
   }

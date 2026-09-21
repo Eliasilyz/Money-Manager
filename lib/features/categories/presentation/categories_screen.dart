@@ -60,13 +60,6 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
     return Scaffold(
       appBar: AppBar(
         title: Text('Kategori', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        actions: [
-          IconButton(
-            tooltip: 'Tambah Kategori',
-            icon: const Icon(Icons.add),
-            onPressed: () => context.push('/add-category'),
-          ),
-        ],
         bottom: TabBar(
           controller: _tabCtrl,
           tabs: const [
@@ -87,6 +80,14 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
         },
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'categories_fab',
+        onPressed: () => context.push('/add-category'),
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add, size: 26),
       ),
     );
   }

@@ -86,23 +86,6 @@ class BudgetsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Anggaran', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: FilledButton.icon(
-              onPressed: () => context.push('/add-budget'),
-              icon: const Icon(Icons.add, size: 16),
-              label: Text('Buat', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.gold,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
-          ),
-        ],
       ),
       body: budgetsAsync.when(
         data: (budgets) {
@@ -167,6 +150,14 @@ class BudgetsScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'budgets_fab',
+        onPressed: () => context.push('/add-budget'),
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add, size: 26),
       ),
     );
   }

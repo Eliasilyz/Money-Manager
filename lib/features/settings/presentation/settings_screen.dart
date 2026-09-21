@@ -43,7 +43,7 @@ class SettingsScreen extends ConsumerWidget {
 
             Text('Kelola keuangan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
-            _buildSectionCard([
+            _buildSectionCard(context, [
               _tile(context, Icons.category_outlined, 'Kategori', '${categories.length} kategori', () => context.push('/categories')),
               const Divider(height: 1),
               _tile(context, Icons.repeat_rounded, 'Transaksi Berulang', '${recurring.length} transaksi aktif', () => context.push('/recurring')),
@@ -56,7 +56,7 @@ class SettingsScreen extends ConsumerWidget {
 
             Text('Preferensi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
-            _buildSectionCard([
+            _buildSectionCard(context, [
               _tile(context, Icons.cloud_sync_outlined, 'Backup & Restore', 'Cadangkan & pulihkan data', () => context.push('/backup')),
               const Divider(height: 1),
               _tile(context, Icons.monetization_on_outlined, 'Mata Uang', 'Rupiah Indonesia (IDR)', () => context.push('/currencies')),
@@ -79,7 +79,7 @@ class SettingsScreen extends ConsumerWidget {
 
             Text('Tentang aplikasi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
-            _buildSectionCard([
+            _buildSectionCard(context, [
               _tile(context, Icons.info_outline, 'Tentang Money Manager', 'Versi 1.0.0 (Build 1)', () => _showAboutDialog(context)),
             ]),
           ],
@@ -122,10 +122,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionCard(List<Widget> children) {
+  Widget _buildSectionCard(BuildContext context, List<Widget> children) {
+    final colors = AppColorsT.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
       ),

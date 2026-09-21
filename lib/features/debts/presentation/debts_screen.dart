@@ -18,13 +18,6 @@ class DebtsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Hutang & Piutang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        actions: [
-          IconButton(
-            tooltip: 'Tambah Hutang',
-            icon: const Icon(Icons.add),
-            onPressed: () => context.push('/add-debt'),
-          ),
-        ],
       ),
       body: debtsAsync.when(
         data: (debts) {
@@ -83,6 +76,14 @@ class DebtsScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'debts_fab',
+        onPressed: () => context.push('/add-debt'),
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add, size: 26),
       ),
     );
   }
