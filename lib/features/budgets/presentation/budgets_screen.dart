@@ -115,7 +115,7 @@ class BudgetsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.totalBudgetRemaining, style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+                    Text('Total anggaran tersisa', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
                     const SizedBox(height: 6),
                     Text(fmt.format(totalBudget - totalSpent), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
                     const SizedBox(height: 10),
@@ -129,7 +129,7 @@ class BudgetsScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text('${l10n.spent} ${fmt.format(totalSpent)} / ${fmt.format(totalBudget)}', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
+                    Text('Terpakai ${fmt.format(totalSpent)} / ${fmt.format(totalBudget)}', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
                   ],
                 ),
               ),
@@ -137,8 +137,8 @@ class BudgetsScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(l10n.perCategory, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                  Text('${budgets.length} ${l10n.budgets.toLowerCase()}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                  Text('Per kategori', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                  Text('${budgets.length} anggaran', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -148,6 +148,24 @@ class BudgetsScreen extends ConsumerWidget {
                 final pct = (spent / b.amount * 100).round();
                 return _buildBudgetTile(context, catName, spent, b.amount, pct, _getColor(b.categoryId), _getIconColor(b.categoryId), _getIcon(b.categoryId), l10n);
               }),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.orange.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber_rounded, color: AppColors.orange, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text('Perlu review anggaran', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
@@ -52,12 +53,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   children: [
                     _buildHeader(context, l10n),
                     _buildBalanceCard(context, data, fmt, l10n),
-                    const SizedBox(height: 16),
-                    _buildQuickActions(context, l10n),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
+                    _buildStatTrio(context, data, fmt, l10n),
+                    const SizedBox(height: 20),
                     _buildCashFlow(context, data, fmt, l10n, locale),
                     const SizedBox(height: 24),
-                    _buildSection(context, l10n.transactions.toUpperCase(), () => context.push('/transactions'), l10n),
+                    _buildSection(context, 'Transaksi terbaru', () => context.push('/transactions'), l10n),
                     if (data.recentTransactions.isEmpty)
                       _buildEmpty(context, l10n)
                     else
@@ -79,18 +80,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final colors = AppColorsT.of(context);
     final now = DateTime.now();
     final greeting = now.hour < 12 ? l10n.goodMorning : now.hour < 17 ? l10n.goodAfternoon : l10n.goodNight;
+    final locale = Localizations.localeOf(context).languageCode;
+    final dateStr = DateFormat('EEEE, d MMMM', locale).format(now);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('$greeting, Rani', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-          IconButton(
-            onPressed: () => context.push('/settings'),
-            icon: Icon(Icons.notifications_none_outlined, color: colors.textSecondary, size: 22),
-            tooltip: l10n.notifications,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$greeting, Elon', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                Text(dateStr, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+              ],
+            ),
           ),
+          MonthPill(month: now, onTap: () {}),
         ],
       ),
     );
@@ -161,39 +168,45 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context, AppLocalizations l10n) {
-    final colors = AppColorsT.of(context);
-    final actions = [
-      (Icons.swap_horiz_rounded, l10n.transfer, () => context.push('/add-transfer')),
-      (Icons.account_balance_outlined, l10n.budgets, () => context.push('/budgets')),
-      (Icons.savings_outlined, l10n.goalsAndDebts, () => context.push('/goals')),
-      (Icons.bar_chart_rounded, l10n.statistics, () => context.push('/statistics')),
-    ];
+  Widget _buildStatTrio(BuildContext context, DashboardData data, NumberFormat fmt, AppLocalizations l10n) {
+    final now = DateTime.now();
+    final todayExpenses = data.recentTransactions
+        .where((t) => t.type == 'expense' && t.date.year == now.year && t.date.month == now.month && t.date.day == now.day)
+        .fold<int>(0, (s, t) => s + t.amount);
+    final monthExpenses = data.recentTransactions
+        .where((t) => t.type == 'expense' && t.date.year == now.year && t.date.month == now.month)
+        .fold<int>(0, (s, t) => s + t.amount);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
-        children: actions.map((a) {
-          return Expanded(
-            child: GestureDetector(
-              onTap: a.$3,
-              child: Column(
-                children: [
-                  Container(
-                    width: 48, height: 48,
-                    decoration: BoxDecoration(
-                      color: colors.surface,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
-                    ),
-                    child: Icon(a.$1, color: colors.primary, size: 22),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(a.$2, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
+        children: [
+          _statTrioItem(context, l10n.today, fmt.format(todayExpenses)),
+          _statTrioItem(context, l10n.thisMonth, fmt.format(monthExpenses)),
+          _statTrioItem(context, l10n.totalBalance, fmt.format(data.totalBalance)),
+        ],
+      ),
+    );
+  }
+
+  Widget _statTrioItem(BuildContext context, String label, String value) {
+    final colors = AppColorsT.of(context);
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colors.border),
+        ),
+        child: Column(
+          children: [
+            Text(label, style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+            const SizedBox(height: 4),
+            Text(value, style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textPrimary), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+          ],
+        ),
       ),
     );
   }
@@ -221,7 +234,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
+          border: Border.all(color: colors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,10 +243,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.cashFlow, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                GestureDetector(
-                  onTap: () => context.push('/statistics'),
-                  child: Text(l10n.seeAll, style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
-                ),
+                Text('6 bulan', style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
               ],
             ),
             const SizedBox(height: 16),
@@ -256,7 +266,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   child: Container(
                                     height: maxVal > 0 ? (incomes[i] / maxVal * 80) : 0,
                                     decoration: BoxDecoration(
-                                      color: AppColors.teal.withValues(alpha: 0.7),
+                                      color: AppColors.gold,
                                       borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                                     ),
                                   ),
@@ -266,7 +276,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   child: Container(
                                     height: maxVal > 0 ? (expenses[i] / maxVal * 80) : 0,
                                     decoration: BoxDecoration(
-                                      color: AppColors.rose.withValues(alpha: 0.8),
+                                      color: AppColors.orange,
                                       borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                                     ),
                                   ),
@@ -283,29 +293,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 }),
               ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _legendDot(AppColors.teal.withValues(alpha: 0.7), l10n.incomeMonth),
-                const SizedBox(width: 16),
-                _legendDot(AppColors.rose.withValues(alpha: 0.8), l10n.expensesMonth),
-              ],
-            ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _legendDot(Color color, String label) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(width: 8, height: 8, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4))),
-        const SizedBox(width: 4),
-        Text(label, style: GoogleFonts.inter(fontSize: 10, color: Colors.grey)),
-      ],
     );
   }
 
@@ -316,10 +306,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
+          Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
           if (onSeeAll != null)
-            TextButton(
-              onPressed: onSeeAll,
+            GestureDetector(
+              onTap: onSeeAll,
               child: Text(l10n.seeAll, style: GoogleFonts.inter(fontSize: 12, color: colors.primary)),
             ),
         ],

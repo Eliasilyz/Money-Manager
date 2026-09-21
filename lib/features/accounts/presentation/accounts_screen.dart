@@ -81,10 +81,10 @@ class AccountsScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(l10n.accountList, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                    Text('Daftar akun', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                     TextButton(
                       onPressed: () => context.push('/manage-accounts'),
-                      child: Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+                      child: Text('Atur', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                     ),
                   ],
                 ),
@@ -162,17 +162,11 @@ class AccountsScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.netWorth, style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+          Text('Total saldo bersih', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
           const SizedBox(height: 6),
           Text(fmt.format(totalBalance), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(Icons.trending_up_rounded, color: AppColors.teal, size: 16),
-              const SizedBox(width: 4),
-              Text('+4.8% ${l10n.thisMonth}', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.teal)),
-            ],
-          ),
+          Text('Diperbarui 2 menit lalu', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
         ],
       ),
     );

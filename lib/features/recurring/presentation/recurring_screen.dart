@@ -30,19 +30,18 @@ class RecurringScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.recurringTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-      ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'recurring_fab',
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Buat transaksi baru dengan toggle "Transaksi berulang" aktif', style: GoogleFonts.inter())),
-          );
-          context.push('/add-transaction');
-        },
-        backgroundColor: AppColors.gold,
-        foregroundColor: Colors.white,
-        elevation: 4,
-        child: const Icon(Icons.add, size: 26),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Buat transaksi baru dengan toggle "Transaksi berulang" aktif', style: GoogleFonts.inter())),
+              );
+              context.push('/add-transaction');
+            },
+            icon: Icon(Icons.add, color: colors.primary, size: 18),
+            label: Text('Tambah', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+          ),
+        ],
       ),
       body: asyncItems.when(
         data: (items) {
@@ -79,10 +78,10 @@ class RecurringScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        _statBadge('$active ${l10n.active.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
+                        _statBadge('$active ${l10n.expense.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
                         if (inactive > 0) ...[
                           const SizedBox(width: 8),
-                          _statBadge('$inactive ${l10n.inactive.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
+                          _statBadge('$inactive ${l10n.income.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
                         ],
                       ],
                     ),
@@ -93,7 +92,7 @@ class RecurringScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(l10n.comingSoon, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                  Text('Akan datang', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                   Text('${items.length} item', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                 ],
               ),
@@ -148,8 +147,8 @@ class RecurringScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(l10n.subscriptions, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                  Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, color: colors.primary)),
+                  Text('Langganan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                  Text('Kelola', style: GoogleFonts.inter(fontSize: 12, color: colors.primary)),
                 ],
               ),
               const SizedBox(height: 12),

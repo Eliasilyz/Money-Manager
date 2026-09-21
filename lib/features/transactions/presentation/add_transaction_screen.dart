@@ -28,7 +28,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   String? _selectedCategoryId;
   DateTime _selectedDate = DateTime.now();
   bool _saving = false;
-  bool _isRecurring = false;
 
   final _amountCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -103,11 +102,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               const SizedBox(height: 24),
               _buildCenteredAmount(colors),
               const SizedBox(height: 32),
-              _buildFormRow(Icons.category_outlined, l10n.category, _getCategoryLabel(categoriesAsync), colors, () => _showCategoryPicker(categoriesAsync, colors)),
-              _buildFormRow(Icons.account_balance_wallet_outlined, l10n.accounts, _getAccountLabel(accountsAsync), colors, () => _showAccountPicker(accountsAsync, colors)),
-              _buildFormRow(Icons.calendar_today_outlined, l10n.date, DateFormat('dd MMMM yyyy • HH:mm', 'id').format(_selectedDate), colors, () => _pickDate()),
-              _buildFormRow(Icons.notes_outlined, l10n.note, _noteCtrl.text.isEmpty ? l10n.addTransactionSubtitle : _noteCtrl.text, colors, () => _showNoteDialog(colors)),
-              _buildRecurringRow(colors),
+              _buildFormRow(Icons.category_outlined, 'Kategori', _getCategoryLabel(categoriesAsync), colors, () => _showCategoryPicker(categoriesAsync, colors)),
+              _buildFormRow(Icons.account_balance_wallet_outlined, 'Dari Akun', _getAccountLabel(accountsAsync), colors, () => _showAccountPicker(accountsAsync, colors)),
+              _buildFormRow(Icons.calendar_today_outlined, 'Tanggal', DateFormat('dd MMMM yyyy • HH:mm', 'id').format(_selectedDate), colors, () => _pickDate()),
+              _buildFormRow(Icons.notes_outlined, 'Catatan', _noteCtrl.text.isEmpty ? 'Tambah catatan transaksi' : _noteCtrl.text, colors, () => _showNoteDialog(colors)),
               const SizedBox(height: 32),
               _buildSaveButton(colors, l10n),
               const SizedBox(height: 12),
@@ -151,11 +149,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.border),
       ),
       child: Row(
         children: [
           _typeTab('Pengeluaran', 'expense', colors),
           _typeTab('Pemasukan', 'income', colors),
+          _typeTab('Transfer', 'transfer', colors),
         ],
       ),
     );
@@ -186,35 +186,43 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   }
 
   Widget _buildCenteredAmount(AppColorsT colors) {
-    return Column(
-      children: [
-        Text('Nominal', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Rp', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-            const SizedBox(width: 4),
-            IntrinsicWidth(
-              child: TextField(
-                controller: _amountCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(fontSize: 40, fontWeight: FontWeight.w700, color: colors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: '0',
-                  hintStyle: GoogleFonts.outfit(fontSize: 40, fontWeight: FontWeight.w700, color: colors.textSecondary.withValues(alpha: 0.4)),
-                  border: InputBorder.none,
-                  isDense: true,
-                  contentPadding: EdgeInsets.zero,
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.border),
+      ),
+      child: Column(
+        children: [
+          Text('Jumlah transaksi', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Rp', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+              const SizedBox(width: 4),
+              IntrinsicWidth(
+                child: TextField(
+                  controller: _amountCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(fontSize: 36, fontWeight: FontWeight.w700, color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: '0',
+                    hintStyle: GoogleFonts.outfit(fontSize: 36, fontWeight: FontWeight.w700, color: colors.textSecondary.withValues(alpha: 0.4)),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -235,8 +243,8 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
-                  const SizedBox(height: 2),
+                  Text(label.toUpperCase(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.5)),
+                  const SizedBox(height: 4),
                   Text(value, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary)),
                 ],
               ),
@@ -244,37 +252,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
             Icon(Icons.chevron_right, size: 18, color: colors.textSecondary),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildRecurringRow(AppColorsT colors) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: colors.border, width: 0.5)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.repeat_rounded, size: 20, color: colors.textSecondary),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Transaksi berulang', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
-                const SizedBox(height: 2),
-                Text(_isRecurring ? 'Aktif' : 'Nonaktif', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary)),
-              ],
-            ),
-          ),
-          Switch(
-            value: _isRecurring,
-            onChanged: (v) => setState(() => _isRecurring = v),
-            activeThumbColor: colors.primary,
-          ),
-        ],
       ),
     );
   }
@@ -292,7 +269,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         child: _saving
             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
             : Text(
-                _isEditing ? l10n.saveChanges : l10n.saveTransaction,
+                _isEditing ? l10n.saveChanges : 'Simpan transaksi',
                 style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
               ),
       ),

@@ -87,10 +87,28 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           DateFormat('MMMM yyyy', locale).format(_currentMonth),
           style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary),
         ),
-        IconButton(
-          onPressed: () => setState(() => _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1)),
-          icon: Icon(Icons.chevron_right, color: colors.textPrimary),
-          tooltip: l10n.monthYear,
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () => setState(() {
+                _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
+                _selectedDate = DateTime.now();
+              }),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text('Hari ini', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.primary)),
+              ),
+            ),
+            IconButton(
+              onPressed: () => setState(() => _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1)),
+              icon: Icon(Icons.chevron_right, color: colors.textPrimary),
+              tooltip: l10n.monthYear,
+            ),
+          ],
         ),
       ],
     );

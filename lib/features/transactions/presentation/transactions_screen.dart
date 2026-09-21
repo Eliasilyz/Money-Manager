@@ -24,7 +24,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   DateTime _selectedDate = DateTime.now();
   String _searchQuery = '';
   String _filterType = 'all';
-  bool _showSearch = false;
   final _searchCtrl = TextEditingController();
 
   @override
@@ -45,9 +44,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 
     final filterLabels = {
       'all': l10n.allFilter,
-      'category': l10n.categoryFilter,
-      'account': l10n.accountFilter,
-      'calendar': l10n.filterCalendar,
+      'filter': 'Filter',
+      'analitik': 'Analitik',
+      'calendar': 'Kalender',
     };
 
     return Scaffold(
@@ -56,74 +55,33 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 12, 0),
-              child: Row(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.transactionTitle, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary), overflow: TextOverflow.ellipsis),
-                        Text(l10n.transactionSubtitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => context.push('/statistics'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: colors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.bar_chart_rounded, color: colors.primary, size: 16),
-                          const SizedBox(width: 4),
-                          Text(l10n.statistics, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.primary)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  IconButton(
-                    onPressed: () => setState(() => _showSearch = !_showSearch),
-                    icon: Icon(Icons.search, color: colors.textSecondary, size: 22),
-                    tooltip: l10n.search,
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                  ),
-                  IconButton(
-                    onPressed: () => _showFilterSheet(context, colors, l10n),
-                    icon: Icon(Icons.filter_list_rounded, color: colors.textSecondary, size: 22),
-                    tooltip: 'Filter',
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                  ),
+                  Text(l10n.transactionTitle, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                  Text(l10n.transactionSubtitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                 ],
               ),
             ),
-            if (_showSearch)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                child: TextField(
-                  controller: _searchCtrl,
-                  onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: l10n.searchTransactions,
-                    prefixIcon: Icon(Icons.search, color: colors.textSecondary, size: 20),
-                    filled: true,
-                    fillColor: colors.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.primary, width: 1.5)),
-                  ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: _searchCtrl,
+                onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
+                decoration: InputDecoration(
+                  hintText: 'Cari transaksi atau catatan...',
+                  prefixIcon: Icon(Icons.search, color: colors.textSecondary, size: 20),
+                  filled: true,
+                  fillColor: colors.surface,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.primary, width: 1.5)),
                 ),
               ),
+            ),
             const SizedBox(height: 12),
             SizedBox(
               height: 36,
@@ -182,7 +140,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         heroTag: 'transactions_fab',
         onPressed: () => context.push('/add-transaction'),
         backgroundColor: AppColors.gold,
-        foregroundColor: AppColors.bg,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -190,9 +148,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 
   Widget _buildCalendarStrip(AppColorsT colors, String locale) {
     final today = DateTime.now();
-    final l10n = AppLocalizations.of(context);
     final dayLabels = ['S', 'R', 'K', 'J', 'S', 'M', 'M'];
-    // Show 7 days: 3 before today, today, 3 after today
     final startDay = today.subtract(Duration(days: today.weekday - 1));
     final weekDays = List.generate(7, (i) => DateTime(startDay.year, startDay.month, startDay.day + i));
 
@@ -209,7 +165,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 Text(DateFormat('MMMM yyyy', locale).format(today), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
                 GestureDetector(
                   onTap: () => context.push('/calendar'),
-                  child: Text(l10n.filterCalendar, style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
+                  child: Text('Kalender', style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
                 ),
               ],
             ),
@@ -270,26 +226,43 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   }
 
   Widget _buildGroupedList(List<Transaction> txList, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors, String locale) {
-    final dayTotal = txList.fold<int>(0, (s, t) => s + (t.type == 'income' ? t.amount : -t.amount));
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final grouped = <String, List<Transaction>>{};
+    for (final t in txList) {
+      final dayKey = '${t.date.year}-${t.date.month}-${t.date.day}';
+      grouped.putIfAbsent(dayKey, () => []).add(t);
+    }
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
-      children: [
-        if (_filterType == 'calendar')
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(DateFormat('EEEE, d MMMM yyyy', locale).format(_selectedDate), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                Text(
-                  '${dayTotal >= 0 ? '+' : '-'}${fmt.format(dayTotal.abs())}',
-                  style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: dayTotal >= 0 ? AppColors.teal : AppColors.rose),
-                ),
-              ],
+      children: grouped.entries.map((entry) {
+        final dayTx = entry.value;
+        final dayDate = dayTx.first.date;
+        final dayOnly = DateTime(dayDate.year, dayDate.month, dayDate.day);
+        final dayTotal = dayTx.fold<int>(0, (s, t) => s + (t.type == 'income' ? t.amount : -t.amount));
+        final dayName = dayOnly == today ? 'Hari ini' : dayOnly == yesterday ? 'Kemarin' : DateFormat('EEEE', locale).format(dayOnly);
+        final formattedTotal = '${dayTotal >= 0 ? '+' : '-'}${fmt.format(dayTotal.abs())}';
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(dayName, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                  Text(formattedTotal, style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: dayTotal >= 0 ? AppColors.teal : AppColors.rose)),
+                ],
+              ),
             ),
-          ),
-        ...txList.map((t) => _buildTxTile(t, catMap, fmt, colors)),
-      ],
+            ...dayTx.map((t) => _buildTxTile(t, catMap, fmt, colors)),
+          ],
+        );
+      }).toList(),
     );
   }
 
@@ -433,160 +406,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           const SizedBox(height: 16),
           Text(l10n.noTransactions, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
-      ),
-    );
-  }
-
-  void _showFilterSheet(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Filter Transaksi', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: Icon(Icons.category_outlined, color: colors.primary),
-              title: Text(l10n.categoryFilter, style: GoogleFonts.inter(fontSize: 14)),
-              trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showCategoryFilter(context, colors, l10n);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.account_balance_wallet_outlined, color: colors.primary),
-              title: Text(l10n.accountFilter, style: GoogleFonts.inter(fontSize: 14)),
-              trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showAccountFilter(context, colors, l10n);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.calendar_today_outlined, color: colors.primary),
-              title: Text(l10n.periodFilter, style: GoogleFonts.inter(fontSize: 14)),
-              trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showPeriodFilter(context, colors, l10n);
-              },
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  setState(() {
-                    _searchQuery = '';
-                    _filterType = 'all';
-                    _selectedDate = DateTime.now();
-                  });
-                },
-                child: Text(l10n.resetFilters, style: GoogleFonts.inter(color: colors.primary)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showCategoryFilter(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
-    final categoriesAsync = ref.read(categoriesNotifierProvider);
-    if (!categoriesAsync.hasValue) return;
-    final cats = categoriesAsync.value!;
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.selectCategory, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            ...cats.map((c) => ListTile(
-              title: Text(c.name, style: GoogleFonts.inter(fontSize: 14)),
-              onTap: () {
-                Navigator.pop(ctx);
-                setState(() {
-                  _searchQuery = c.name.toLowerCase();
-                  _filterType = 'all';
-                });
-              },
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAccountFilter(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
-    final accountsAsync = ref.read(accountsNotifierProvider);
-    if (!accountsAsync.hasValue) return;
-    final accounts = accountsAsync.value!;
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.selectAccount, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            ...accounts.map((a) => ListTile(
-              title: Text(a.name, style: GoogleFonts.inter(fontSize: 14)),
-              onTap: () {
-                Navigator.pop(ctx);
-                setState(() {
-                  _searchQuery = a.name.toLowerCase();
-                  _filterType = 'all';
-                });
-              },
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showPeriodFilter(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
-    final now = DateTime.now();
-    final periods = <(String, DateTime, DateTime)>[
-      (l10n.thisMonth, DateTime(now.year, now.month, 1), now),
-      ('7 hari terakhir', now.subtract(const Duration(days: 7)), now),
-      ('30 hari terakhir', now.subtract(const Duration(days: 30)), now),
-      ('Bulan lalu', DateTime(now.month == 1 ? now.year - 1 : now.year, now.month == 1 ? 12 : now.month - 1, 1), DateTime(now.year, now.month, 0)),
-      ('Tahun ini', DateTime(now.year, 1, 1), now),
-    ];
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.periodFilter, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            ...periods.map((p) => ListTile(
-              title: Text(p.$1, style: GoogleFonts.inter(fontSize: 14)),
-              onTap: () {
-                Navigator.pop(ctx);
-                setState(() {
-                  _searchQuery = '';
-                  _filterType = 'all';
-                });
-              },
-            )),
-          ],
-        ),
       ),
     );
   }

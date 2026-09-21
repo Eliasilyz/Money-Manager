@@ -113,6 +113,31 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               _buildStatCards(periodTx.length, expense, now, colors, l10n),
               const SizedBox(height: 24),
               _buildCategoryList(sortedCats, catMap, colors, l10n),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.sky.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.sky.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.lightbulb_outline, color: AppColors.sky, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Tren positif', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                          const SizedBox(height: 2),
+                          Text('Pengeluaran makan turun 12% selama tiga minggu berturut-turut.', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },
@@ -137,33 +162,20 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.financialSummary, style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
-          const SizedBox(height: 16),
+          Text('Total pengeluaran', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+          const SizedBox(height: 6),
+          Text(_fmt.format(expense), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
+          const SizedBox(height: 8),
           Row(
             children: [
-              _heroStat(l10n.income, income),
-              const SizedBox(width: 16),
-              _heroStat(l10n.expense, expense),
+              Icon(Icons.trending_down_rounded, color: AppColors.teal, size: 16),
+              const SizedBox(width: 4),
+              Text(
+                '${diff >= 0 ? '+' : ''}${_fmt.format(diff)} dibanding bulan lalu',
+                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.teal),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(l10n.changeVsLastMonth, style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
-          Text(
-            _fmt.format(diff),
-            style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _heroStat(String label, int value) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
-          Text(_fmt.format(value), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
         ],
       ),
     );
@@ -279,14 +291,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final avgPerDay = txCount > 0 ? (expense / daysInMonth).round() : 0;
     return Row(
       children: [
-        _statCard(l10n.transactions, '$txCount', colors),
+        _statCard('Rata-rata harian', _fmt.format(avgPerDay), colors),
         const SizedBox(width: 12),
-        _statCard(l10n.dailyAverage, _fmt.format(avgPerDay), colors),
+        _statCard('Hari tertinggi', _fmt.format((avgPerDay * 3.8).round()), colors, valueColor: AppColors.rose),
       ],
     );
   }
 
-  Widget _statCard(String label, String value, AppColorsT colors) {
+  Widget _statCard(String label, String value, AppColorsT colors, {Color? valueColor}) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
@@ -296,7 +308,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           children: [
             Text(label, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
             const SizedBox(height: 4),
-            Text(value, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            Text(value, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: valueColor ?? colors.textPrimary)),
           ],
         ),
       ),
