@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
+import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -23,39 +25,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   String _filterType = 'Semua';
   bool _showSearch = false;
   final _searchCtrl = TextEditingController();
-
-  static const _categoryIcons = <String, IconData>{
-    'makan': Icons.restaurant_rounded,
-    'minum': Icons.local_cafe_rounded,
-    'belanja': Icons.shopping_bag_rounded,
-    'transportasi': Icons.directions_car_rounded,
-    'rumah': Icons.home_rounded,
-    'hiburan': Icons.movie_rounded,
-    'kesehatan': Icons.favorite_rounded,
-    'pendidikan': Icons.school_rounded,
-  };
-
-  static const _categoryBgColors = <String, Color>{
-    'makan': Color(0xFFE1F1EA),
-    'minum': Color(0xFFE8F0FA),
-    'belanja': Color(0xFFFEF3E2),
-    'transportasi': Color(0xFFFBE7E7),
-    'rumah': Color(0xFFEFECFA),
-    'hiburan': Color(0xFFE1F1EA),
-    'kesehatan': Color(0xFFFBE7E7),
-    'pendidikan': Color(0xFFE8F0FA),
-  };
-
-  static const _categoryFgColors = <String, Color>{
-    'makan': Color(0xFF1B6E4B),
-    'minum': Color(0xFF3B82F6),
-    'belanja': Color(0xFFF59E0B),
-    'transportasi': Color(0xFFE0524A),
-    'rumah': Color(0xFF8B5CF6),
-    'hiburan': Color(0xFF1B6E4B),
-    'kesehatan': Color(0xFFE0524A),
-    'pendidikan': Color(0xFF3B82F6),
-  };
 
   @override
   void dispose() {
@@ -115,7 +84,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         tooltip: 'Cari',
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () => _showFilterSheet(context, colors),
                         icon: Icon(Icons.filter_list_rounded, color: colors.textSecondary, size: 22),
                         tooltip: 'Filter',
                       ),
@@ -306,59 +275,97 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 
   Widget _buildTxTile(Transaction t, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors) {
     final isIncome = t.type == 'income';
-    final color = isIncome ? AppColors.teal : AppColors.rose;
-    final sign = isIncome ? '+' : '-';
     final cat = catMap[t.categoryId];
     final catName = cat?.name ?? '';
-
-    String iconKey = catName.toLowerCase();
-    IconData icon = Icons.receipt_long_rounded;
-    Color bgColor = const Color(0xFFE1F1EA);
-    Color fgColor = const Color(0xFF1B6E4B);
-    for (final entry in _categoryIcons.entries) {
-      if (iconKey.contains(entry.key)) {
-        icon = entry.value;
-        bgColor = _categoryBgColors[entry.key] ?? bgColor;
-        fgColor = _categoryFgColors[entry.key] ?? fgColor;
-        break;
-      }
-    }
+    final sign = isIncome ? '+' : '-';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
+      child: TransactionTile(
+        amount: '$sign${fmt.format(t.amount)}',
+        isIncome: isIncome,
+        date: t.date,
+        categoryName: catName.isNotEmpty ? catName : null,
+        note: t.note,
+        description: t.description,
+        isTransfer: t.transferId != null,
+        onTap: () => _showTransactionDetail(t, catName, fmt, colors),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, color: fgColor, size: 18),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+
+  void _showTransactionDetail(Transaction t, String catName, NumberFormat fmt, AppColorsT colors) {
+    final isIncome = t.type == 'income';
+    final sign = isIncome ? '+' : '-';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  (t.description != null && t.description!.isNotEmpty) ? t.description! : catName,
-                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary),
+                Text('Detail Transaksi', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+                IconButton(onPressed: () => Navigator.pop(ctx), icon: Icon(Icons.close, color: colors.textSecondary)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '$sign${fmt.format(t.amount)}',
+              style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: isIncome ? AppColors.teal : AppColors.rose),
+            ),
+            const SizedBox(height: 16),
+            _detailRow('Tipe', isIncome ? 'Pemasukan' : 'Pengeluaran', colors),
+            if (catName.isNotEmpty) _detailRow('Kategori', catName, colors),
+            if (t.description != null && t.description!.isNotEmpty) _detailRow('Deskripsi', t.description!, colors),
+            if (t.note != null && t.note!.isNotEmpty) _detailRow('Catatan', t.note!, colors),
+            _detailRow('Tanggal', DateFormat('dd MMMM yyyy • HH:mm', 'id').format(t.date), colors),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      context.push('/add-transaction');
+                    },
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: Text('Edit', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                  ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '${catName.isNotEmpty ? catName : 'Lainnya'} • ${DateFormat('HH:mm').format(t.date)}',
-                  style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () => Navigator.pop(ctx),
+                    icon: const Icon(Icons.delete_outline, size: 18),
+                    label: Text('Hapus', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                    style: FilledButton.styleFrom(backgroundColor: AppColors.rose),
+                  ),
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value, AppColorsT colors) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
           ),
-          Text(
-            '$sign${fmt.format(t.amount)}',
-            style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: color),
+          Expanded(
+            child: Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary)),
           ),
         ],
       ),
@@ -378,6 +385,160 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           const SizedBox(height: 16),
           Text('Belum ada transaksi', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
+      ),
+    );
+  }
+
+  void _showFilterSheet(BuildContext context, AppColorsT colors) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Filter Transaksi', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: Icon(Icons.category_outlined, color: colors.primary),
+              title: Text('Kategori', style: GoogleFonts.inter(fontSize: 14)),
+              trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showCategoryFilter(context, colors);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.account_balance_wallet_outlined, color: colors.primary),
+              title: Text('Akun', style: GoogleFonts.inter(fontSize: 14)),
+              trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showAccountFilter(context, colors);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today_outlined, color: colors.primary),
+              title: Text('Periode', style: GoogleFonts.inter(fontSize: 14)),
+              trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showPeriodFilter(context, colors);
+              },
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  setState(() {
+                    _searchQuery = '';
+                    _filterType = 'Semua';
+                    _selectedDate = DateTime.now();
+                  });
+                },
+                child: Text('Reset filter', style: GoogleFonts.inter(color: colors.primary)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCategoryFilter(BuildContext context, AppColorsT colors) {
+    final categoriesAsync = ref.read(categoriesNotifierProvider);
+    if (!categoriesAsync.hasValue) return;
+    final cats = categoriesAsync.value!;
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Pilih Kategori', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            ...cats.map((c) => ListTile(
+              title: Text(c.name, style: GoogleFonts.inter(fontSize: 14)),
+              onTap: () {
+                Navigator.pop(ctx);
+                setState(() {
+                  _searchQuery = c.name.toLowerCase();
+                  _filterType = 'Semua';
+                });
+              },
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAccountFilter(BuildContext context, AppColorsT colors) {
+    final accountsAsync = ref.read(accountsNotifierProvider);
+    if (!accountsAsync.hasValue) return;
+    final accounts = accountsAsync.value!;
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Pilih Akun', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            ...accounts.map((a) => ListTile(
+              title: Text(a.name, style: GoogleFonts.inter(fontSize: 14)),
+              onTap: () {
+                Navigator.pop(ctx);
+                setState(() {
+                  _searchQuery = a.name.toLowerCase();
+                  _filterType = 'Semua';
+                });
+              },
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showPeriodFilter(BuildContext context, AppColorsT colors) {
+    final now = DateTime.now();
+    final periods = <(String, DateTime, DateTime)>[
+      ('Bulan ini', DateTime(now.year, now.month, 1), now),
+      ('7 hari terakhir', now.subtract(const Duration(days: 7)), now),
+      ('30 hari terakhir', now.subtract(const Duration(days: 30)), now),
+      ('Bulan lalu', DateTime(now.month == 1 ? now.year - 1 : now.year, now.month == 1 ? 12 : now.month - 1, 1), DateTime(now.year, now.month, 0)),
+      ('Tahun ini', DateTime(now.year, 1, 1), now),
+    ];
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Pilih Periode', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            ...periods.map((p) => ListTile(
+              title: Text(p.$1, style: GoogleFonts.inter(fontSize: 14)),
+              onTap: () {
+                Navigator.pop(ctx);
+                setState(() {
+                  _searchQuery = '';
+                  _filterType = 'Semua';
+                });
+              },
+            )),
+          ],
+        ),
       ),
     );
   }

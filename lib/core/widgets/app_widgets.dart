@@ -197,7 +197,7 @@ class TintedInfoCard extends StatelessWidget {
 }
 
 class TransactionTile extends StatelessWidget {
-  final String title;
+  final String? title;
   final String? description;
   final String amount;
   final bool isIncome;
@@ -207,10 +207,14 @@ class TransactionTile extends StatelessWidget {
   final String? categoryIcon;
   final VoidCallback? onTap;
   final Color? categoryColor;
+  final bool isTransfer;
+  final String? fromAccountName;
+  final String? toAccountName;
+  final String? note;
 
   const TransactionTile({
     super.key,
-    required this.title,
+    this.title,
     this.description,
     required this.amount,
     required this.isIncome,
@@ -220,7 +224,50 @@ class TransactionTile extends StatelessWidget {
     this.categoryIcon,
     this.onTap,
     this.categoryColor,
+    this.isTransfer = false,
+    this.fromAccountName,
+    this.toAccountName,
+    this.note,
   });
+
+  String _resolvedTitle() {
+    if (title != null && title!.isNotEmpty) return title!;
+    if (isTransfer) {
+      final from = fromAccountName ?? '?';
+      final to = toAccountName ?? '?';
+      return 'Transfer: $from → $to';
+    }
+    if (note != null && note!.isNotEmpty) return note!;
+    if (categoryName != null && categoryName!.isNotEmpty) return categoryName!;
+    return isIncome ? 'Pemasukan' : 'Pengeluaran';
+  }
+
+  String _resolvedSubtitle() {
+    final parts = <String>[];
+    if (isTransfer) {
+      final from = fromAccountName ?? '?';
+      final to = toAccountName ?? '?';
+      parts.add('$from → $to');
+    } else {
+      if (categoryName != null && categoryName!.isNotEmpty) parts.add(categoryName!);
+      if (accountName != null && accountName!.isNotEmpty) parts.add(accountName!);
+    }
+    parts.add(_formatDate(date));
+    return parts.where((p) => p.isNotEmpty).join(' • ');
+  }
+
+  static String _formatDate(DateTime? d) {
+    if (d == null) return '';
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final txDay = DateTime(d.year, d.month, d.day);
+    final timeStr = '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+
+    if (txDay == today) return 'Hari ini • $timeStr';
+    if (txDay == today.subtract(const Duration(days: 1))) return 'Kemarin • $timeStr';
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    return '${d.day} ${months[d.month - 1]} ${d.year.toString().substring(2)} • $timeStr';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,23 +280,23 @@ class TransactionTile extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         leading: Container(
           width: 38, height: 38,
-          decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-          child: Icon(isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded, color: color, size: 18),
+          decoration: BoxDecoration(
+            color: (categoryColor ?? color).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            isTransfer
+                ? Icons.swap_horiz_rounded
+                : (isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded),
+            color: categoryColor ?? color,
+            size: 18,
+          ),
         ),
-        title: Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary)),
-        subtitle: categoryName != null || accountName != null || date != null
-            ? Text('${categoryName ?? ''} • ${accountName ?? ''} • ${_formatDate(date)}',
-                 style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary))
-            : null,
+        title: Text(_resolvedTitle(), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text(_resolvedSubtitle(), style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
         trailing: Text(amount, style: GoogleFonts.jetBrainsMono(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
       ),
     );
-  }
-
-  String _formatDate(DateTime? d) {
-    if (d == null) return '';
-    final months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-    return '${d.day} ${months[d.month-1]} ${d.hour.toString().padLeft(2,'0')}:${d.minute.toString().padLeft(2,'0')}';
   }
 }
 

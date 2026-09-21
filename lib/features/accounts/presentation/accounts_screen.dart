@@ -26,6 +26,14 @@ class AccountsScreen extends ConsumerWidget {
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'accounts_fab',
+        onPressed: () => context.push('/add-account'),
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add, size: 26),
+      ),
       body: SafeArea(
         child: accountsAsync.when(
           data: (accounts) {
@@ -55,23 +63,9 @@ class AccountsScreen extends ConsumerWidget {
                     ),
                     Row(
                       children: [
-                        FilledButton.icon(
-                          onPressed: () => context.push('/add-account'),
-                          icon: const Icon(Icons.add, size: 16),
-                          label: Text('Tambah', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.gold,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.filter_list_rounded, color: colors.textSecondary, size: 22),
-                          tooltip: 'Filter',
+                        TextButton(
+                          onPressed: () => context.push('/categories'),
+                          child: Text('Kelola', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                         ),
                       ],
                     ),
@@ -87,7 +81,7 @@ class AccountsScreen extends ConsumerWidget {
                   children: [
                     Text('Daftar akun', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => context.push('/categories'),
                       child: Text('Kelola', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                     ),
                   ],
@@ -199,7 +193,7 @@ class AccountsScreen extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(
           child: GestureDetector(
-            onTap: () {},
+            onTap: () => context.push('/add-transfer'),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(

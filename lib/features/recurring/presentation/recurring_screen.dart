@@ -25,23 +25,14 @@ class RecurringScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Transaksi Berulang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: FilledButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.add, size: 16),
-              label: Text('Tambah', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600)),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.gold,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
-          ),
-        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'recurring_fab',
+        onPressed: () {},
+        backgroundColor: AppColors.gold,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        child: const Icon(Icons.add, size: 26),
       ),
       body: asyncItems.when(
         data: (items) {

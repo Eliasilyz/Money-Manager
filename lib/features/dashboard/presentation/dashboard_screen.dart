@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
+import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
@@ -35,6 +36,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         child: dashboardAsync.when(
           data: (data) {
             final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+            final categoriesAsync = ref.watch(categoriesNotifierProvider);
+            final catMap = categoriesAsync.whenOrNull(data: (cats) => {for (final c in cats) c.id: c}) ?? {};
+            final accountMap = {for (final a in data.accounts) a.id: a};
             return RefreshIndicator(
               onRefresh: () async => ref.invalidate(dashboardProvider),
               color: AppColors.gold,
@@ -54,7 +58,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     if (data.recentTransactions.isEmpty)
                       _buildEmpty(context)
                     else
-                      ...data.recentTransactions.map((t) => _buildTxTile(context, t, fmt)),
+                      ...data.recentTransactions.map((t) => _buildTxTile(context, t, fmt, catMap, accountMap)),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -80,7 +84,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         children: [
           Text('$greeting, Rani', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary)),
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.push('/settings'),
             icon: Icon(Icons.notifications_none_outlined, color: colors.textSecondary, size: 22),
             tooltip: 'Notifikasi',
           ),
@@ -157,10 +161,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildQuickActions(BuildContext context) {
     final colors = AppColorsT.of(context);
     final actions = [
-      (Icons.swap_horiz_rounded, 'Transfer'),
-      (Icons.qr_code_scanner_rounded, 'Pindai'),
-      (Icons.savings_outlined, 'Target'),
-      (Icons.bar_chart_rounded, 'Laporan'),
+      (Icons.swap_horiz_rounded, 'Transfer', () => context.push('/add-transfer')),
+      (Icons.account_balance_outlined, 'Anggaran', () => context.push('/budgets')),
+      (Icons.savings_outlined, 'Target', () => context.push('/goals')),
+      (Icons.bar_chart_rounded, 'Statistik', () => context.push('/statistics')),
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -168,7 +172,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         children: actions.map((a) {
           return Expanded(
             child: GestureDetector(
-              onTap: () {},
+              onTap: a.$3,
               child: Column(
                 children: [
                   Container(
@@ -320,11 +324,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildTxTile(BuildContext context, Transaction t, NumberFormat fmt) {
+  Widget _buildTxTile(BuildContext context, Transaction t, NumberFormat fmt, Map<String, dynamic> catMap, Map<String, dynamic> accountMap) {
     final colors = AppColorsT.of(context);
     final isIncome = t.type == 'income';
     final color = isIncome ? AppColors.teal : AppColors.rose;
     final sign = isIncome ? '+' : '-';
+    final cat = catMap[t.categoryId];
+    final catName = cat?.name ?? '';
+    final account = accountMap[t.accountId];
+    final accountName = account?.name ?? '';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -347,12 +355,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  (t.description != null && t.description!.isNotEmpty) ? t.description! : (isIncome ? 'Pemasukan' : 'Pengeluaran'),
+                  _resolveTxTitle(t, catName),
                   style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 2),
                 Text(
-                  DateFormat('HH:mm').format(t.date),
+                  _resolveTxSubtitle(t, catName, accountName),
                   style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -361,6 +374,35 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ],
       ),
     );
+  }
+
+  String _resolveTxTitle(Transaction t, String catName) {
+    if (t.description != null && t.description!.isNotEmpty) return t.description!;
+    if (t.transferId != null) return 'Transfer';
+    if (t.note != null && t.note!.isNotEmpty) return t.note!;
+    if (catName.isNotEmpty) return catName;
+    return t.type == 'income' ? 'Pemasukan' : 'Pengeluaran';
+  }
+
+  String _resolveTxSubtitle(Transaction t, String catName, String accountName) {
+    final time = _formatTxTime(t.date);
+    if (t.transferId != null) return 'Transfer • $time';
+    final parts = <String>[];
+    if (catName.isNotEmpty) parts.add(catName);
+    if (accountName.isNotEmpty) parts.add(accountName);
+    parts.add(time);
+    return parts.join(' • ');
+  }
+
+  String _formatTxTime(DateTime d) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final txDay = DateTime(d.year, d.month, d.day);
+    final timeStr = '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+    if (txDay == today) return 'Hari ini • $timeStr';
+    if (txDay == today.subtract(const Duration(days: 1))) return 'Kemarin • $timeStr';
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    return '${d.day} ${months[d.month - 1]} ${d.year.toString().substring(2)} • $timeStr';
   }
 
   Widget _buildEmpty(BuildContext context) {
