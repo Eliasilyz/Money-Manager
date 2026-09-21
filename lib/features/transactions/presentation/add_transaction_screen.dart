@@ -25,6 +25,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   String? _selectedCategoryId;
   DateTime _selectedDate = DateTime.now();
   bool _saving = false;
+  bool _isRecurring = false;
 
   final _amountCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -72,26 +73,18 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildTypeSelector(colors),
-              const SizedBox(height: 16),
-              _buildAmountCard(colors),
-              const SizedBox(height: 20),
-              _buildFieldLabel('KATEGORI', colors),
-              _buildCategoryDropdown(categoriesAsync, colors),
-              const SizedBox(height: 16),
-              _buildFieldLabel('DARI AKUN', colors),
-              _buildAccountDropdown(accountsAsync, colors),
-              const SizedBox(height: 16),
-              _buildFieldLabel('TANGGAL', colors),
-              _buildDateField(colors),
-              const SizedBox(height: 16),
-              _buildFieldLabel('CATATAN', colors),
-              _buildNoteField(colors),
-              if (_type == 'expense') ...[
-                const SizedBox(height: 20),
-                _buildTransferSection(accountsAsync, colors),
-              ],
               const SizedBox(height: 24),
+              _buildCenteredAmount(colors),
+              const SizedBox(height: 32),
+              _buildFormRow(Icons.category_outlined, 'Kategori', _getCategoryLabel(categoriesAsync), colors, () => _showCategoryPicker(categoriesAsync, colors)),
+              _buildFormRow(Icons.account_balance_wallet_outlined, 'Akun', _getAccountLabel(accountsAsync), colors, () => _showAccountPicker(accountsAsync, colors)),
+              _buildFormRow(Icons.calendar_today_outlined, 'Tanggal', DateFormat('dd MMMM yyyy • HH:mm', 'id').format(_selectedDate), colors, () => _pickDate()),
+              _buildFormRow(Icons.notes_outlined, 'Catatan', _noteCtrl.text.isEmpty ? 'Tambahkan catatan...' : _noteCtrl.text, colors, () => _showNoteDialog(colors)),
+              _buildRecurringRow(colors),
+              const SizedBox(height: 32),
               _buildSaveButton(colors),
+              const SizedBox(height: 12),
+              Text('Anda masih bisa mengedit setelah menyimpan', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary), textAlign: TextAlign.center),
             ],
           ),
         ),
@@ -99,11 +92,26 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     );
   }
 
-  Widget _buildFieldLabel(String label, AppColorsT colors) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Text(label, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.5)),
-    );
+  String _getCategoryLabel(AsyncValue<List<Category>> categoriesAsync) {
+    if (!categoriesAsync.hasValue) return 'Pilih kategori';
+    final filtered = _type == 'income'
+        ? categoriesAsync.value!.where((c) => c.type == 'income').toList()
+        : categoriesAsync.value!.where((c) => c.type == 'expense').toList();
+    if (_selectedCategoryId != null) {
+      final match = filtered.where((c) => c.id == _selectedCategoryId);
+      if (match.isNotEmpty) return match.first.name;
+    }
+    return 'Pilih kategori';
+  }
+
+  String _getAccountLabel(AsyncValue<List<Account>> accountsAsync) {
+    if (!accountsAsync.hasValue) return 'Pilih akun';
+    final active = accountsAsync.value!.where((a) => !a.isArchived).toList();
+    if (_selectedAccountId != null) {
+      final match = active.where((a) => a.id == _selectedAccountId);
+      if (match.isNotEmpty) return match.first.name;
+    }
+    return 'Pilih akun';
   }
 
   Widget _buildTypeSelector(AppColorsT colors) {
@@ -146,213 +154,96 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     );
   }
 
-  Widget _buildAmountCard(AppColorsT colors) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.primaryDark,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Jumlah transaksi', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text('Rp', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.8))),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _amountCtrl,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  style: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w700, color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: '0',
-                    hintStyle: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w700, color: Colors.white.withValues(alpha: 0.3)),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
+  Widget _buildCenteredAmount(AppColorsT colors) {
+    return Column(
+      children: [
+        Text('Nominal', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Rp', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            const SizedBox(width: 4),
+            IntrinsicWidth(
+              child: TextField(
+                controller: _amountCtrl,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(fontSize: 40, fontWeight: FontWeight.w700, color: colors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: '0',
+                  hintStyle: GoogleFonts.outfit(fontSize: 40, fontWeight: FontWeight.w700, color: colors.textSecondary.withValues(alpha: 0.4)),
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryDropdown(AsyncValue<List<Category>> categoriesAsync, AppColorsT colors) {
-    return categoriesAsync.when(
-      data: (categories) {
-        final filtered = _type == 'income'
-            ? categories.where((c) => c.type == 'income').toList()
-            : categories.where((c) => c.type == 'expense').toList();
-        if (filtered.isEmpty) {
-          return _dropdownShell(Icons.category_outlined, 'Belum ada kategori', colors);
-        }
-        return _dropdownShell(
-          Icons.category_outlined,
-          null,
-          colors,
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: filtered.any((c) => c.id == _selectedCategoryId) ? _selectedCategoryId : null,
-              isExpanded: true,
-              dropdownColor: colors.surface,
-              hint: Text('Pilih kategori', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 13)),
-              items: filtered.map((c) => DropdownMenuItem(
-                value: c.id,
-                child: Text(c.name, style: GoogleFonts.inter(color: colors.textPrimary, fontSize: 13)),
-              )).toList(),
-              onChanged: (val) => setState(() => _selectedCategoryId = val),
             ),
-          ),
-        );
-      },
-      loading: () => const LinearProgressIndicator(color: AppColors.gold),
-      error: (e, _) => Text('Error: $e', style: GoogleFonts.inter(color: AppColors.rose)),
-    );
-  }
-
-  Widget _buildAccountDropdown(AsyncValue<List<Account>> accountsAsync, AppColorsT colors) {
-    return accountsAsync.when(
-      data: (accounts) {
-        final active = accounts.where((a) => !a.isArchived).toList();
-        if (active.isEmpty) {
-          return GestureDetector(
-            onTap: () => context.push('/add-account'),
-            child: _dropdownShell(Icons.account_balance_wallet_outlined, 'Belum ada akun · Tambah', colors),
-          );
-        }
-        return _dropdownShell(
-          Icons.account_balance_wallet_outlined,
-          null,
-          colors,
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: active.any((a) => a.id == _selectedAccountId) ? _selectedAccountId : null,
-              isExpanded: true,
-              dropdownColor: colors.surface,
-              hint: Text('Pilih akun', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 13)),
-              items: active.map((a) => DropdownMenuItem(
-                value: a.id,
-                child: Text('${a.name} • ${a.currencyCode}', style: GoogleFonts.inter(color: colors.textPrimary, fontSize: 13)),
-              )).toList(),
-              onChanged: (val) => setState(() => _selectedAccountId = val),
-            ),
-          ),
-        );
-      },
-      loading: () => const LinearProgressIndicator(color: AppColors.gold),
-      error: (e, _) => Text('Error: $e', style: GoogleFonts.inter(color: AppColors.rose)),
-    );
-  }
-
-  Widget _buildDateField(AppColorsT colors) {
-    return GestureDetector(
-      onTap: _pickDate,
-      child: _dropdownShell(
-        Icons.calendar_today_outlined,
-        DateFormat('dd MMMM yyyy • HH:mm').format(_selectedDate),
-        colors,
-      ),
-    );
-  }
-
-  Widget _buildNoteField(AppColorsT colors) {
-    return _dropdownShell(
-      Icons.notes_outlined,
-      null,
-      colors,
-      child: TextField(
-        controller: _noteCtrl,
-        style: GoogleFonts.inter(color: colors.textPrimary, fontSize: 13),
-        maxLines: 2,
-        decoration: InputDecoration(
-          hintText: 'Makan malam bersama keluarga',
-          hintStyle: GoogleFonts.inter(color: colors.textSecondary, fontSize: 12),
-          border: InputBorder.none,
-          isDense: true,
-          contentPadding: EdgeInsets.zero,
+          ],
         ),
-        textCapitalization: TextCapitalization.sentences,
+      ],
+    );
+  }
+
+  Widget _buildFormRow(IconData icon, String label, String value, AppColorsT colors, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: colors.border, width: 0.5)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: colors.textSecondary),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                  const SizedBox(height: 2),
+                  Text(value, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 18, color: colors.textSecondary),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _dropdownShell(IconData icon, String? text, AppColorsT colors, {Widget? child}) {
+  Widget _buildRecurringRow(AppColorsT colors) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.border),
+        border: Border(bottom: BorderSide(color: colors.border, width: 0.5)),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: colors.textSecondary),
-          const SizedBox(width: 12),
+          Icon(Icons.repeat_rounded, size: 20, color: colors.textSecondary),
+          const SizedBox(width: 14),
           Expanded(
-            child: child ?? Text(text ?? '', style: GoogleFonts.inter(fontSize: 13, color: colors.textPrimary)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Transaksi berulang', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                const SizedBox(height: 2),
+                Text(_isRecurring ? 'Aktif' : 'Nonaktif', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary)),
+              ],
+            ),
           ),
-          Icon(Icons.chevron_right, size: 18, color: colors.textSecondary),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTransferSection(AsyncValue<List<Account>> accountsAsync, AppColorsT colors) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Atur transfer antar akun', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _transferChip('Dari', _selectedAccountId, accountsAsync, colors),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Icon(Icons.arrow_forward, color: colors.textSecondary, size: 18),
-              ),
-              _transferChip('Ke', null, accountsAsync, colors),
-            ],
+          Switch(
+            value: _isRecurring,
+            onChanged: (v) => setState(() => _isRecurring = v),
+            activeThumbColor: colors.primary,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _transferChip(String label, String? value, AsyncValue<List<Account>> accountsAsync, AppColorsT colors) {
-    String accountName = 'Pilih akun';
-    if (value != null && accountsAsync.hasValue) {
-      final match = accountsAsync.value!.where((a) => a.id == value);
-      if (match.isNotEmpty) accountName = match.first.name;
-    }
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: colors.primaryDark.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
-            const SizedBox(height: 2),
-            Text(accountName, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textPrimary), overflow: TextOverflow.ellipsis),
-          ],
-        ),
       ),
     );
   }
@@ -363,13 +254,111 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       child: FilledButton(
         onPressed: _saving ? null : _save,
         style: FilledButton.styleFrom(
-          backgroundColor: colors.primaryDark,
+          backgroundColor: colors.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
         child: _saving
             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-            : Text('Simpan transaksi', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
+            : Text('Simpan', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
+      ),
+    );
+  }
+
+  void _showCategoryPicker(AsyncValue<List<Category>> categoriesAsync, AppColorsT colors) {
+    if (!categoriesAsync.hasValue || categoriesAsync.value!.isEmpty) return;
+    final filtered = _type == 'income'
+        ? categoriesAsync.value!.where((c) => c.type == 'income').toList()
+        : categoriesAsync.value!.where((c) => c.type == 'expense').toList();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Pilih Kategori', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            ...filtered.map((c) => ListTile(
+              title: Text(c.name, style: GoogleFonts.inter(fontSize: 14)),
+              trailing: _selectedCategoryId == c.id ? Icon(Icons.check, color: colors.primary) : null,
+              onTap: () {
+                setState(() => _selectedCategoryId = c.id);
+                Navigator.pop(ctx);
+              },
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAccountPicker(AsyncValue<List<Account>> accountsAsync, AppColorsT colors) {
+    if (!accountsAsync.hasValue || accountsAsync.value!.isEmpty) return;
+    final active = accountsAsync.value!.where((a) => !a.isArchived).toList();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Pilih Akun', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            ...active.map((a) => ListTile(
+              title: Text(a.name, style: GoogleFonts.inter(fontSize: 14)),
+              subtitle: Text(a.currencyCode, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+              trailing: _selectedAccountId == a.id ? Icon(Icons.check, color: colors.primary) : null,
+              onTap: () {
+                setState(() => _selectedAccountId = a.id);
+                Navigator.pop(ctx);
+              },
+            )),
+            ListTile(
+              leading: Icon(Icons.add, color: colors.primary),
+              title: Text('Tambah akun baru', style: GoogleFonts.inter(fontSize: 14, color: colors.primary)),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.push('/add-account');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showNoteDialog(AppColorsT colors) {
+    final ctrl = TextEditingController(text: _noteCtrl.text);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Catatan', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        content: TextField(
+          controller: ctrl,
+          maxLines: 3,
+          style: GoogleFonts.inter(fontSize: 14),
+          decoration: InputDecoration(
+            hintText: 'Makan malam bersama keluarga',
+            hintStyle: GoogleFonts.inter(color: colors.textSecondary, fontSize: 13),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          textCapitalization: TextCapitalization.sentences,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          FilledButton(
+            onPressed: () {
+              setState(() => _noteCtrl.text = ctrl.text);
+              Navigator.pop(ctx);
+            },
+            child: const Text('Simpan'),
+          ),
+        ],
       ),
     );
   }

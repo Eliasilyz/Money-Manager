@@ -21,6 +21,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   DateTime _selectedDate = DateTime.now();
   String _searchQuery = '';
   String _filterType = 'Semua';
+  bool _showSearch = false;
   final _searchCtrl = TextEditingController();
 
   static const _categoryIcons = <String, IconData>{
@@ -87,51 +88,71 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                       Text('Semua aktivitas keuangan', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                     ],
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.more_vert, color: colors.textSecondary, size: 20),
-                    tooltip: 'Opsi lain',
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => setState(() => _showSearch = !_showSearch),
+                        icon: Icon(Icons.search, color: colors.textSecondary, size: 22),
+                        tooltip: 'Cari',
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.filter_list_rounded, color: colors.textSecondary, size: 22),
+                        tooltip: 'Filter',
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-              child: TextField(
-                controller: _searchCtrl,
-                onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
-                decoration: InputDecoration(
-                  hintText: 'Cari transaksi atau catatan...',
-                  prefixIcon: Icon(Icons.search, color: colors.textSecondary, size: 20),
-                  filled: true,
-                  fillColor: colors.surface,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.primary, width: 1.5)),
+            if (_showSearch)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: TextField(
+                  controller: _searchCtrl,
+                  onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Cari transaksi atau catatan...',
+                    prefixIcon: Icon(Icons.search, color: colors.textSecondary, size: 20),
+                    filled: true,
+                    fillColor: colors.surface,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.border)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: colors.primary, width: 1.5)),
+                  ),
                 ),
               ),
-            ),
             const SizedBox(height: 12),
             SizedBox(
               height: 36,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: ['Semua', 'Kategori', 'Akun', 'Periode'].map((f) {
+                children: ['Semua', 'Kategori', 'Akun', 'Kalender'].map((f) {
                   final selected = _filterType == f;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
                       onTap: () => setState(() => _filterType = f),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: selected ? colors.primary : colors.surface,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: selected ? colors.primary : colors.border),
                         ),
-                        child: Text(f, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(f, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
+                            if (f != 'Semua') ...[
+                              const SizedBox(width: 4),
+                              Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: selected ? Colors.white : colors.textSecondary),
+                            ],
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -241,6 +262,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
       children: [
+        _buildInsightCard(txList, catMap, fmt, colors),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Row(
@@ -256,6 +278,65 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         ),
         ...txList.map((t) => _buildTxTile(t, catMap, fmt, colors)),
       ],
+    );
+  }
+
+  Widget _buildInsightCard(List<Transaction> txList, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors) {
+    if (txList.isEmpty) return const SizedBox.shrink();
+    final expenseTx = txList.where((t) => t.type == 'expense').toList();
+    if (expenseTx.isEmpty) return const SizedBox.shrink();
+    final totalExpense = expenseTx.fold<int>(0, (s, t) => s + t.amount);
+    if (totalExpense == 0) return const SizedBox.shrink();
+
+    final catTotals = <String, int>{};
+    for (final t in expenseTx) {
+      final catName = catMap[t.categoryId]?.name ?? 'Lainnya';
+      catTotals[catName] = (catTotals[catName] ?? 0) + t.amount;
+    }
+    final topCat = catTotals.entries.reduce((a, b) => a.value > b.value ? a : b);
+    final pct = ((topCat.value / totalExpense) * 100).round();
+
+    String iconKey = topCat.key.toLowerCase();
+    IconData icon = Icons.receipt_long_rounded;
+    Color bgColor = const Color(0xFFE1F1EA);
+    Color fgColor = const Color(0xFF1B6E4B);
+    for (final entry in _categoryIcons.entries) {
+      if (iconKey.contains(entry.key)) {
+        icon = entry.value;
+        bgColor = _categoryBgColors[entry.key] ?? bgColor;
+        fgColor = _categoryFgColors[entry.key] ?? fgColor;
+        break;
+      }
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40, height: 40,
+            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: fgColor, size: 18),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${topCat.key} paling besar', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                Text('$pct% dari total pengeluaran', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+              ],
+            ),
+          ),
+          Text(fmt.format(topCat.value), style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.rose)),
+        ],
+      ),
     );
   }
 

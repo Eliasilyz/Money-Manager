@@ -8,11 +8,18 @@ import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  bool _showBalance = true;
+
+  @override
+  Widget build(BuildContext context) {
     final dashboardAsync = ref.watch(dashboardProvider);
 
     return Scaffold(
@@ -39,7 +46,7 @@ class DashboardScreen extends ConsumerWidget {
                     _buildHeader(context),
                     _buildBalanceCard(context, data, fmt),
                     const SizedBox(height: 16),
-                    _buildQuickStats(context, data, fmt),
+                    _buildQuickActions(context),
                     const SizedBox(height: 24),
                     _buildCashFlow(context, data, fmt),
                     const SizedBox(height: 24),
@@ -64,8 +71,6 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildHeader(BuildContext context) {
     final colors = AppColorsT.of(context);
     final now = DateTime.now();
-    final dateBadge = DateFormat('MMM yyyy', 'id').format(now);
-    final dayDate = DateFormat('EEEE, d MMMM', 'id').format(now);
     final greeting = now.hour < 12 ? 'Selamat pagi' : now.hour < 17 ? 'Selamat siang' : 'Selamat malam';
 
     return Padding(
@@ -73,20 +78,11 @@ class DashboardScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('$greeting, Elon', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-              Text(dayDate, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(dateBadge, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+          Text('$greeting, Rani', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.notifications_none_outlined, color: colors.textSecondary, size: 22),
+            tooltip: 'Notifikasi',
           ),
         ],
       ),
@@ -110,15 +106,27 @@ class DashboardScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total saldo', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.7))),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Total saldo', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.7))),
+              GestureDetector(
+                onTap: () => setState(() => _showBalance = !_showBalance),
+                child: Icon(_showBalance ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.white.withValues(alpha: 0.7), size: 18),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
-          Text(fmt.format(data.totalBalance), style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.w700, color: Colors.white)),
+          Text(
+            _showBalance ? fmt.format(data.totalBalance) : 'Rp ********',
+            style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.w700, color: Colors.white),
+          ),
           const SizedBox(height: 16),
           Row(
             children: [
-              _heroMiniStat(Icons.arrow_downward_rounded, 'Pemasukan bulan ini', fmt.format(data.totalIncome)),
+              _heroMiniStat(AppColors.teal, 'Pemasukan bulan ini', fmt.format(data.totalIncome)),
               const SizedBox(width: 20),
-              _heroMiniStat(Icons.arrow_upward_rounded, 'Pengeluaran', fmt.format(data.totalExpenses)),
+              _heroMiniStat(AppColors.rose, 'Pengeluaran bulan ini', fmt.format(data.totalExpenses)),
             ],
           ),
         ],
@@ -126,11 +134,11 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _heroMiniStat(IconData icon, String label, String value) {
+  Widget _heroMiniStat(Color dotColor, String label, String value) {
     return Expanded(
       child: Row(
         children: [
-          Icon(icon, color: Colors.white.withValues(alpha: 0.7), size: 14),
+          Container(width: 8, height: 8, decoration: BoxDecoration(color: dotColor, borderRadius: BorderRadius.circular(4))),
           const SizedBox(width: 6),
           Expanded(
             child: Column(
@@ -146,49 +154,39 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickStats(BuildContext context, DashboardData data, NumberFormat fmt) {
-    final now = DateTime.now();
-    final today = data.recentTransactions.where((t) =>
-        t.date.year == now.year && t.date.month == now.month && t.date.day == now.day);
-    final todayAmount = today.fold<int>(0, (sum, t) => sum + (t.type == 'income' ? t.amount : -t.amount));
-
+  Widget _buildQuickActions(BuildContext context) {
+    final colors = AppColorsT.of(context);
+    final actions = [
+      (Icons.swap_horiz_rounded, 'Transfer'),
+      (Icons.qr_code_scanner_rounded, 'Pindai'),
+      (Icons.savings_outlined, 'Target'),
+      (Icons.bar_chart_rounded, 'Laporan'),
+    ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
-        children: [
-          _statBox(context, 'Hari ini', fmt.format(todayAmount.abs()), AppColors.teal),
-          const SizedBox(width: 10),
-          _statBox(context, 'Bulan ini', fmt.format(data.totalExpenses), AppColors.gold),
-          const SizedBox(width: 10),
-          _statBox(context, 'Total', fmt.format(data.totalBalance), AppColors.lilac),
-        ],
-      ),
-    );
-  }
-
-  Widget _statBox(BuildContext context, String label, String value, Color accent) {
-    final colors = AppColorsT.of(context);    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(width: 8, height: 8, decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(4))),
-                const SizedBox(width: 6),
-                Text(label, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
-              ],
+        children: actions.map((a) {
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {},
+              child: Column(
+                children: [
+                  Container(
+                    width: 48, height: 48,
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
+                    ),
+                    child: Icon(a.$1, color: colors.primary, size: 22),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(a.$2, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(value, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary), overflow: TextOverflow.ellipsis),
-          ],
-        ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -225,7 +223,10 @@ class DashboardScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Arus kas', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                Text('${months.length} bulan', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                GestureDetector(
+                  onTap: () => context.push('/statistics'),
+                  child: Text('Lihat semua', style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -258,7 +259,7 @@ class DashboardScreen extends ConsumerWidget {
                                   child: Container(
                                     height: maxVal > 0 ? (expenses[i] / maxVal * 80) : 0,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFF59E0B),
+                                      color: AppColors.rose.withValues(alpha: 0.8),
                                       borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                                     ),
                                   ),
@@ -281,7 +282,7 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 _legendDot(AppColors.teal.withValues(alpha: 0.7), 'Pemasukan'),
                 const SizedBox(width: 16),
-                _legendDot(const Color(0xFFF59E0B), 'Pengeluaran'),
+                _legendDot(AppColors.rose.withValues(alpha: 0.8), 'Pengeluaran'),
               ],
             ),
           ],
