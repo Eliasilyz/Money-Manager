@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class ScreenHeader extends StatelessWidget {
@@ -56,9 +58,8 @@ class MonthPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
-    final months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    final label = '${months[month.month - 1]} ${month.year}';
+    final locale = Localizations.localeOf(context).languageCode;
+    final label = DateFormat('MMMM yyyy', locale).format(month);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -242,7 +243,7 @@ class TransactionTile extends StatelessWidget {
     return isIncome ? 'Pemasukan' : 'Pengeluaran';
   }
 
-  String _resolvedSubtitle() {
+  String _resolvedSubtitle(String locale) {
     final parts = <String>[];
     if (isTransfer) {
       final from = fromAccountName ?? '?';
@@ -252,11 +253,11 @@ class TransactionTile extends StatelessWidget {
       if (categoryName != null && categoryName!.isNotEmpty) parts.add(categoryName!);
       if (accountName != null && accountName!.isNotEmpty) parts.add(accountName!);
     }
-    parts.add(_formatDate(date));
+    parts.add(_formatDate(date, locale));
     return parts.where((p) => p.isNotEmpty).join(' • ');
   }
 
-  static String _formatDate(DateTime? d) {
+  static String _formatDate(DateTime? d, [String locale = 'id']) {
     if (d == null) return '';
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -265,14 +266,15 @@ class TransactionTile extends StatelessWidget {
 
     if (txDay == today) return 'Hari ini • $timeStr';
     if (txDay == today.subtract(const Duration(days: 1))) return 'Kemarin • $timeStr';
-    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-    return '${d.day} ${months[d.month - 1]} ${d.year.toString().substring(2)} • $timeStr';
+    final monthStr = DateFormat('MMM', locale).format(d);
+    return '${d.day} $monthStr ${d.year.toString().substring(2)} • $timeStr';
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
     final color = isIncome ? colors.income : colors.expense;
+    final locale = Localizations.localeOf(context).languageCode;
 
     return Card(
       child: ListTile(
@@ -293,7 +295,7 @@ class TransactionTile extends StatelessWidget {
           ),
         ),
         title: Text(_resolvedTitle(), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(_resolvedSubtitle(), style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text(_resolvedSubtitle(locale), style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
         trailing: Text(amount, style: GoogleFonts.jetBrainsMono(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
       ),
     );
@@ -383,6 +385,7 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return NavigationBar(
       backgroundColor: const Color(0xFF0E3B2B),
       indicatorColor: Colors.white.withValues(alpha: 0.15),
@@ -390,11 +393,11 @@ class AppBottomNav extends StatelessWidget {
       onDestinationSelected: (index) => navigationShell.goBranch(index),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       height: 64,
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.home_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.home, color: Colors.white), label: 'Beranda'),
-        NavigationDestination(icon: Icon(Icons.receipt_long_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.receipt_long, color: Colors.white), label: 'Transaksi'),
-        NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.account_balance_wallet, color: Colors.white), label: 'Akun'),
-        NavigationDestination(icon: Icon(Icons.more_horiz_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.more_horiz, color: Colors.white), label: 'Lainnya'),
+      destinations: [
+        NavigationDestination(icon: const Icon(Icons.home_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.home, color: Colors.white), label: l10n.dashboard),
+        NavigationDestination(icon: const Icon(Icons.receipt_long_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.receipt_long, color: Colors.white), label: l10n.transactions),
+        NavigationDestination(icon: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.account_balance_wallet, color: Colors.white), label: l10n.accounts),
+        NavigationDestination(icon: const Icon(Icons.more_horiz_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.more_horiz, color: Colors.white), label: l10n.settings),
       ],
     );
   }

@@ -17,6 +17,7 @@ class DriftCategoryRepository implements ICategoryRepository {
           icon: c.icon,
           type: c.type,
           parentId: c.parentId,
+          systemKey: c.systemKey,
           createdAt: c.createdAt,
           updatedAt: c.updatedAt,
         )).toList();
@@ -31,6 +32,7 @@ class DriftCategoryRepository implements ICategoryRepository {
                 icon: c.icon,
                 type: c.type,
                 parentId: c.parentId,
+                systemKey: c.systemKey,
                 createdAt: c.createdAt,
                 updatedAt: c.updatedAt,
               )).toList());
@@ -44,6 +46,7 @@ class DriftCategoryRepository implements ICategoryRepository {
                 icon: c.icon,
                 type: c.type,
                 parentId: c.parentId,
+                systemKey: c.systemKey,
                 createdAt: c.createdAt,
                 updatedAt: c.updatedAt,
               )).toList());
@@ -57,6 +60,7 @@ class DriftCategoryRepository implements ICategoryRepository {
         icon: Value(category.icon),
         type: Value(category.type),
         parentId: Value(category.parentId),
+        systemKey: Value(category.systemKey),
         createdAt: Value(category.createdAt),
         updatedAt: Value(category.updatedAt),
       ),
@@ -72,6 +76,7 @@ class DriftCategoryRepository implements ICategoryRepository {
         icon: Value(category.icon),
         type: Value(category.type),
         parentId: Value(category.parentId),
+        systemKey: Value(category.systemKey),
         createdAt: Value(category.createdAt),
         updatedAt: Value(category.updatedAt),
       ),
@@ -94,6 +99,7 @@ class DriftCategoryRepository implements ICategoryRepository {
       icon: match.icon,
       type: match.type,
       parentId: match.parentId,
+      systemKey: match.systemKey,
       createdAt: match.createdAt,
       updatedAt: match.updatedAt,
     );

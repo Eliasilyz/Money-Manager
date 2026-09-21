@@ -521,14 +521,14 @@ abstract class AppLocalizations {
   /// No description provided for @noBudgets.
   ///
   /// In id, this message translates to:
-  /// **'Belum ada anggaran'**
+  /// **'Belum ada budget'**
   String get noBudgets;
 
-  /// No description provided for @targetAndDebtsTitle.
+  /// No description provided for @goalsAndDebtsTitle.
   ///
   /// In id, this message translates to:
   /// **'Target & Hutang'**
-  String get targetAndDebtsTitle;
+  String get goalsAndDebtsTitle;
 
   /// No description provided for @financialPlan.
   ///
@@ -695,8 +695,8 @@ abstract class AppLocalizations {
   /// No description provided for @changeVsLastMonth.
   ///
   /// In id, this message translates to:
-  /// **'{percent}% dibanding {lastMonth}'**
-  String changeVsLastMonth(Object lastMonth, Object percent);
+  /// **'Selisih vs bulan lalu'**
+  String get changeVsLastMonth;
 
   /// No description provided for @decrease.
   ///
@@ -1271,8 +1271,146 @@ abstract class AppLocalizations {
   /// No description provided for @monthYear.
   ///
   /// In id, this message translates to:
-  /// **'{month} {year}'**
-  String monthYear(Object month, Object year);
+  /// **'Bulan & Tahun'**
+  String get monthYear;
+
+  /// No description provided for @financialSummary.
+  ///
+  /// In id, this message translates to:
+  /// **'Ringkasan Keuangan'**
+  String get financialSummary;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In id, this message translates to:
+  /// **'Minggu Ini'**
+  String get thisWeek;
+
+  /// No description provided for @debtTypeBorrowed.
+  ///
+  /// In id, this message translates to:
+  /// **'Hutang'**
+  String get debtTypeBorrowed;
+
+  /// No description provided for @debtTypeLent.
+  ///
+  /// In id, this message translates to:
+  /// **'Piutang'**
+  String get debtTypeLent;
+
+  /// No description provided for @frequencyDaily.
+  ///
+  /// In id, this message translates to:
+  /// **'Harian'**
+  String get frequencyDaily;
+
+  /// No description provided for @frequencyWeekly.
+  ///
+  /// In id, this message translates to:
+  /// **'Mingguan'**
+  String get frequencyWeekly;
+
+  /// No description provided for @frequencyMonthly.
+  ///
+  /// In id, this message translates to:
+  /// **'Bulanan'**
+  String get frequencyMonthly;
+
+  /// No description provided for @frequencyYearly.
+  ///
+  /// In id, this message translates to:
+  /// **'Tahunan'**
+  String get frequencyYearly;
+
+  /// No description provided for @nextDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Berikutnya'**
+  String get nextDate;
+
+  /// No description provided for @manage.
+  ///
+  /// In id, this message translates to:
+  /// **'Kelola'**
+  String get manage;
+
+  /// No description provided for @accountTypeCredit.
+  ///
+  /// In id, this message translates to:
+  /// **'Kartu Kredit'**
+  String get accountTypeCredit;
+
+  /// No description provided for @accountTypeCash.
+  ///
+  /// In id, this message translates to:
+  /// **'Tunai'**
+  String get accountTypeCash;
+
+  /// No description provided for @other.
+  ///
+  /// In id, this message translates to:
+  /// **'Lainnya'**
+  String get other;
+
+  /// No description provided for @accountList.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar Akun'**
+  String get accountList;
+
+  /// No description provided for @netWorth.
+  ///
+  /// In id, this message translates to:
+  /// **'Kekayaan Bersih'**
+  String get netWorth;
+
+  /// No description provided for @totalBudget.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Budget'**
+  String get totalBudget;
+
+  /// No description provided for @firstNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat catatan pertama'**
+  String get firstNote;
+
+  /// No description provided for @addAccountButton.
+  ///
+  /// In id, this message translates to:
+  /// **'+ Tambah akun'**
+  String get addAccountButton;
+
+  /// No description provided for @transferBalance.
+  ///
+  /// In id, this message translates to:
+  /// **'Pindah saldo'**
+  String get transferBalance;
+
+  /// No description provided for @notesCount.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} catatan tersimpan'**
+  String notesCount(Object count);
+
+  /// No description provided for @accountTypeWallet.
+  ///
+  /// In id, this message translates to:
+  /// **'Dompet'**
+  String get accountTypeWallet;
+
+  /// No description provided for @accountTypeSavings.
+  ///
+  /// In id, this message translates to:
+  /// **'Tabungan'**
+  String get accountTypeSavings;
+
+  /// No description provided for @accountTypeInvestment.
+  ///
+  /// In id, this message translates to:
+  /// **'Investasi'**
+  String get accountTypeInvestment;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ class Category {
   final String? icon;
   final String type;
   final String? parentId;
+  final String? systemKey;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -13,6 +14,7 @@ class Category {
     this.icon,
     this.type = 'expense',
     this.parentId,
+    this.systemKey,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -23,6 +25,7 @@ class Category {
     String? icon,
     String? type,
     String? parentId,
+    String? systemKey,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -32,6 +35,7 @@ class Category {
       icon: icon ?? this.icon,
       type: type ?? this.type,
       parentId: parentId ?? this.parentId,
+      systemKey: systemKey ?? this.systemKey,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -43,6 +47,7 @@ class Category {
     'icon': icon,
     'type': type,
     'parentId': parentId,
+    'systemKey': systemKey,
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
   };
@@ -53,6 +58,7 @@ class Category {
         icon: json['icon'] as String?,
         type: json['type'] as String? ?? 'expense',
         parentId: json['parentId'] as String?,
+        systemKey: json['systemKey'] as String?,
         createdAt: DateTime.parse(json['createdAt'] as String),
         updatedAt: DateTime.parse(json['updatedAt'] as String),
       );

@@ -9,6 +9,7 @@ import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
@@ -22,7 +23,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   final DateTime _calendarMonth = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime _selectedDate = DateTime.now();
   String _searchQuery = '';
-  String _filterType = 'Semua';
+  String _filterType = 'all';
   bool _showSearch = false;
   final _searchCtrl = TextEditingController();
 
@@ -35,10 +36,19 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
     final catMap = categoriesAsync.whenOrNull(data: (cats) => {for (final c in cats) c.id: c}) ?? const <String, Category>{};
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+
+    final filterLabels = {
+      'all': l10n.allFilter,
+      'category': l10n.categoryFilter,
+      'account': l10n.accountFilter,
+      'calendar': l10n.filterCalendar,
+    };
 
     return Scaffold(
       body: SafeArea(
@@ -53,8 +63,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Transaksi', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                      Text('Semua aktivitas keuangan', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+                      Text(l10n.transactionTitle, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                      Text(l10n.transactionSubtitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                     ],
                   ),
                   Row(
@@ -72,7 +82,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                             children: [
                               Icon(Icons.bar_chart_rounded, color: colors.primary, size: 16),
                               const SizedBox(width: 4),
-                              Text('Statistik', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+                              Text(l10n.statistics, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                             ],
                           ),
                         ),
@@ -81,10 +91,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                       IconButton(
                         onPressed: () => setState(() => _showSearch = !_showSearch),
                         icon: Icon(Icons.search, color: colors.textSecondary, size: 22),
-                        tooltip: 'Cari',
+                        tooltip: l10n.search,
                       ),
                       IconButton(
-                        onPressed: () => _showFilterSheet(context, colors),
+                        onPressed: () => _showFilterSheet(context, colors, l10n),
                         icon: Icon(Icons.filter_list_rounded, color: colors.textSecondary, size: 22),
                         tooltip: 'Filter',
                       ),
@@ -101,7 +111,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   onChanged: (v) => setState(() => _searchQuery = v.toLowerCase()),
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Cari transaksi atau catatan...',
+                    hintText: l10n.searchTransactions,
                     prefixIcon: Icon(Icons.search, color: colors.textSecondary, size: 20),
                     filled: true,
                     fillColor: colors.surface,
@@ -118,12 +128,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: ['Semua', 'Kategori', 'Akun', 'Kalender'].map((f) {
-                  final selected = _filterType == f;
+                children: filterLabels.entries.map((e) {
+                  final selected = _filterType == e.key;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
-                      onTap: () => setState(() => _filterType = f),
+                      onTap: () => setState(() => _filterType = e.key),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
@@ -134,8 +144,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(f, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
-                            if (f != 'Semua') ...[
+                            Text(e.value, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
+                            if (e.key != 'all') ...[
                               const SizedBox(width: 4),
                               Icon(Icons.keyboard_arrow_down_rounded, size: 14, color: selected ? Colors.white : colors.textSecondary),
                             ],
@@ -147,17 +157,17 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 }).toList(),
               ),
             ),
-            if (_filterType == 'Kalender') ...[
+            if (_filterType == 'calendar') ...[
               const SizedBox(height: 12),
-              _buildCalendarStrip(colors),
+              _buildCalendarStrip(colors, locale),
             ],
             const SizedBox(height: 8),
             Expanded(
               child: transactionsAsync.when(
                 data: (allTx) {
-                  final filtered = _filterTransactions(allTx);
-                  if (filtered.isEmpty) return _buildEmpty(colors);
-                  return _buildGroupedList(filtered, catMap, fmt, colors);
+                  final filtered = _filterTransactions(allTx, l10n);
+                  if (filtered.isEmpty) return _buildEmpty(colors, l10n);
+                  return _buildGroupedList(filtered, catMap, fmt, colors, locale);
                 },
                 loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
                 error: (e, _) => Center(child: Text('Error: $e', style: GoogleFonts.inter(color: AppColors.rose))),
@@ -176,9 +186,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     );
   }
 
-  Widget _buildCalendarStrip(AppColorsT colors) {
+  Widget _buildCalendarStrip(AppColorsT colors, String locale) {
     final daysInMonth = DateTime(_calendarMonth.year, _calendarMonth.month + 1, 0).day;
     final today = DateTime.now();
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       height: 72,
       child: Column(
@@ -189,8 +200,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(DateFormat('MMMM yyyy', 'id').format(_calendarMonth), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-                Text('Kalender', style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
+                Text(DateFormat('MMMM yyyy', locale).format(_calendarMonth), style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                Text(l10n.filterCalendar, style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
               ],
             ),
           ),
@@ -233,7 +244,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     );
   }
 
-  List<Transaction> _filterTransactions(List<Transaction> all) {
+  List<Transaction> _filterTransactions(List<Transaction> all, AppLocalizations l10n) {
     var list = all;
     if (_searchQuery.isNotEmpty) {
       list = list.where((t) {
@@ -242,25 +253,25 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         return desc.contains(_searchQuery) || note.contains(_searchQuery);
       }).toList();
     }
-    if (_filterType == 'Kalender') {
+    if (_filterType == 'calendar') {
       list = list.where((t) => t.date.year == _selectedDate.year && t.date.month == _selectedDate.month && t.date.day == _selectedDate.day).toList();
     }
     list.sort((a, b) => b.date.compareTo(a.date));
     return list;
   }
 
-  Widget _buildGroupedList(List<Transaction> txList, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors) {
+  Widget _buildGroupedList(List<Transaction> txList, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors, String locale) {
     final dayTotal = txList.fold<int>(0, (s, t) => s + (t.type == 'income' ? t.amount : -t.amount));
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
       children: [
-        if (_filterType == 'Kalender')
+        if (_filterType == 'calendar')
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(DateFormat('EEEE, d MMMM yyyy', 'id').format(_selectedDate), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                Text(DateFormat('EEEE, d MMMM yyyy', locale).format(_selectedDate), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                 Text(
                   '${dayTotal >= 0 ? '+' : '-'}${fmt.format(dayTotal.abs())}',
                   style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: dayTotal >= 0 ? AppColors.teal : AppColors.rose),
@@ -295,6 +306,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   }
 
   void _showTransactionDetail(Transaction t, String catName, NumberFormat fmt, AppColorsT colors) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final isIncome = t.type == 'income';
     final sign = isIncome ? '+' : '-';
     showModalBottomSheet(
@@ -309,7 +322,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Detail Transaksi', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+                Text(l10n.transactionTitle, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
                 IconButton(onPressed: () => Navigator.pop(ctx), icon: Icon(Icons.close, color: colors.textSecondary)),
               ],
             ),
@@ -319,11 +332,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: isIncome ? AppColors.teal : AppColors.rose),
             ),
             const SizedBox(height: 16),
-            _detailRow('Tipe', isIncome ? 'Pemasukan' : 'Pengeluaran', colors),
-            if (catName.isNotEmpty) _detailRow('Kategori', catName, colors),
-            if (t.description != null && t.description!.isNotEmpty) _detailRow('Deskripsi', t.description!, colors),
-            if (t.note != null && t.note!.isNotEmpty) _detailRow('Catatan', t.note!, colors),
-            _detailRow('Tanggal', DateFormat('dd MMMM yyyy • HH:mm', 'id').format(t.date), colors),
+            _detailRow(l10n.transactionType, isIncome ? l10n.income : l10n.expense, colors),
+            if (catName.isNotEmpty) _detailRow(l10n.category, catName, colors),
+            if (t.description != null && t.description!.isNotEmpty) _detailRow(l10n.description, t.description!, colors),
+            if (t.note != null && t.note!.isNotEmpty) _detailRow(l10n.note, t.note!, colors),
+            _detailRow(l10n.date, DateFormat('dd MMMM yyyy • HH:mm', locale).format(t.date), colors),
             const SizedBox(height: 20),
             Row(
               children: [
@@ -334,7 +347,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                       context.push('/add-transaction');
                     },
                     icon: const Icon(Icons.edit_outlined, size: 18),
-                    label: Text('Edit', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                    label: Text(l10n.edit, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -342,7 +355,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   child: FilledButton.icon(
                     onPressed: () => Navigator.pop(ctx),
                     icon: const Icon(Icons.delete_outline, size: 18),
-                    label: Text('Hapus', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                    label: Text(l10n.delete, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
                     style: FilledButton.styleFrom(backgroundColor: AppColors.rose),
                   ),
                 ),
@@ -372,7 +385,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     );
   }
 
-  Widget _buildEmpty(AppColorsT colors) {
+  Widget _buildEmpty(AppColorsT colors, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -383,13 +396,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             child: const Icon(Icons.receipt_long_outlined, size: 32, color: AppColors.gold),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada transaksi', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          Text(l10n.noTransactions, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
       ),
     );
   }
 
-  void _showFilterSheet(BuildContext context, AppColorsT colors) {
+  void _showFilterSheet(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       builder: (ctx) => Container(
@@ -402,29 +415,29 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             const SizedBox(height: 16),
             ListTile(
               leading: Icon(Icons.category_outlined, color: colors.primary),
-              title: Text('Kategori', style: GoogleFonts.inter(fontSize: 14)),
+              title: Text(l10n.categoryFilter, style: GoogleFonts.inter(fontSize: 14)),
               trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
               onTap: () {
                 Navigator.pop(ctx);
-                _showCategoryFilter(context, colors);
+                _showCategoryFilter(context, colors, l10n);
               },
             ),
             ListTile(
               leading: Icon(Icons.account_balance_wallet_outlined, color: colors.primary),
-              title: Text('Akun', style: GoogleFonts.inter(fontSize: 14)),
+              title: Text(l10n.accountFilter, style: GoogleFonts.inter(fontSize: 14)),
               trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
               onTap: () {
                 Navigator.pop(ctx);
-                _showAccountFilter(context, colors);
+                _showAccountFilter(context, colors, l10n);
               },
             ),
             ListTile(
               leading: Icon(Icons.calendar_today_outlined, color: colors.primary),
-              title: Text('Periode', style: GoogleFonts.inter(fontSize: 14)),
+              title: Text(l10n.periodFilter, style: GoogleFonts.inter(fontSize: 14)),
               trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
               onTap: () {
                 Navigator.pop(ctx);
-                _showPeriodFilter(context, colors);
+                _showPeriodFilter(context, colors, l10n);
               },
             ),
             const SizedBox(height: 8),
@@ -435,11 +448,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   Navigator.pop(ctx);
                   setState(() {
                     _searchQuery = '';
-                    _filterType = 'Semua';
+                    _filterType = 'all';
                     _selectedDate = DateTime.now();
                   });
                 },
-                child: Text('Reset filter', style: GoogleFonts.inter(color: colors.primary)),
+                child: Text(l10n.resetFilters, style: GoogleFonts.inter(color: colors.primary)),
               ),
             ),
           ],
@@ -448,7 +461,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     );
   }
 
-  void _showCategoryFilter(BuildContext context, AppColorsT colors) {
+  void _showCategoryFilter(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
     final categoriesAsync = ref.read(categoriesNotifierProvider);
     if (!categoriesAsync.hasValue) return;
     final cats = categoriesAsync.value!;
@@ -460,7 +473,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pilih Kategori', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(l10n.selectCategory, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             ...cats.map((c) => ListTile(
               title: Text(c.name, style: GoogleFonts.inter(fontSize: 14)),
@@ -468,7 +481,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 Navigator.pop(ctx);
                 setState(() {
                   _searchQuery = c.name.toLowerCase();
-                  _filterType = 'Semua';
+                  _filterType = 'all';
                 });
               },
             )),
@@ -478,7 +491,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     );
   }
 
-  void _showAccountFilter(BuildContext context, AppColorsT colors) {
+  void _showAccountFilter(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
     final accountsAsync = ref.read(accountsNotifierProvider);
     if (!accountsAsync.hasValue) return;
     final accounts = accountsAsync.value!;
@@ -490,7 +503,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pilih Akun', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(l10n.selectAccount, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             ...accounts.map((a) => ListTile(
               title: Text(a.name, style: GoogleFonts.inter(fontSize: 14)),
@@ -498,7 +511,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 Navigator.pop(ctx);
                 setState(() {
                   _searchQuery = a.name.toLowerCase();
-                  _filterType = 'Semua';
+                  _filterType = 'all';
                 });
               },
             )),
@@ -508,10 +521,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     );
   }
 
-  void _showPeriodFilter(BuildContext context, AppColorsT colors) {
+  void _showPeriodFilter(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
     final now = DateTime.now();
     final periods = <(String, DateTime, DateTime)>[
-      ('Bulan ini', DateTime(now.year, now.month, 1), now),
+      (l10n.thisMonth, DateTime(now.year, now.month, 1), now),
       ('7 hari terakhir', now.subtract(const Duration(days: 7)), now),
       ('30 hari terakhir', now.subtract(const Duration(days: 30)), now),
       ('Bulan lalu', DateTime(now.month == 1 ? now.year - 1 : now.year, now.month == 1 ? 12 : now.month - 1, 1), DateTime(now.year, now.month, 0)),
@@ -525,7 +538,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pilih Periode', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(l10n.periodFilter, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             ...periods.map((p) => ListTile(
               title: Text(p.$1, style: GoogleFonts.inter(fontSize: 14)),
@@ -533,7 +546,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 Navigator.pop(ctx);
                 setState(() {
                   _searchQuery = '';
-                  _filterType = 'Semua';
+                  _filterType = 'all';
                 });
               },
             )),

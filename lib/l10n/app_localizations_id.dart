@@ -227,10 +227,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get overLimit => 'Melebihi';
 
   @override
-  String get noBudgets => 'Belum ada anggaran';
+  String get noBudgets => 'Belum ada budget';
 
   @override
-  String get targetAndDebtsTitle => 'Target & Hutang';
+  String get goalsAndDebtsTitle => 'Target & Hutang';
 
   @override
   String get financialPlan => 'Rencana finansial';
@@ -332,9 +332,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get totalLabel => 'Total';
 
   @override
-  String changeVsLastMonth(Object lastMonth, Object percent) {
-    return '$percent% dibanding $lastMonth';
-  }
+  String get changeVsLastMonth => 'Selisih vs bulan lalu';
 
   @override
   String get decrease => '↓';
@@ -641,7 +639,76 @@ class AppLocalizationsId extends AppLocalizations {
   String get filterCalendar => 'Kalender';
 
   @override
-  String monthYear(Object month, Object year) {
-    return '$month $year';
+  String get monthYear => 'Bulan & Tahun';
+
+  @override
+  String get financialSummary => 'Ringkasan Keuangan';
+
+  @override
+  String get thisWeek => 'Minggu Ini';
+
+  @override
+  String get debtTypeBorrowed => 'Hutang';
+
+  @override
+  String get debtTypeLent => 'Piutang';
+
+  @override
+  String get frequencyDaily => 'Harian';
+
+  @override
+  String get frequencyWeekly => 'Mingguan';
+
+  @override
+  String get frequencyMonthly => 'Bulanan';
+
+  @override
+  String get frequencyYearly => 'Tahunan';
+
+  @override
+  String get nextDate => 'Berikutnya';
+
+  @override
+  String get manage => 'Kelola';
+
+  @override
+  String get accountTypeCredit => 'Kartu Kredit';
+
+  @override
+  String get accountTypeCash => 'Tunai';
+
+  @override
+  String get other => 'Lainnya';
+
+  @override
+  String get accountList => 'Daftar Akun';
+
+  @override
+  String get netWorth => 'Kekayaan Bersih';
+
+  @override
+  String get totalBudget => 'Total Budget';
+
+  @override
+  String get firstNote => 'Buat catatan pertama';
+
+  @override
+  String get addAccountButton => '+ Tambah akun';
+
+  @override
+  String get transferBalance => 'Pindah saldo';
+
+  @override
+  String notesCount(Object count) {
+    return '$count catatan tersimpan';
   }
+
+  @override
+  String get accountTypeWallet => 'Dompet';
+
+  @override
+  String get accountTypeSavings => 'Tabungan';
+
+  @override
+  String get accountTypeInvestment => 'Investasi';
 }

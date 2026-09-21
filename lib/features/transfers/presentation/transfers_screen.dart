@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/transfers/application/transfer_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class TransfersScreen extends ConsumerWidget {
@@ -12,15 +13,16 @@ class TransfersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final transfersAsync = ref.watch(transfersNotifierProvider);
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Transfer', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.transfer, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         actions: [
           IconButton(
-            tooltip: 'Tambah Transfer',
+            tooltip: l10n.transfer,
             icon: const Icon(Icons.add),
             onPressed: () => context.push('/add-transfer'),
           ),
@@ -29,7 +31,7 @@ class TransfersScreen extends ConsumerWidget {
       body: transfersAsync.when(
         data: (transfers) {
           if (transfers.isEmpty) {
-            return _buildEmpty(context);
+            return _buildEmpty(context, l10n);
           }
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -50,7 +52,7 @@ class TransfersScreen extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            t.description ?? 'Transfer',
+                            t.description ?? l10n.transfer,
                             style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -78,7 +80,7 @@ class TransfersScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Center(
       child: Column(
@@ -95,7 +97,7 @@ class TransfersScreen extends ConsumerWidget {
             child: const Icon(Icons.swap_horiz_rounded, size: 32, color: AppColors.gold),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada transfer antar akun', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          Text(l10n.noData, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
       ),
     );

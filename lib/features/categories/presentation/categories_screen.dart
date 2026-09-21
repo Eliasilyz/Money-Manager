@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
+import 'package:money_manager/theme/app_colors.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
 class CategoriesScreen extends ConsumerStatefulWidget {
@@ -14,32 +16,7 @@ class CategoriesScreen extends ConsumerStatefulWidget {
 }
 
 class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with SingleTickerProviderStateMixin {
-  AppColorsT get colors => AppColorsT.of(context);
   late final TabController _tabCtrl;
-
-  static const _icons = {
-    'food & drinks': ('🍜', AppColors.rose),
-    'makanan': ('🍜', AppColors.rose),
-    'transport': ('🚗', AppColors.sky),
-    'transportasi': ('🚗', AppColors.sky),
-    'shopping': ('🛒', AppColors.lilac),
-    'belanja': ('🛒', AppColors.lilac),
-    'bills & utilities': ('💡', AppColors.rose),
-    'tagihan': ('💡', AppColors.rose),
-    'entertainment': ('🎮', AppColors.lilac),
-    'hiburan': ('🎮', AppColors.lilac),
-    'health': ('🏥', AppColors.teal),
-    'kesehatan': ('🏥', AppColors.teal),
-    'education': ('📚', AppColors.orange),
-    'pendidikan': ('📚', AppColors.orange),
-    'salary': ('💼', AppColors.teal),
-    'gaji': ('💼', AppColors.teal),
-    'freelance': ('💻', AppColors.sky),
-    'investment': ('📈', AppColors.lilac),
-    'investasi': ('📈', AppColors.lilac),
-    'other income': ('💰', AppColors.teal),
-    'pendapatan lain': ('💰', AppColors.teal),
-  };
 
   @override
   void initState() {
@@ -55,16 +32,17 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kategori', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.categories, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         bottom: TabBar(
           controller: _tabCtrl,
-          tabs: const [
-            Tab(text: 'Pengeluaran'),
-            Tab(text: 'Pemasukan'),
+          tabs: [
+            Tab(text: l10n.expense),
+            Tab(text: l10n.income),
           ],
         ),
       ),
@@ -93,6 +71,8 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
   }
 
   Widget _buildList(BuildContext context, List<Category> categories) {
+    final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     if (categories.isEmpty) {
       return Center(
         child: Column(
@@ -100,7 +80,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
           children: [
             const Text('📂', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 12),
-            Text('Belum ada kategori', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+            Text(l10n.noData, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
           ],
         ),
       );
@@ -111,69 +91,54 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final cat = categories[index];
-        final lookup = _icons[cat.name.toLowerCase()];
-        final emoji = lookup?.$1 ?? '📁';
-        final color = lookup?.$2 ?? colors.textSecondary;
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: 6),
-          child: Card(
-            child: Dismissible(
-              key: ValueKey(cat.id),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20),
+        return Dismissible(
+          key: ValueKey(cat.id),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20),
+            decoration: BoxDecoration(color: AppColors.rose, borderRadius: BorderRadius.circular(14)),
+            child: const Icon(Icons.delete_outline, color: Colors.white),
+          ),
+          confirmDismiss: (_) async {
+            return await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Text('${l10n.delete}?'),
+                content: Text('${cat.name} ${l10n.delete}'),
+                actions: [
+                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: Text(l10n.delete, style: GoogleFonts.inter(color: AppColors.rose)),
+                  ),
+                ],
+              ),
+            );
+          },
+          onDismissed: (_) {
+            ref.read(categoriesNotifierProvider.notifier).deleteCategory(cat.id);
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: ListTile(
+              leading: Container(
+                width: 36, height: 36,
                 decoration: BoxDecoration(
-                  color: AppColors.rose,
-                  borderRadius: BorderRadius.circular(16),
+                  color: colors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.delete_outline, color: Colors.white),
-              ),
-              confirmDismiss: (_) async {
-                return await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('Hapus Kategori?'),
-                    content: Text('"${cat.name}" akan dihapus permanen.'),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: Text('Hapus', style: GoogleFonts.inter(color: AppColors.rose)),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              onDismissed: (_) {
-                ref.read(categoriesNotifierProvider.notifier).deleteCategory(cat.id);
-              },
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(child: Text(emoji, style: const TextStyle(fontSize: 18))),
-                ),
-                title: Text(
-                  cat.name,
-                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary),
-                ),
-                subtitle: Text(
-                  cat.type.toUpperCase(),
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: cat.type == 'expense' ? AppColors.rose : AppColors.teal,
-                    letterSpacing: 0.5,
-                  ),
+                  child: Icon(
+                    cat.icon != null ? IconData(int.parse(cat.icon!), fontFamily: 'MaterialIcons') : Icons.category_outlined,
+                  color: colors.primary,
+                  size: 18,
                 ),
               ),
+              title: Text(cat.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500)),
             ),
           ),
         );

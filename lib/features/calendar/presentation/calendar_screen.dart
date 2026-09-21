@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -22,12 +23,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kalender', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.calendarTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: transactionsAsync.when(
         data: (allTx) {
@@ -45,22 +48,22 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             children: [
-              _buildMonthNav(colors),
+              _buildMonthNav(colors, locale, l10n),
               const SizedBox(height: 12),
               _buildCalendarGrid(allTx, colors),
               const SizedBox(height: 20),
-              _buildDaySummary(dayIncome, dayExpense, colors),
+              _buildDaySummary(dayIncome, dayExpense, colors, locale, l10n),
               const SizedBox(height: 16),
               if (dayTx.isNotEmpty) ...[
-                Text('Transaksi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                Text(l10n.transactions, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                 const SizedBox(height: 10),
-                ...dayTx.map((t) => _buildTxTile(t, catMap, colors)),
+                ...dayTx.map((t) => _buildTxTile(t, catMap, colors, l10n)),
               ] else
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: colors.border)),
-                  child: Text('Tidak ada transaksi', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), textAlign: TextAlign.center),
+                  child: Text(l10n.noTransactions, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), textAlign: TextAlign.center),
                 ),
             ],
           );
@@ -71,23 +74,23 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
-  Widget _buildMonthNav(AppColorsT colors) {
+  Widget _buildMonthNav(AppColorsT colors, String locale, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
           onPressed: () => setState(() => _currentMonth = DateTime(_currentMonth.year, _currentMonth.month - 1)),
           icon: Icon(Icons.chevron_left, color: colors.textPrimary),
-          tooltip: 'Bulan sebelumnya',
+          tooltip: l10n.monthYear,
         ),
         Text(
-          DateFormat('MMMM yyyy', 'id').format(_currentMonth),
+          DateFormat('MMMM yyyy', locale).format(_currentMonth),
           style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary),
         ),
         IconButton(
           onPressed: () => setState(() => _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1)),
           icon: Icon(Icons.chevron_right, color: colors.textPrimary),
-          tooltip: 'Bulan berikutnya',
+          tooltip: l10n.monthYear,
         ),
       ],
     );
@@ -98,7 +101,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final firstDayWeekday = DateTime(_currentMonth.year, _currentMonth.month, 1).weekday;
     final today = DateTime.now();
 
-    // Build day-level income/expense map for indicator dots
     final dayMap = <int, int>{};
     for (final t in allTx.where((t) => t.date.month == _currentMonth.month && t.date.year == _currentMonth.year)) {
       dayMap[t.date.day] = (dayMap[t.date.day] ?? 0) + (t.type == 'expense' ? -t.amount : t.amount);
@@ -177,7 +179,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     return ((daysInMonth + firstWeekday - 1) / 7).ceil();
   }
 
-  Widget _buildDaySummary(int income, int expense, AppColorsT colors) {
+  Widget _buildDaySummary(int income, int expense, AppColorsT colors, String locale, AppLocalizations l10n) {
     final net = income - expense;
     return Container(
       width: double.infinity,
@@ -190,20 +192,20 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(DateFormat('EEEE, d MMMM yyyy', 'id').format(_selectedDate), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+          Text(DateFormat('EEEE, d MMMM yyyy', locale).format(_selectedDate), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary)),
           const SizedBox(height: 10),
           Row(
             children: [
-              _dayStat(Icons.arrow_downward_rounded, 'Pemasukan', income, AppColors.teal),
+              _dayStat(Icons.arrow_downward_rounded, l10n.income, income, AppColors.teal),
               const SizedBox(width: 16),
-              _dayStat(Icons.arrow_upward_rounded, 'Pengeluaran', expense, AppColors.rose),
+              _dayStat(Icons.arrow_upward_rounded, l10n.expense, expense, AppColors.rose),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Bersih', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+              Text(l10n.total, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
               Text(
                 '${net >= 0 ? '+' : '-'}${_fmt.format(net.abs())}',
                 style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: net >= 0 ? AppColors.teal : AppColors.rose),
@@ -237,12 +239,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
-  Widget _buildTxTile(Transaction t, Map catMap, AppColorsT colors) {
+  Widget _buildTxTile(Transaction t, Map catMap, AppColorsT colors, AppLocalizations l10n) {
     final isIncome = t.type == 'income';
     final color = isIncome ? AppColors.teal : AppColors.rose;
     final sign = isIncome ? '+' : '-';
     final cat = catMap[t.categoryId];
-    final catName = cat?.name ?? 'Lainnya';
+    final catName = cat?.name ?? l10n.other;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),

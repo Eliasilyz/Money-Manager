@@ -7,6 +7,7 @@ import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
@@ -51,12 +52,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Statistik', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.statisticsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: transactionsAsync.when(
         data: (allTx) {
@@ -66,18 +69,18 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           String periodLabel;
 
           switch (_period) {
-            case 'Minggu':
+            case 'week':
               final weekStart = now.subtract(Duration(days: now.weekday - 1));
               periodTx = allTx.where((t) => t.date.isAfter(weekStart.subtract(const Duration(days: 1)))).toList();
-              periodLabel = 'Minggu ini';
+              periodLabel = l10n.thisWeek;
               break;
-            case 'Tahun':
+            case 'year':
               periodTx = allTx.where((t) => t.date.year == now.year).toList();
-              periodLabel = 'Tahun ${now.year}';
+              periodLabel = '${l10n.total} ${now.year}';
               break;
             default:
               periodTx = allTx.where((t) => t.date.month == now.month && t.date.year == now.year).toList();
-              periodLabel = DateFormat('MMMM yyyy', 'id').format(now);
+              periodLabel = DateFormat('MMMM yyyy', locale).format(now);
           }
 
           final income = periodTx.where((t) => t.type == 'income').fold<int>(0, (int sum, t) => sum + t.amount);
@@ -87,7 +90,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           final expenseTx = periodTx.where((t) => t.type == 'expense').toList();
           final catTotals = <String, int>{};
           for (final t in expenseTx) {
-            final catName = catMap[t.categoryId]?.name ?? 'Lainnya';
+            final catName = catMap[t.categoryId]?.name ?? l10n.other;
             catTotals[catName] = (catTotals[catName] ?? 0) + t.amount;
           }
           final sortedCats = catTotals.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
@@ -99,17 +102,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             children: [
               Text(periodLabel, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
               const SizedBox(height: 12),
-              _buildHeroCard(income, expense, diff, colors),
+              _buildHeroCard(income, expense, diff, colors, l10n),
               const SizedBox(height: 16),
-              _buildPeriodSelector(colors),
+              _buildPeriodSelector(colors, l10n),
               const SizedBox(height: 24),
               if (expenseTx.isNotEmpty) ...[
-                _buildDonutSection(topItems, otherTotal, expense, catMap, colors),
+                _buildDonutSection(topItems, otherTotal, expense, catMap, colors, l10n),
                 const SizedBox(height: 24),
               ],
-              _buildStatCards(periodTx.length, expense, now, colors),
+              _buildStatCards(periodTx.length, expense, now, colors, l10n),
               const SizedBox(height: 24),
-              _buildCategoryList(sortedCats, catMap, colors),
+              _buildCategoryList(sortedCats, catMap, colors, l10n),
             ],
           );
         },
@@ -119,7 +122,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  Widget _buildHeroCard(int income, int expense, int diff, AppColorsT colors) {
+  Widget _buildHeroCard(int income, int expense, int diff, AppColorsT colors, AppLocalizations l10n) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -134,17 +137,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Ringkasan keuangan', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+          Text(l10n.financialSummary, style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
           const SizedBox(height: 16),
           Row(
             children: [
-              _heroStat('Pemasukan', income),
+              _heroStat(l10n.income, income),
               const SizedBox(width: 16),
-              _heroStat('Pengeluaran', expense),
+              _heroStat(l10n.expense, expense),
             ],
           ),
           const SizedBox(height: 12),
-          Text('Selisih', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
+          Text(l10n.changeVsLastMonth, style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
           Text(
             _fmt.format(diff),
             style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
@@ -166,17 +169,22 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  Widget _buildPeriodSelector(AppColorsT colors) {
+  Widget _buildPeriodSelector(AppColorsT colors, AppLocalizations l10n) {
+    final periods = [
+      ('week', l10n.thisWeek),
+      ('month', l10n.thisMonth),
+      ('year', l10n.total),
+    ];
     return SizedBox(
       height: 36,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: ['Minggu', 'Bulan', 'Tahun'].map((p) {
-          final selected = _period == p;
+        children: periods.map((p) {
+          final selected = _period == p.$1;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
-              onTap: () => setState(() => _period = p),
+              onTap: () => setState(() => _period = p.$1),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
@@ -184,7 +192,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: selected ? colors.primary : colors.border),
                 ),
-                child: Text(p, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
+                child: Text(p.$2, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
               ),
             ),
           );
@@ -193,7 +201,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  Widget _buildDonutSection(List<MapEntry<String, int>> topItems, int otherTotal, int total, Map<String, Category> catMap, AppColorsT colors) {
+  Widget _buildDonutSection(List<MapEntry<String, int>> topItems, int otherTotal, int total, Map<String, Category> catMap, AppColorsT colors, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -204,7 +212,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pengeluaran per kategori', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+          Text(l10n.categoryBreakdown, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -226,7 +234,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Total', style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
+                        Text(l10n.total, style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
                         Text(_fmt.format(total), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: colors.textPrimary)),
                       ],
                     ),
@@ -238,7 +246,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 child: Column(
                   children: [
                     ...topItems.asMap().entries.map((e) => _legendRow(e.value.key, e.value.value, total, _getCatColor(e.value.key, e.key), colors)),
-                    if (otherTotal > 0) _legendRow('Lainnya', otherTotal, total, const Color(0xFF9CA3AF), colors),
+                    if (otherTotal > 0) _legendRow(l10n.other, otherTotal, total, const Color(0xFF9CA3AF), colors),
                   ],
                 ),
               ),
@@ -266,14 +274,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  Widget _buildStatCards(int txCount, int expense, DateTime now, AppColorsT colors) {
+  Widget _buildStatCards(int txCount, int expense, DateTime now, AppColorsT colors, AppLocalizations l10n) {
     final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
     final avgPerDay = txCount > 0 ? (expense / daysInMonth).round() : 0;
     return Row(
       children: [
-        _statCard('Transaksi', '$txCount', colors),
+        _statCard(l10n.transactions, '$txCount', colors),
         const SizedBox(width: 12),
-        _statCard('Rata-rata/hari', _fmt.format(avgPerDay), colors),
+        _statCard(l10n.dailyAverage, _fmt.format(avgPerDay), colors),
       ],
     );
   }
@@ -295,13 +303,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  Widget _buildCategoryList(List<MapEntry<String, int>> sortedCats, Map<String, Category> catMap, AppColorsT colors) {
+  Widget _buildCategoryList(List<MapEntry<String, int>> sortedCats, Map<String, Category> catMap, AppColorsT colors, AppLocalizations l10n) {
     if (sortedCats.isEmpty) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: colors.border)),
-        child: Text('Belum ada data pengeluaran', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), textAlign: TextAlign.center),
+        child: Text(l10n.noData, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), textAlign: TextAlign.center),
       );
     }
     final maxCat = sortedCats.first.value;
@@ -311,8 +319,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Detail kategori', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-            Text('${sortedCats.length} kategori', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+            Text(l10n.viewDetail, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text('${sortedCats.length} ${l10n.categories.toLowerCase()}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
           ],
         ),
         const SizedBox(height: 12),

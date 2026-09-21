@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/debts/application/debt_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class DebtsScreen extends ConsumerWidget {
@@ -12,17 +13,18 @@ class DebtsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final debtsAsync = ref.watch(debtsNotifierProvider);
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hutang & Piutang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.debts, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: debtsAsync.when(
         data: (debts) {
           if (debts.isEmpty) {
-            return _buildEmpty(context);
+            return _buildEmpty(context, l10n);
           }
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -53,7 +55,7 @@ class DebtsScreen extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          isBorrowed ? 'Hutang' : 'Piutang',
+                          isBorrowed ? l10n.debtTypeBorrowed : l10n.debtTypeLent,
                           style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: color),
                         ),
                       ],
@@ -65,7 +67,7 @@ class DebtsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Jatuh tempo: ${DateFormat('dd MMM yyyy').format(d.dueDate)}',
+                      '${l10n.dueDate}: ${DateFormat('dd MMM yyyy').format(d.dueDate)}',
                       style: GoogleFonts.inter(fontSize: 11, color: isOverdue ? colors.expense : colors.textSecondary),
                     ),
                   ],
@@ -88,7 +90,7 @@ class DebtsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Center(
       child: Column(
@@ -105,7 +107,7 @@ class DebtsScreen extends ConsumerWidget {
             child: const Icon(Icons.money_off_rounded, size: 32, color: AppColors.gold),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada hutang atau piutang', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          Text(l10n.noData, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
       ),
     );

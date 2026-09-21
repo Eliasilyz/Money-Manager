@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/budgets/application/budget_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class BudgetsScreen extends ConsumerWidget {
@@ -73,6 +74,8 @@ class BudgetsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final budgetsAsync = ref.watch(budgetsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
     final catNames = categoriesAsync.whenOrNull(
@@ -81,15 +84,15 @@ class BudgetsScreen extends ConsumerWidget {
         const <String, String>{};
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
     final now = DateTime.now();
-    final monthLabel = DateFormat('MMMM yyyy', 'id').format(now);
+    final monthLabel = DateFormat('MMMM yyyy', locale).format(now);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Anggaran', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.budgetsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: budgetsAsync.when(
         data: (budgets) {
-          if (budgets.isEmpty) return _buildEmpty(context, 'Belum ada anggaran');
+          if (budgets.isEmpty) return _buildEmpty(colors, l10n);
           final totalBudget = budgets.fold<int>(0, (s, b) => s + b.amount);
           final totalSpent = (totalBudget * 0.57).toInt();
           return ListView(
@@ -112,7 +115,7 @@ class BudgetsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Total anggaran tersisa', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+                    Text(l10n.totalBudgetRemaining, style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
                     const SizedBox(height: 6),
                     Text(fmt.format(totalBudget - totalSpent), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
                     const SizedBox(height: 10),
@@ -126,7 +129,7 @@ class BudgetsScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text('Terpakai ${fmt.format(totalSpent)} dari ${fmt.format(totalBudget)}', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
+                    Text('${l10n.spent} ${fmt.format(totalSpent)} / ${fmt.format(totalBudget)}', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
                   ],
                 ),
               ),
@@ -134,8 +137,8 @@ class BudgetsScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Per kategori', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                  Text('${budgets.length} anggaran', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                  Text(l10n.perCategory, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                  Text('${budgets.length} ${l10n.budgets.toLowerCase()}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -143,7 +146,7 @@ class BudgetsScreen extends ConsumerWidget {
                 final catName = catNames[b.categoryId] ?? b.categoryId;
                 final spent = (b.amount * 0.6).toInt();
                 final pct = (spent / b.amount * 100).round();
-                return _buildBudgetTile(context, catName, spent, b.amount, pct, _getColor(b.categoryId), _getIconColor(b.categoryId), _getIcon(b.categoryId));
+                return _buildBudgetTile(context, catName, spent, b.amount, pct, _getColor(b.categoryId), _getIconColor(b.categoryId), _getIcon(b.categoryId), l10n);
               }),
             ],
           );
@@ -156,82 +159,78 @@ class BudgetsScreen extends ConsumerWidget {
         onPressed: () => context.push('/add-budget'),
         backgroundColor: AppColors.gold,
         foregroundColor: Colors.white,
-        elevation: 4,
         child: const Icon(Icons.add, size: 26),
       ),
     );
   }
 
-  Widget _buildBudgetTile(BuildContext context, String name, int spent, int total, int pct, Color bgColor, Color iconColor, IconData icon) {
+  Widget _buildBudgetTile(BuildContext context, String catName, int spent, int total, int pct, Color bgColor, Color iconColor, IconData icon, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
-    final progress = (spent / total).clamp(0.0, 1.0);
+    final isOver = spent > total;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
+        border: Border.all(color: colors.border),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, color: iconColor, size: 20),
+          Row(
+            children: [
+              Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, color: iconColor, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(catName, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+              ),
+              Text(
+                '$pct%',
+                style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: isOver ? AppColors.rose : colors.textPrimary),
+              ),
+            ],
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-                    Text('$pct%', style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: pct > 80 ? AppColors.rose : colors.primary)),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text('${fmt.format(spent)} dari ${fmt.format(total)}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: colors.border,
-                    color: pct > 80 ? AppColors.rose : colors.primary,
-                    minHeight: 5,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: (spent / total).clamp(0.0, 1.0),
+              backgroundColor: colors.border,
+              color: isOver ? AppColors.rose : iconColor,
+              minHeight: 6,
             ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('${l10n.spent} ${fmt.format(spent)}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+              Text('/ ${fmt.format(total)}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmpty(BuildContext context, String message) {
-    final colors = AppColorsT.of(context);
+  Widget _buildEmpty(AppColorsT colors, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.border),
-            ),
-            child: const Icon(Icons.pie_chart_outline, size: 32, color: AppColors.gold),
+            width: 72, height: 72,
+            decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(20), border: Border.all(color: colors.border)),
+            child: const Icon(Icons.account_balance_wallet_outlined, size: 32, color: AppColors.gold),
           ),
           const SizedBox(height: 16),
-          Text(message, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          Text(l10n.noBudgets, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
       ),
     );

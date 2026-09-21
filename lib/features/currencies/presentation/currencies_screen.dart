@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:money_manager/features/currencies/application/currency_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class CurrenciesScreen extends ConsumerWidget {
@@ -10,16 +11,17 @@ class CurrenciesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final asyncCurrencies = ref.watch(currenciesNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mata Uang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.currency, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: asyncCurrencies.when(
         data: (currencies) {
           if (currencies.isEmpty) {
-            return _buildEmpty(context);
+            return _buildEmpty(context, l10n);
           }
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -57,7 +59,7 @@ class CurrenciesScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${c.decimalDigits} desimal',
+                          '${c.decimalDigits} decimal',
                           style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
                         ),
                       ],
@@ -74,7 +76,7 @@ class CurrenciesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Center(
       child: Column(
@@ -91,7 +93,7 @@ class CurrenciesScreen extends ConsumerWidget {
             child: const Icon(Icons.monetization_on_outlined, size: 32, color: AppColors.gold),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada mata uang', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          Text(l10n.noData, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
       ),
     );

@@ -5,22 +5,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
 
-  static const _typeConfig = {
-    'wallet': ('Dompet', Icons.account_balance_wallet_outlined, Color(0xFFEFECFA), Color(0xFF8B5CF6)),
-    'savings': ('Tabungan', Icons.savings_outlined, Color(0xFFE1F1EA), Color(0xFF1B6E4B)),
-    'credit': ('Kartu Kredit', Icons.credit_card_outlined, Color(0xFFFBE7E7), Color(0xFFE0524A)),
-    'cash': ('Tunai', Icons.payments_outlined, Color(0xFFFEF3E2), Color(0xFFF59E0B)),
-    'investment': ('Investasi', Icons.trending_up_rounded, Color(0xFFE8F0FA), Color(0xFF3B82F6)),
+  static const _typeIcons = {
+    'wallet': (Icons.account_balance_wallet_outlined, Color(0xFFEFECFA), Color(0xFF8B5CF6)),
+    'savings': (Icons.savings_outlined, Color(0xFFE1F1EA), Color(0xFF1B6E4B)),
+    'credit': (Icons.credit_card_outlined, Color(0xFFFBE7E7), Color(0xFFE0524A)),
+    'cash': (Icons.payments_outlined, Color(0xFFFEF3E2), Color(0xFFF59E0B)),
+    'investment': (Icons.trending_up_rounded, Color(0xFFE8F0FA), Color(0xFF3B82F6)),
   };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final accountsAsync = ref.watch(accountsNotifierProvider);
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
@@ -37,7 +39,7 @@ class AccountsScreen extends ConsumerWidget {
       body: SafeArea(
         child: accountsAsync.when(
           data: (accounts) {
-            if (accounts.isEmpty) return _buildEmpty(context);
+            if (accounts.isEmpty) return _buildEmpty(context, l10n);
             final transactions = transactionsAsync.valueOrNull ?? [];
             final accountBalances = <String, int>{};
             for (final a in accounts) {
@@ -57,40 +59,41 @@ class AccountsScreen extends ConsumerWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Akun', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                        Text('${accounts.length} akun terhubung', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+                        Text(l10n.accountsTitle, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                        Text(l10n.accountsSubtitle(accounts.length), style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                       ],
                     ),
                     Row(
                       children: [
                         TextButton(
                           onPressed: () => context.push('/categories'),
-                          child: Text('Kelola', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+                          child: Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                         ),
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                _buildNetWorthCard(totalBalance, fmt, colors),
+                _buildNetWorthCard(totalBalance, fmt, colors, l10n),
                 const SizedBox(height: 16),
-                _buildActionButtons(context, colors),
+                _buildActionButtons(context, colors, l10n),
                 const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Daftar akun', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                    Text(l10n.accountList, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                     TextButton(
                       onPressed: () => context.push('/categories'),
-                      child: Text('Kelola', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+                      child: Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 ...accounts.map((a) {
                   final balance = accountBalances[a.id] ?? a.initialBalance;
-                  final cfg = _typeConfig[a.accountType] ?? ('Lainnya', Icons.account_circle_outlined, const Color(0xFFE1F1EA), const Color(0xFF1B6E4B));
+                  final cfg = _typeIcons[a.accountType] ?? (Icons.account_circle_outlined, const Color(0xFFE1F1EA), const Color(0xFF1B6E4B));
                   final txCount = transactions.where((t) => t.accountId == a.id).length;
+                  final typeLabel = _typeLabel(a.accountType, l10n);
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.all(14),
@@ -103,8 +106,8 @@ class AccountsScreen extends ConsumerWidget {
                       children: [
                         Container(
                           width: 42, height: 42,
-                          decoration: BoxDecoration(color: cfg.$3, borderRadius: BorderRadius.circular(12)),
-                          child: Icon(cfg.$2, color: cfg.$4, size: 20),
+                          decoration: BoxDecoration(color: cfg.$2, borderRadius: BorderRadius.circular(12)),
+                          child: Icon(cfg.$1, color: cfg.$3, size: 20),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -112,7 +115,7 @@ class AccountsScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(a.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-                              Text('${cfg.$1} • $txCount transaksi', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                              Text('${typeLabel} • $txCount ${l10n.transactions.toLowerCase()}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                             ],
                           ),
                         ),
@@ -134,7 +137,16 @@ class AccountsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildNetWorthCard(int totalBalance, NumberFormat fmt, AppColorsT colors) {
+  String _typeLabel(String type, AppLocalizations l10n) => switch (type) {
+    'wallet' => l10n.accountTypeWallet,
+    'savings' => l10n.accountTypeSavings,
+    'credit' => l10n.accountTypeCredit,
+    'cash' => l10n.accountTypeCash,
+    'investment' => l10n.accountTypeInvestment,
+    _ => l10n.other,
+  };
+
+  Widget _buildNetWorthCard(int totalBalance, NumberFormat fmt, AppColorsT colors, AppLocalizations l10n) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -150,7 +162,7 @@ class AccountsScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Kekayaan bersih', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+          Text(l10n.netWorth, style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
           const SizedBox(height: 6),
           Text(fmt.format(totalBalance), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
           const SizedBox(height: 8),
@@ -158,7 +170,7 @@ class AccountsScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.trending_up_rounded, color: AppColors.teal, size: 16),
               const SizedBox(width: 4),
-              Text('+4,8% bulan ini', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.teal)),
+              Text('+4.8% ${l10n.thisMonth}', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.teal)),
             ],
           ),
         ],
@@ -166,7 +178,7 @@ class AccountsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, AppColorsT colors) {
+  Widget _buildActionButtons(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -184,7 +196,7 @@ class AccountsScreen extends ConsumerWidget {
                 children: [
                   Icon(Icons.add_circle_outline_rounded, color: colors.primary, size: 18),
                   const SizedBox(width: 6),
-                  Text('+ Tambah akun', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                  Text(l10n.addAccount, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textPrimary)),
                 ],
               ),
             ),
@@ -206,7 +218,7 @@ class AccountsScreen extends ConsumerWidget {
                 children: [
                   Icon(Icons.swap_horiz_rounded, color: colors.primary, size: 18),
                   const SizedBox(width: 6),
-                  Text('Pindah saldo', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+                  Text(l10n.transfer, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textPrimary)),
                 ],
               ),
             ),
@@ -216,7 +228,7 @@ class AccountsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Center(
       child: Column(
@@ -228,7 +240,7 @@ class AccountsScreen extends ConsumerWidget {
             child: const Icon(Icons.account_balance_wallet_outlined, size: 32, color: AppColors.gold),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada akun', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          Text(l10n.noAccounts, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
         ],
       ),
     );

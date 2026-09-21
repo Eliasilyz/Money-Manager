@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:money_manager/app.dart';
 import 'package:money_manager/core/constants/app_constants.dart';
 import 'package:money_manager/features/settings/application/backup_service.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -49,6 +50,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
   Future<void> _exportBackup() async {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final db = ref.read(databaseProvider);
     final service = ref.read(backupServiceProvider);
 
@@ -59,21 +61,21 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         final ctrl = TextEditingController();
         return AlertDialog(
           backgroundColor: colors.surface,
-          title: Text('Buat Backup', style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+          title: Text(l10n.backupNow, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
           content: TextField(
             controller: ctrl,
             obscureText: true,
             style: GoogleFonts.inter(color: colors.textPrimary),
-            decoration: const InputDecoration(
-              labelText: 'Kata sandi (opsional)',
-              hintText: 'Kosongkan untuk backup tanpa enkripsi',
+            decoration: InputDecoration(
+              labelText: l10n.passwordRequired,
+              hintText: l10n.encryptBackup,
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, ''), child: Text('Tanpa sandi', style: GoogleFonts.inter(color: colors.textSecondary))),
+            TextButton(onPressed: () => Navigator.pop(ctx, ''), child: Text(l10n.cancel, style: GoogleFonts.inter(color: colors.textSecondary))),
             TextButton(
               onPressed: () => Navigator.pop(ctx, ctrl.text.isEmpty ? null : ctrl.text),
-              child: Text('Enkripsi', style: GoogleFonts.inter(color: AppColors.gold, fontWeight: FontWeight.w600)),
+              child: Text(l10n.encryptBackup, style: GoogleFonts.inter(color: AppColors.gold, fontWeight: FontWeight.w600)),
             ),
           ],
         );
@@ -94,7 +96,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           content: Row(children: [
             const Icon(Icons.check_circle, color: Colors.white),
             const SizedBox(width: 10),
-            Text('Backup tersimpan: $name', style: GoogleFonts.inter(fontSize: 13)),
+            Text('${l10n.backupNow}: $name', style: GoogleFonts.inter(fontSize: 13)),
           ]),
           duration: const Duration(seconds: 4),
         ),
@@ -105,13 +107,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
   Future<void> _importBackup(File file) async {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final db = ref.read(databaseProvider);
     final service = ref.read(backupServiceProvider);
 
     final raw = await file.readAsString();
     if (!mounted) return;
 
-    // 1. Valide sebelum menyentuh data.
     Map<String, List<Map<String, dynamic>>> data;
     bool encrypted = raw.contains('"format": "encrypted_backup"');
     try {
@@ -124,7 +126,6 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         );
         return;
       }
-      // File terenkripsi: minta sandi.
       String? pw;
       await showDialog<String>(
         context: context,
@@ -132,16 +133,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           final ctrl = TextEditingController();
           return AlertDialog(
             backgroundColor: colors.surface,
-            title: Text('Backup Terenkripsi', style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            title: Text(l10n.backupRestore, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
             content: TextField(
               controller: ctrl,
               obscureText: true,
               style: GoogleFonts.inter(color: colors.textPrimary),
-              decoration: const InputDecoration(labelText: 'Kata sandi'),
+              decoration: InputDecoration(labelText: l10n.passwordRequired),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Batal', style: GoogleFonts.inter(color: colors.textSecondary))),
-              TextButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: Text('Buka', style: GoogleFonts.inter(color: AppColors.gold, fontWeight: FontWeight.w600))),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel, style: GoogleFonts.inter(color: colors.textSecondary))),
+              TextButton(onPressed: () => Navigator.pop(ctx, ctrl.text), child: Text(l10n.restore, style: GoogleFonts.inter(color: AppColors.gold, fontWeight: FontWeight.w600))),
             ],
           );
         },
@@ -163,7 +164,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Backup dibuat oleh versi yang tidak dikenali.', style: GoogleFonts.inter(fontSize: 13)),
+          content: Text(l10n.error, style: GoogleFonts.inter(fontSize: 13)),
           backgroundColor: AppColors.rose,
         ),
       );
@@ -174,25 +175,23 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
     if (!mounted) return;
 
-    // 2. Info + konfirmasi sebelum replace.
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: colors.surface,
-        title: Text('Pulihkan Data?', style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+        title: Text(l10n.restoreConfirm, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
         content: Text(
-          'Backup berisi $total data. Seluruh data saat ini akan diganti.\n\nBackup lama Anda dibuat lebih dulu secara otomatis untuk keamanan.',
+          '${l10n.backupRestore} $total data. ${l10n.restoreWarning}',
           style: GoogleFonts.inter(fontSize: 14, color: colors.textSecondary, height: 1.4),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('Batal', style: GoogleFonts.inter(color: colors.textSecondary))),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Pulihkan', style: GoogleFonts.inter(color: AppColors.rose, fontWeight: FontWeight.w600))),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel, style: GoogleFonts.inter(color: colors.textSecondary))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.restore, style: GoogleFonts.inter(color: AppColors.rose, fontWeight: FontWeight.w600))),
         ],
       ),
     );
     if (confirmed != true || !mounted) return;
 
-    // 3. Safety backup data lama, lalu restore.
     try {
       final serviceNow = ref.read(backupServiceProvider);
       final safety = await serviceNow.generateBackup(db);
@@ -205,7 +204,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Data berhasil dipulihkan ($total data).', style: GoogleFonts.inter(fontSize: 13)),
+          content: Text('${l10n.restore} ($total data).', style: GoogleFonts.inter(fontSize: 13)),
           duration: const Duration(seconds: 4),
         ),
       );
@@ -213,7 +212,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     } on BackupException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memulihkan: ${e.message}', style: GoogleFonts.inter(fontSize: 13)), backgroundColor: AppColors.rose),
+        SnackBar(content: Text('${l10n.error}: ${e.message}', style: GoogleFonts.inter(fontSize: 13)), backgroundColor: AppColors.rose),
       );
     }
   }
@@ -221,19 +220,20 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('Backup & Restore', style: GoogleFonts.outfit(fontWeight: FontWeight.w700))),
+      appBar: AppBar(title: Text(l10n.backupRestore, style: GoogleFonts.outfit(fontWeight: FontWeight.w700))),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
-          Text('Simpan seluruh data ke berkas (lokal).', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+          Text(l10n.backupNow, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
           const SizedBox(height: 16),
           SizedBox(
             height: 52,
             child: FilledButton.icon(
               onPressed: _exportBackup,
               icon: const Icon(Icons.ios_share, size: 18),
-              label: Text('Buat Backup Sekarang', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600)),
+              label: Text(l10n.backupNow, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600)),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.gold,
                 foregroundColor: AppColors.bg,
@@ -242,7 +242,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Text('Backup tersimpan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+          Text(l10n.manageBackups, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
           const SizedBox(height: 8),
           if (_loading)
             const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator(color: AppColors.gold)))
@@ -250,7 +250,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             Padding(
               padding: const EdgeInsets.all(24),
               child: Center(
-                child: Text('Belum ada backup.', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
+                child: Text(l10n.noData, style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
               ),
             )
           else
@@ -270,35 +270,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                     onTap: () => _importBackup(File(f.path)),
                     leading: Icon(Icons.description_outlined, color: colors.primary, size: 22),
                     title: Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-                    subtitle: Text('${DateFormat('dd MMM yyyy, HH:mm').format(stat.modified)} • $sizeKb KB • Tap untuk pulihkan', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                    subtitle: Text('${DateFormat('dd MMM yyyy, HH:mm').format(stat.modified)} • $sizeKb KB', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                     trailing: Icon(Icons.restore, color: colors.textSecondary, size: 18),
                   ),
                 ),
               );
             }),
           const SizedBox(height: 24),
-          Text('Google Drive', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: colors.border),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.cloud_off_outlined, color: colors.textSecondary, size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Integrasi Google Drive memerlukan kredensial pengembang (client ID OAuth). Fitur nonaktif.',
-                    style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary, height: 1.4),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

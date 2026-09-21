@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,6 +80,44 @@ Future<void> _seedDefaults(AppDatabase db) async {
         CurrenciesTableCompanion.insert(code: 'EUR', name: 'Euro', symbol: '\u20ac'),
         CurrenciesTableCompanion.insert(code: 'GBP', name: 'British Pound', symbol: '\u00a3'),
         CurrenciesTableCompanion.insert(code: 'JPY', name: 'Japanese Yen', symbol: '\u00a5'),
+      ]);
+    });
+  }
+
+  final existingCategories = await db.select(db.categoriesTable).get();
+  if (existingCategories.isEmpty) {
+    final now = DateTime.now();
+    await db.batch((batch) {
+      batch.insertAll(db.categoriesTable, [
+        // Expense
+        CategoriesTableCompanion.insert(id: 'exp_food_drink', name: 'Makan & Minum', type: Value('expense'), systemKey: Value('food_drink'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_transport', name: 'Transportasi', type: Value('expense'), systemKey: Value('transport'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_shopping', name: 'Belanja', type: Value('expense'), systemKey: Value('shopping'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_housing', name: 'Rumah & Sewa', type: Value('expense'), systemKey: Value('housing'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_utilities', name: 'Tagihan & Utilitas', type: Value('expense'), systemKey: Value('utilities'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_health', name: 'Kesehatan', type: Value('expense'), systemKey: Value('health'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_education', name: 'Pendidikan', type: Value('expense'), systemKey: Value('education'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_entertainment', name: 'Hiburan', type: Value('expense'), systemKey: Value('entertainment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_vacation', name: 'Liburan', type: Value('expense'), systemKey: Value('vacation'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_family', name: 'Keluarga & Anak', type: Value('expense'), systemKey: Value('family'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_personal_care', name: 'Perawatan Diri', type: Value('expense'), systemKey: Value('personal_care'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_gifts', name: 'Hadiah & Donasi', type: Value('expense'), systemKey: Value('gifts'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_debt_payment', name: 'Cicilan & Hutang', type: Value('expense'), systemKey: Value('debt_payment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_insurance', name: 'Asuransi', type: Value('expense'), systemKey: Value('insurance'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_subscriptions', name: 'Langganan', type: Value('expense'), systemKey: Value('subscriptions'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_other', name: 'Lainnya', type: Value('expense'), systemKey: Value('other_expense'), createdAt: Value(now), updatedAt: Value(now)),
+        // Income
+        CategoriesTableCompanion.insert(id: 'inc_salary', name: 'Gaji', type: Value('income'), systemKey: Value('salary'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_bonus', name: 'Bonus', type: Value('income'), systemKey: Value('bonus'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_business', name: 'Usaha', type: Value('income'), systemKey: Value('business'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_investment', name: 'Investasi', type: Value('income'), systemKey: Value('investment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_gift', name: 'Hadiah', type: Value('income'), systemKey: Value('gift'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_sale', name: 'Penjualan', type: Value('income'), systemKey: Value('sale'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_refund', name: 'Pengembalian Dana', type: Value('income'), systemKey: Value('refund'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_other', name: 'Lainnya', type: Value('income'), systemKey: Value('other_income'), createdAt: Value(now), updatedAt: Value(now)),
+        // System (hidden)
+        CategoriesTableCompanion.insert(id: 'sys_balance_adj', name: 'Penyesuaian saldo', type: Value('system'), systemKey: Value('balance_adjustment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'sys_transfer', name: 'Transfer', type: Value('system'), systemKey: Value('transfer'), createdAt: Value(now), updatedAt: Value(now)),
       ]);
     });
   }

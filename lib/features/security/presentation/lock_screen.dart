@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:money_manager/features/security/application/security_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
@@ -66,12 +67,13 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   }
 
   void _showLockout() {
+    final l10n = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Text('Terlalu banyak percobaan', style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700)),
-        content: Text('Coba lagi dalam 1 menit.', style: GoogleFonts.inter(fontSize: 14)),
+        title: Text(l10n.error, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700)),
+        content: Text(l10n.retry, style: GoogleFonts.inter(fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () async {
@@ -80,7 +82,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
               if (!mounted) return;
               setState(() => _attempts = 0);
             },
-            child: const Text('Tunggu'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -90,6 +92,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -111,7 +114,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                 const SizedBox(height: 20),
                 Text('Money Manager', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
                 const SizedBox(height: 8),
-                Text('Masukkan PIN untuk melanjutkan', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
+                Text(l10n.enterPin, style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
                 const SizedBox(height: 24),
                 TextField(
                   controller: _pinCtrl,
@@ -125,7 +128,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                   decoration: InputDecoration(
                     counterText: '',
                     hintText: '••••••',
-                    errorText: _error ? 'PIN salah, coba lagi' : null,
+                    errorText: _error ? l10n.pinMismatch : null,
                     filled: true,
                     fillColor: colors.surface,
                     errorStyle: GoogleFonts.inter(fontSize: 12, color: AppColors.rose),
@@ -142,7 +145,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       foregroundColor: AppColors.bg,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: Text('Buka', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
+                    child: Text(l10n.save, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
                   ),
                 ),
                 FutureBuilder<bool>(
@@ -154,7 +157,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                       TextButton.icon(
                         onPressed: _offerBiometric,
                         icon: const Icon(Icons.fingerprint, color: AppColors.gold),
-                        label: Text('Gunakan biometrik', style: GoogleFonts.inter(fontSize: 13, color: AppColors.gold)),
+                        label: Text(l10n.enableBiometrics, style: GoogleFonts.inter(fontSize: 13, color: AppColors.gold)),
                       ),
                     ]);
                   },

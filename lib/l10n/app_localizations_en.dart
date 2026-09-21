@@ -228,10 +228,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overLimit => 'Over Limit';
 
   @override
-  String get noBudgets => 'No budgets set';
+  String get noBudgets => 'No budgets yet';
 
   @override
-  String get targetAndDebtsTitle => 'Target & Hutang';
+  String get goalsAndDebtsTitle => 'Goals & Debts';
 
   @override
   String get financialPlan => 'Financial Plan';
@@ -333,9 +333,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalLabel => 'Total';
 
   @override
-  String changeVsLastMonth(Object lastMonth, Object percent) {
-    return '$percent% vs $lastMonth';
-  }
+  String get changeVsLastMonth => 'Change vs last month';
 
   @override
   String get decrease => '↓';
@@ -356,7 +354,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewDetail => 'View Detail';
 
   @override
-  String get noData => 'No data available';
+  String get noData => 'No data yet';
 
   @override
   String get calendarTitle => 'Financial Calendar';
@@ -641,7 +639,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterCalendar => 'Calendar';
 
   @override
-  String monthYear(Object month, Object year) {
-    return '$month $year';
+  String get monthYear => 'Month & Year';
+
+  @override
+  String get financialSummary => 'Financial Summary';
+
+  @override
+  String get thisWeek => 'This Week';
+
+  @override
+  String get debtTypeBorrowed => 'Debt';
+
+  @override
+  String get debtTypeLent => 'Receivable';
+
+  @override
+  String get frequencyDaily => 'Daily';
+
+  @override
+  String get frequencyWeekly => 'Weekly';
+
+  @override
+  String get frequencyMonthly => 'Monthly';
+
+  @override
+  String get frequencyYearly => 'Yearly';
+
+  @override
+  String get nextDate => 'Next';
+
+  @override
+  String get manage => 'Manage';
+
+  @override
+  String get accountTypeCredit => 'Credit Card';
+
+  @override
+  String get accountTypeCash => 'Cash';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get accountList => 'Account List';
+
+  @override
+  String get netWorth => 'Net Worth';
+
+  @override
+  String get totalBudget => 'Total Budget';
+
+  @override
+  String get firstNote => 'Create first note';
+
+  @override
+  String get addAccountButton => '+ Add account';
+
+  @override
+  String get transferBalance => 'Transfer';
+
+  @override
+  String notesCount(Object count) {
+    return '$count notes saved';
   }
+
+  @override
+  String get accountTypeWallet => 'Wallet';
+
+  @override
+  String get accountTypeSavings => 'Savings';
+
+  @override
+  String get accountTypeInvestment => 'Investment';
 }

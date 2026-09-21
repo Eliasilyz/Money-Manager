@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/goals/application/goal_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class GoalsScreen extends ConsumerWidget {
@@ -12,12 +13,13 @@ class GoalsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final goalsAsync = ref.watch(goalsNotifierProvider);
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Target & Hutang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.goalsAndDebtsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: goalsAsync.when(
         data: (goals) {
@@ -33,8 +35,8 @@ class GoalsScreen extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    _tabPill(context, 'Target tabungan', true),
-                    _tabPill(context, 'Hutang', false),
+                    _tabPill(context, l10n.savingsTarget, true),
+                    _tabPill(context, l10n.debts, false),
                   ],
                 ),
               ),
@@ -62,7 +64,7 @@ class GoalsScreen extends ConsumerWidget {
                               color: Colors.white.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text('PRIORITAS', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white)),
+                            child: Text(l10n.priority.toUpperCase(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white)),
                           ),
                         ],
                       ),
@@ -72,7 +74,7 @@ class GoalsScreen extends ConsumerWidget {
                       Text(fmt.format(goals.first.targetAmount), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
                       const SizedBox(height: 8),
                       Text(
-                        '${(goals.first.currentAmount / goals.first.targetAmount * 100).toStringAsFixed(0)}% dari ${fmt.format(goals.first.targetAmount)}',
+                        '${(goals.first.currentAmount / goals.first.targetAmount * 100).toStringAsFixed(0)}% ${l10n.ofTarget} ${fmt.format(goals.first.targetAmount)}',
                         style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7)),
                       ),
                       if (goals.first.targetDate != null) ...[
@@ -106,7 +108,7 @@ class GoalsScreen extends ConsumerWidget {
                               const SizedBox(height: 6),
                               Text(fmt.format(g.currentAmount), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
                               const SizedBox(height: 4),
-                              Text('$pct% tercapai', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                              Text('$pct% ${l10n.ofTarget}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                             ],
                           ),
                         ),
@@ -115,10 +117,10 @@ class GoalsScreen extends ConsumerWidget {
                   ),
                 ],
               ] else ...[
-                _buildEmpty(context),
+                _buildEmpty(context, l10n),
               ],
               const SizedBox(height: 28),
-              Text('Ringkasan hutang', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+              Text(l10n.debtSummary, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
               const SizedBox(height: 12),
               Container(
                 width: double.infinity,
@@ -132,7 +134,7 @@ class GoalsScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.money_off_rounded, size: 32, color: colors.textSecondary),
                     const SizedBox(height: 8),
-                    Text('Belum ada hutang', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
+                    Text(l10n.totalDebtRemaining, style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
                   ],
                 ),
               ),
@@ -169,7 +171,7 @@ class GoalsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty(BuildContext context) {
+  Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Center(
       child: Padding(
@@ -182,7 +184,7 @@ class GoalsScreen extends ConsumerWidget {
               child: const Icon(Icons.flag_outlined, size: 32, color: AppColors.gold),
             ),
             const SizedBox(height: 16),
-            Text('Belum ada target keuangan', style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+            Text(l10n.noData, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
           ],
         ),
       ),

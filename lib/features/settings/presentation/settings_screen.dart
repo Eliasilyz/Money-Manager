@@ -7,6 +7,7 @@ import 'package:money_manager/features/categories/application/category_provider.
 import 'package:money_manager/features/goals/application/goal_provider.dart';
 import 'package:money_manager/features/recurring/application/recurring_provider.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -15,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);
     final notif = ref.watch(notificationsEnabledProvider);
@@ -24,44 +26,44 @@ class SettingsScreen extends ConsumerWidget {
     final recurring = ref.watch(recurringTransactionsNotifierProvider).valueOrNull ?? [];
 
     final themeLabel = switch (themeMode) {
-      ThemeMode.light => 'Tema terang',
-      ThemeMode.dark => 'Tema gelap',
-      _ => 'Ikuti sistem',
+      ThemeMode.light => l10n.light,
+      ThemeMode.dark => l10n.dark,
+      _ => l10n.followSystem,
     };
-    final langLabel = locale.languageCode == 'id' ? 'Indonesia' : 'English';
+    final langLabel = locale.languageCode == 'id' ? l10n.indonesian : l10n.english;
 
     return Scaffold(
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
           children: [
-            Text('Lainnya', style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            Text(l10n.othersTitle, style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w700, color: colors.textPrimary)),
             const SizedBox(height: 16),
 
             _buildProfileCard(context, colors),
             const SizedBox(height: 24),
 
-            Text('Kelola keuangan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.financialManagement, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.category_outlined, 'Kategori', '${categories.length} kategori', () => context.push('/categories')),
+              _tile(context, Icons.category_outlined, l10n.categories, l10n.categoriesCount(categories.length), () => context.push('/categories')),
               const Divider(height: 1),
-              _tile(context, Icons.repeat_rounded, 'Transaksi Berulang', '${recurring.length} transaksi aktif', () => context.push('/recurring')),
+              _tile(context, Icons.repeat_rounded, l10n.recurring, l10n.activeRecurring(recurring.length), () => context.push('/recurring')),
               const Divider(height: 1),
-              _tile(context, Icons.pie_chart_outline, 'Anggaran & Target', '${budgets.length} anggaran • ${goals.length} target', () => context.push('/budgets')),
+              _tile(context, Icons.pie_chart_outline, '${l10n.budgets} & ${l10n.goalsAndDebts}', l10n.budgetsGoalsCount(budgets.length, goals.length), () => context.push('/budgets')),
               const Divider(height: 1),
-              _tile(context, Icons.sticky_note_2_outlined, 'Catatan', 'Catatan pribadi', () => context.push('/notes')),
+              _tile(context, Icons.sticky_note_2_outlined, l10n.notes, '${categories.length} ${l10n.notes}', () => context.push('/notes')),
             ]),
             const SizedBox(height: 24),
 
-            Text('Preferensi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.preferences, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.cloud_sync_outlined, 'Backup & Restore', 'Cadangkan & pulihkan data', () => context.push('/backup')),
+              _tile(context, Icons.cloud_sync_outlined, l10n.backupRestore, l10n.backupNow, () => context.push('/backup')),
               const Divider(height: 1),
-              _tile(context, Icons.monetization_on_outlined, 'Mata Uang', 'Rupiah Indonesia (IDR)', () => context.push('/currencies')),
+              _tile(context, Icons.monetization_on_outlined, l10n.currency, 'Rupiah Indonesia (IDR)', () => context.push('/currencies')),
               const Divider(height: 1),
-              _tile(context, Icons.notifications_none_outlined, 'Notifikasi', notif ? 'Pengingat aktif' : 'Pengingat nonaktif', () {
+              _tile(context, Icons.notifications_none_outlined, l10n.notifications, notif ? l10n.notificationsActive : l10n.notificationsInactive, () {
                 final n = !notif;
                 ref.read(notificationsEnabledProvider.notifier).state = n;
                 ref.read(settingsServiceProvider).saveNotificationsEnabled(n);
@@ -73,14 +75,14 @@ class SettingsScreen extends ConsumerWidget {
                 }
               }),
               const Divider(height: 1),
-              _tile(context, Icons.palette_outlined, 'Tampilan', '$themeLabel • $langLabel', () => _showAppearanceDialog(context, ref)),
+              _tile(context, Icons.palette_outlined, l10n.view, '$themeLabel • $langLabel', () => _showAppearanceDialog(context, ref)),
             ]),
             const SizedBox(height: 24),
 
-            Text('Tentang aplikasi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.aboutApp, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.info_outline, 'Tentang Money Manager', 'Versi 1.0.0 (Build 1)', () => _showAboutDialog(context)),
+              _tile(context, Icons.info_outline, 'Money Manager', '${l10n.version} 1.0.0 (${l10n.build} 1)', () => _showAboutDialog(context)),
             ]),
           ],
         ),
@@ -147,13 +149,14 @@ class SettingsScreen extends ConsumerWidget {
 
   void _showAppearanceDialog(BuildContext context, WidgetRef ref) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final themeMode = ref.read(themeModeProvider);
     final locale = ref.read(localeProvider);
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Tampilan', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.view, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,11 +165,11 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                _themeOption(ctx, ref, 'Terang', ThemeMode.light, themeMode == ThemeMode.light),
+                _themeOption(ctx, ref, l10n.light, ThemeMode.light, themeMode == ThemeMode.light),
                 const SizedBox(width: 8),
-                _themeOption(ctx, ref, 'Gelap', ThemeMode.dark, themeMode == ThemeMode.dark),
+                _themeOption(ctx, ref, l10n.dark, ThemeMode.dark, themeMode == ThemeMode.dark),
                 const SizedBox(width: 8),
-                _themeOption(ctx, ref, 'Sistem', ThemeMode.system, themeMode == ThemeMode.system),
+                _themeOption(ctx, ref, l10n.followSystem, ThemeMode.system, themeMode == ThemeMode.system),
               ],
             ),
             const SizedBox(height: 16),
@@ -174,15 +177,15 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                _langOption(ctx, ref, 'Indonesia', const Locale('id'), locale.languageCode == 'id'),
+                _langOption(ctx, ref, l10n.indonesian, const Locale('id'), locale.languageCode == 'id'),
                 const SizedBox(width: 8),
-                _langOption(ctx, ref, 'English', const Locale('en'), locale.languageCode == 'en'),
+                _langOption(ctx, ref, l10n.english, const Locale('en'), locale.languageCode == 'en'),
               ],
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Tutup')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.close)),
         ],
       ),
     );
@@ -237,11 +240,12 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showAboutDialog(
       context: context,
       applicationName: 'Money Manager',
       applicationVersion: '1.0.0 (Build 1)',
-      applicationLegalese: '© 2026 Money Manager. Hak cipta dilindungi.',
+      applicationLegalese: '© 2026 Money Manager. ${l10n.allRightsReserved}',
     );
   }
 }
