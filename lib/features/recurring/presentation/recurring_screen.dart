@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/features/recurring/application/recurring_provider.dart';
@@ -32,7 +33,12 @@ class RecurringScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'recurring_fab',
-        onPressed: () {},
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Buat transaksi baru dengan toggle "Transaksi berulang" aktif', style: GoogleFonts.inter())),
+          );
+          context.push('/add-transaction');
+        },
         backgroundColor: AppColors.gold,
         foregroundColor: Colors.white,
         elevation: 4,
