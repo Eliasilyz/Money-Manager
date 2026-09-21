@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,25 +24,38 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   bool _showSearch = false;
   final _searchCtrl = TextEditingController();
 
-  static const _catColors = <String, Color>{
+  static const _categoryIcons = <String, IconData>{
+    'makan': Icons.restaurant_rounded,
+    'minum': Icons.local_cafe_rounded,
+    'belanja': Icons.shopping_bag_rounded,
+    'transportasi': Icons.directions_car_rounded,
+    'rumah': Icons.home_rounded,
+    'hiburan': Icons.movie_rounded,
+    'kesehatan': Icons.favorite_rounded,
+    'pendidikan': Icons.school_rounded,
+  };
+
+  static const _categoryBgColors = <String, Color>{
+    'makan': Color(0xFFE1F1EA),
+    'minum': Color(0xFFE8F0FA),
+    'belanja': Color(0xFFFEF3E2),
+    'transportasi': Color(0xFFFBE7E7),
+    'rumah': Color(0xFFEFECFA),
+    'hiburan': Color(0xFFE1F1EA),
+    'kesehatan': Color(0xFFFBE7E7),
+    'pendidikan': Color(0xFFE8F0FA),
+  };
+
+  static const _categoryFgColors = <String, Color>{
     'makan': Color(0xFF1B6E4B),
     'minum': Color(0xFF3B82F6),
     'belanja': Color(0xFFF59E0B),
     'transportasi': Color(0xFFE0524A),
     'rumah': Color(0xFF8B5CF6),
-    'hiburan': Color(0xFF10B981),
-    'kesehatan': Color(0xFFEF4444),
-    'pendidikan': Color(0xFF0EA5E9),
-    'gaji': Color(0xFF1B6E4B),
-    'investasi': Color(0xFF3B82F6),
-    'lainnya': Color(0xFF9CA3AF),
+    'hiburan': Color(0xFF1B6E4B),
+    'kesehatan': Color(0xFFE0524A),
+    'pendidikan': Color(0xFF3B82F6),
   };
-
-  static const _fallbackColors = [
-    Color(0xFF1B6E4B), Color(0xFF3B82F6), Color(0xFFF59E0B),
-    Color(0xFFE0524A), Color(0xFF8B5CF6), Color(0xFF10B981),
-    Color(0xFFEF4444), Color(0xFF0EA5E9),
-  ];
 
   @override
   void dispose() {
@@ -78,6 +90,25 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   ),
                   Row(
                     children: [
+                      GestureDetector(
+                        onTap: () => context.push('/statistics'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: colors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.bar_chart_rounded, color: colors.primary, size: 16),
+                              const SizedBox(width: 4),
+                              Text('Statistik', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
                       IconButton(
                         onPressed: () => setState(() => _showSearch = !_showSearch),
                         icon: Icon(Icons.search, color: colors.textSecondary, size: 22),
@@ -157,7 +188,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 data: (allTx) {
                   final filtered = _filterTransactions(allTx);
                   if (filtered.isEmpty) return _buildEmpty(colors);
-                  return _buildContent(filtered, allTx, catMap, fmt, colors);
+                  return _buildGroupedList(filtered, catMap, fmt, colors);
                 },
                 loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
                 error: (e, _) => Center(child: Text('Error: $e', style: GoogleFonts.inter(color: AppColors.rose))),
@@ -249,18 +280,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     return list;
   }
 
-  Widget _buildContent(List<Transaction> filtered, List<Transaction> allTx, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors) {
-    final statsTx = _filterType == 'Kalender' ? filtered : allTx;
-    final expenseTx = statsTx.where((t) => t.type == 'expense').toList();
-    final incomeTx = statsTx.where((t) => t.type == 'income').toList();
-    final totalExpense = expenseTx.fold<int>(0, (s, t) => s + t.amount);
-    final totalIncome = incomeTx.fold<int>(0, (s, t) => s + t.amount);
-
+  Widget _buildGroupedList(List<Transaction> txList, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors) {
+    final dayTotal = txList.fold<int>(0, (s, t) => s + (t.type == 'income' ? t.amount : -t.amount));
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
       children: [
-        if (expenseTx.isNotEmpty) _buildStatsSection(expenseTx, catMap, fmt, colors, totalExpense, totalIncome),
-        if (_filterType == 'Kalender') ...[
+        if (_filterType == 'Kalender')
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
             child: Row(
@@ -268,107 +293,15 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               children: [
                 Text(DateFormat('EEEE, d MMMM yyyy', 'id').format(_selectedDate), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                 Text(
-                  '${totalIncome - totalExpense >= 0 ? '+' : '-'}${fmt.format((totalIncome - totalExpense).abs())}',
-                  style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: totalIncome >= totalExpense ? AppColors.teal : AppColors.rose),
+                  '${dayTotal >= 0 ? '+' : '-'}${fmt.format(dayTotal.abs())}',
+                  style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: dayTotal >= 0 ? AppColors.teal : AppColors.rose),
                 ),
               ],
             ),
           ),
-        ],
-        ...filtered.map((t) => _buildTxTile(t, catMap, fmt, colors)),
+        ...txList.map((t) => _buildTxTile(t, catMap, fmt, colors)),
       ],
     );
-  }
-
-  Widget _buildStatsSection(List<Transaction> expenseTx, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors, int totalExpense, int totalIncome) {
-    final catTotals = <String, int>{};
-    for (final t in expenseTx) {
-      final catName = catMap[t.categoryId]?.name ?? 'Lainnya';
-      catTotals[catName] = (catTotals[catName] ?? 0) + t.amount;
-    }
-    final sorted = catTotals.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    final topItems = sorted.take(5).toList();
-    final otherTotal = sorted.skip(5).fold<int>(0, (s, e) => s + e.value);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Statistik', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              SizedBox(
-                width: 140,
-                height: 80,
-                child: CustomPaint(
-                  painter: _HalfDonutPainter(
-                    segments: [
-                      ...topItems.asMap().entries.map((e) => _DonutSegment(
-                        value: e.value.value.toDouble(),
-                        color: _getCatColor(e.value.key, e.key),
-                      )),
-                      if (otherTotal > 0) _DonutSegment(value: otherTotal.toDouble(), color: const Color(0xFF9CA3AF)),
-                    ],
-                    total: totalExpense.toDouble(),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Total', style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
-                        Text(fmt.format(totalExpense), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  children: [
-                    ...topItems.asMap().entries.map((e) => _buildLegendRow(e.value.key, e.value.value, totalExpense, _getCatColor(e.value.key, e.key), fmt, colors)),
-                    if (otherTotal > 0) _buildLegendRow('Lainnya', otherTotal, totalExpense, const Color(0xFF9CA3AF), fmt, colors),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLegendRow(String name, int amount, int total, Color color, NumberFormat fmt, AppColorsT colors) {
-    final pct = total > 0 ? (amount / total * 100).round() : 0;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: [
-          Container(width: 10, height: 10, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3))),
-          const SizedBox(width: 8),
-          Expanded(child: Text(name, style: GoogleFonts.inter(fontSize: 11, color: colors.textPrimary), overflow: TextOverflow.ellipsis)),
-          Text('$pct%', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-          const SizedBox(width: 8),
-          Text(fmt.format(amount), style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-        ],
-      ),
-    );
-  }
-
-  Color _getCatColor(String name, int index) {
-    final key = name.toLowerCase();
-    for (final entry in _catColors.entries) {
-      if (key.contains(entry.key)) return entry.value;
-    }
-    return _fallbackColors[index % _fallbackColors.length];
   }
 
   Widget _buildTxTile(Transaction t, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors) {
@@ -377,7 +310,19 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     final sign = isIncome ? '+' : '-';
     final cat = catMap[t.categoryId];
     final catName = cat?.name ?? '';
-    final fgColor = _getCatColor(catName, 0);
+
+    String iconKey = catName.toLowerCase();
+    IconData icon = Icons.receipt_long_rounded;
+    Color bgColor = const Color(0xFFE1F1EA);
+    Color fgColor = const Color(0xFF1B6E4B);
+    for (final entry in _categoryIcons.entries) {
+      if (iconKey.contains(entry.key)) {
+        icon = entry.value;
+        bgColor = _categoryBgColors[entry.key] ?? bgColor;
+        fgColor = _categoryFgColors[entry.key] ?? fgColor;
+        break;
+      }
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -391,8 +336,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         children: [
           Container(
             width: 40, height: 40,
-            decoration: BoxDecoration(color: fgColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-            child: Icon(isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded, color: fgColor, size: 18),
+            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: fgColor, size: 18),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -400,7 +345,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  (t.description != null && t.description!.isNotEmpty) ? t.description! : (catName.isNotEmpty ? catName : 'Transaksi'),
+                  (t.description != null && t.description!.isNotEmpty) ? t.description! : catName,
                   style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary),
                 ),
                 const SizedBox(height: 2),
@@ -436,50 +381,4 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
       ),
     );
   }
-}
-
-class _DonutSegment {
-  final double value;
-  final Color color;
-  const _DonutSegment({required this.value, required this.color});
-}
-
-class _HalfDonutPainter extends CustomPainter {
-  final List<_DonutSegment> segments;
-  final double total;
-
-  _HalfDonutPainter({required this.segments, required this.total});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (total <= 0 || segments.isEmpty) return;
-
-    final center = Offset(size.width / 2, size.height);
-    final radius = math.min(size.width / 2, size.height) - 6;
-    const strokeWidth = 16.0;
-
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    double startAngle = math.pi;
-    const totalAngle = math.pi;
-
-    for (final seg in segments) {
-      final sweep = (seg.value / total) * totalAngle;
-      paint.color = seg.color;
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        sweep,
-        false,
-        paint,
-      );
-      startAngle += sweep;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _HalfDonutPainter old) => old.total != total || old.segments != segments;
 }

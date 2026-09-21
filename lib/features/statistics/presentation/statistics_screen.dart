@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,9 +27,26 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     'transportasi': Color(0xFFE0524A),
     'rumah': Color(0xFF8B5CF6),
     'hiburan': Color(0xFF10B981),
-    'kesehatan': Color(0xFFE0524A),
-    'pendidikan': Color(0xFF3B82F6),
+    'kesehatan': Color(0xFFEF4444),
+    'pendidikan': Color(0xFF0EA5E9),
+    'gaji': Color(0xFF1B6E4B),
+    'investasi': Color(0xFF3B82F6),
+    'lainnya': Color(0xFF9CA3AF),
   };
+
+  static const _fallbackColors = [
+    Color(0xFF1B6E4B), Color(0xFF3B82F6), Color(0xFFF59E0B),
+    Color(0xFFE0524A), Color(0xFF8B5CF6), Color(0xFF10B981),
+    Color(0xFFEF4444), Color(0xFF0EA5E9),
+  ];
+
+  Color _getCatColor(String name, int index) {
+    final key = name.toLowerCase();
+    for (final entry in _catColors.entries) {
+      if (key.contains(entry.key)) return entry.value;
+    }
+    return _fallbackColors[index % _fallbackColors.length];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,137 +84,32 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           final expense = periodTx.where((t) => t.type == 'expense').fold<int>(0, (int sum, t) => sum + t.amount);
           final diff = income - expense;
 
-          // Category breakdown
+          final expenseTx = periodTx.where((t) => t.type == 'expense').toList();
           final catTotals = <String, int>{};
-          for (final t in periodTx.where((t) => t.type == 'expense')) {
-            final catId = t.categoryId;
-            if (catId != null) {
-              catTotals[catId] = (catTotals[catId] ?? 0) + t.amount;
-            }
+          for (final t in expenseTx) {
+            final catName = catMap[t.categoryId]?.name ?? 'Lainnya';
+            catTotals[catName] = (catTotals[catName] ?? 0) + t.amount;
           }
           final sortedCats = catTotals.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-          final maxCat = sortedCats.isNotEmpty ? sortedCats.first.value : 1;
+          final topItems = sortedCats.take(6).toList();
+          final otherTotal = sortedCats.skip(6).fold<int>(0, (s, e) => s + e.value);
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             children: [
               Text(periodLabel, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
               const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [colors.primaryDark, colors.primary],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Ringkasan keuangan', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        _heroStat('Pemasukan', income, Colors.white),
-                        const SizedBox(width: 16),
-                        _heroStat('Pengeluaran', expense, Colors.white),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text('Selisih', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
-                    Text(
-                      _fmt.format(diff),
-                      style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
+              _buildHeroCard(income, expense, diff, colors),
+              const SizedBox(height: 16),
+              _buildPeriodSelector(colors),
               const SizedBox(height: 24),
-              SizedBox(
-                height: 36,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: ['Minggu', 'Bulan', 'Tahun'].map((p) {
-                    final selected = _period == p;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: GestureDetector(
-                        onTap: () => setState(() => _period = p),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: selected ? colors.primary : colors.surface,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: selected ? colors.primary : colors.border),
-                          ),
-                          child: Text(p, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
+              if (expenseTx.isNotEmpty) ...[
+                _buildDonutSection(topItems, otherTotal, expense, catMap, colors),
+                const SizedBox(height: 24),
+              ],
+              _buildStatCards(periodTx.length, expense, now, colors),
               const SizedBox(height: 24),
-              // Stat cards row
-              Row(
-                children: [
-                  _statCard('Transaksi', '${periodTx.length}', colors),
-                  const SizedBox(width: 12),
-                  _statCard('Rata-rata/hari', _fmt.format(periodTx.isNotEmpty ? (expense / DateTime(now.year, now.month + 1, 0).day).round() : 0), colors),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Pengeluaran per kategori', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                  Text('${sortedCats.length} kategori', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
-                ],
-              ),
-              const SizedBox(height: 12),
-              if (sortedCats.isEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: colors.border)),
-                  child: Text('Belum ada data pengeluaran', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), textAlign: TextAlign.center),
-                )
-              else
-                ...sortedCats.map((entry) {
-                  final cat = catMap[entry.key];
-                  final name = cat?.name ?? 'Lainnya';
-                  final catColor = _catColors[name.toLowerCase()] ?? colors.primary;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: colors.border)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary)),
-                            Text(_fmt.format(entry.value), style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: (entry.value / maxCat).clamp(0.0, 1.0),
-                            backgroundColor: colors.border,
-                            color: catColor,
-                            minHeight: 6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+              _buildCategoryList(sortedCats, catMap, colors),
             ],
           );
         },
@@ -206,15 +119,162 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     );
   }
 
-  Widget _heroStat(String label, int value, Color textColor) {
+  Widget _buildHeroCard(int income, int expense, int diff, AppColorsT colors) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [colors.primaryDark, colors.primary],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Ringkasan keuangan', style: GoogleFonts.inter(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _heroStat('Pemasukan', income),
+              const SizedBox(width: 16),
+              _heroStat('Pengeluaran', expense),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text('Selisih', style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
+          Text(
+            _fmt.format(diff),
+            style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _heroStat(String label, int value) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.inter(fontSize: 11, color: textColor.withValues(alpha: 0.7))),
-          Text(_fmt.format(value), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: textColor)),
+          Text(label, style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
+          Text(_fmt.format(value), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
         ],
       ),
+    );
+  }
+
+  Widget _buildPeriodSelector(AppColorsT colors) {
+    return SizedBox(
+      height: 36,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: ['Minggu', 'Bulan', 'Tahun'].map((p) {
+          final selected = _period == p;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () => setState(() => _period = p),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: selected ? colors.primary : colors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: selected ? colors.primary : colors.border),
+                ),
+                child: Text(p, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textPrimary)),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildDonutSection(List<MapEntry<String, int>> topItems, int otherTotal, int total, Map<String, Category> catMap, AppColorsT colors) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Pengeluaran per kategori', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              SizedBox(
+                width: 140,
+                height: 80,
+                child: CustomPaint(
+                  painter: _HalfDonutPainter(
+                    segments: [
+                      ...topItems.asMap().entries.map((e) => _DonutSegment(
+                        value: e.value.value.toDouble(),
+                        color: _getCatColor(e.value.key, e.key),
+                      )),
+                      if (otherTotal > 0) _DonutSegment(value: otherTotal.toDouble(), color: const Color(0xFF9CA3AF)),
+                    ],
+                    total: total.toDouble(),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Total', style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
+                        Text(_fmt.format(total), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  children: [
+                    ...topItems.asMap().entries.map((e) => _legendRow(e.value.key, e.value.value, total, _getCatColor(e.value.key, e.key), colors)),
+                    if (otherTotal > 0) _legendRow('Lainnya', otherTotal, total, const Color(0xFF9CA3AF), colors),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _legendRow(String name, int amount, int total, Color color, AppColorsT colors) {
+    final pct = total > 0 ? (amount / total * 100).round() : 0;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Container(width: 10, height: 10, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3))),
+          const SizedBox(width: 8),
+          Expanded(child: Text(name, style: GoogleFonts.inter(fontSize: 11, color: colors.textPrimary), overflow: TextOverflow.ellipsis)),
+          Text('$pct%', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+          const SizedBox(width: 8),
+          Text(_fmt.format(amount), style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCards(int txCount, int expense, DateTime now, AppColorsT colors) {
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    final avgPerDay = txCount > 0 ? (expense / daysInMonth).round() : 0;
+    return Row(
+      children: [
+        _statCard('Transaksi', '$txCount', colors),
+        const SizedBox(width: 12),
+        _statCard('Rata-rata/hari', _fmt.format(avgPerDay), colors),
+      ],
     );
   }
 
@@ -234,4 +294,106 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       ),
     );
   }
+
+  Widget _buildCategoryList(List<MapEntry<String, int>> sortedCats, Map<String, Category> catMap, AppColorsT colors) {
+    if (sortedCats.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: colors.border)),
+        child: Text('Belum ada data pengeluaran', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary), textAlign: TextAlign.center),
+      );
+    }
+    final maxCat = sortedCats.first.value;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Detail kategori', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text('${sortedCats.length} kategori', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ...sortedCats.map((entry) {
+          final name = entry.key;
+          final catColor = _getCatColor(name, 0);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: colors.border)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary)),
+                    Text(_fmt.format(entry.value), style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: (entry.value / maxCat).clamp(0.0, 1.0),
+                    backgroundColor: colors.border,
+                    color: catColor,
+                    minHeight: 6,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+}
+
+class _DonutSegment {
+  final double value;
+  final Color color;
+  const _DonutSegment({required this.value, required this.color});
+}
+
+class _HalfDonutPainter extends CustomPainter {
+  final List<_DonutSegment> segments;
+  final double total;
+
+  _HalfDonutPainter({required this.segments, required this.total});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (total <= 0 || segments.isEmpty) return;
+
+    final center = Offset(size.width / 2, size.height);
+    final radius = math.min(size.width / 2, size.height) - 6;
+    const strokeWidth = 16.0;
+
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    double startAngle = math.pi;
+    const totalAngle = math.pi;
+
+    for (final seg in segments) {
+      final sweep = (seg.value / total) * totalAngle;
+      paint.color = seg.color;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweep,
+        false,
+        paint,
+      );
+      startAngle += sweep;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _HalfDonutPainter old) => old.total != total || old.segments != segments;
 }
