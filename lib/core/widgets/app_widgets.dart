@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class ScreenHeader extends StatelessWidget {
@@ -337,19 +336,18 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppColorsT.of(context);
-    final l10n = AppLocalizations.of(context);
     return NavigationBar(
       backgroundColor: const Color(0xFF0E3B2B),
       indicatorColor: Colors.white.withValues(alpha: 0.15),
       selectedIndex: navigationShell.currentIndex,
       onDestinationSelected: (index) => navigationShell.goBranch(index),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      destinations: [
-        NavigationDestination(icon: Icon(Icons.home_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.home, color: Colors.white), label: l10n.dashboard),
-        NavigationDestination(icon: Icon(Icons.receipt_long_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.receipt_long, color: Colors.white), label: l10n.transactions),
-        NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.account_balance_wallet, color: Colors.white), label: l10n.accounts),
-        NavigationDestination(icon: Icon(Icons.more_outlined, color: Colors.white.withValues(alpha: 0.6)), selectedIcon: Icon(Icons.more, color: Colors.white), label: l10n.settings),
+      height: 64,
+      destinations: const [
+        NavigationDestination(icon: Icon(Icons.home_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.home, color: Colors.white), label: 'Beranda'),
+        NavigationDestination(icon: Icon(Icons.receipt_long_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.receipt_long, color: Colors.white), label: 'Transaksi'),
+        NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.account_balance_wallet, color: Colors.white), label: 'Akun'),
+        NavigationDestination(icon: Icon(Icons.more_horiz_outlined, color: Color(0xFF999999)), selectedIcon: Icon(Icons.more_horiz, color: Colors.white), label: 'Lainnya'),
       ],
     );
   }
