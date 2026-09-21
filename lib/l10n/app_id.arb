@@ -248,5 +248,12 @@
   "donation": "Dukung Pengembang",
   "developerCredits": "Dikembangkan oleh {name}",
   "noChangelog": "Belum ada catatan perubahan.",
-  "copiedToClipboard": "Disalin ke clipboard"
+  "copiedToClipboard": "Disalin ke clipboard",
+  "editTransaction": "Ubah transaksi",
+  "editTransactionSubtitle": "Perbarui data transaksi",
+  "saveChanges": "Simpan perubahan",
+  "confirmDelete": "Hapus transaksi ini?",
+  "transactionUpdated": "Transaksi berhasil diperbarui",
+  "transactionDeleted": "Transaksi berhasil dihapus",
+  "transactionSaveError": "Gagal menyimpan transaksi"
 }

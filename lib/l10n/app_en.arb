@@ -247,5 +247,12 @@
   "donation": "Support the Developer",
   "developerCredits": "Developed by {name}",
   "noChangelog": "No changelog available yet.",
-  "copiedToClipboard": "Copied to clipboard"
+  "copiedToClipboard": "Copied to clipboard",
+  "editTransaction": "Edit Transaction",
+  "editTransactionSubtitle": "Update transaction data",
+  "saveChanges": "Save Changes",
+  "confirmDelete": "Delete this transaction?",
+  "transactionUpdated": "Transaction updated successfully",
+  "transactionDeleted": "Transaction deleted successfully",
+  "transactionSaveError": "Failed to save transaction"
 }

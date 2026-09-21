@@ -66,7 +66,7 @@ class AccountsScreen extends ConsumerWidget {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: () => context.push('/categories'),
+                          onPressed: () => context.push('/manage-accounts'),
                           child: Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                         ),
                       ],
@@ -83,7 +83,7 @@ class AccountsScreen extends ConsumerWidget {
                   children: [
                     Text(l10n.accountList, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                     TextButton(
-                      onPressed: () => context.push('/categories'),
+                      onPressed: () => context.push('/manage-accounts'),
                       child: Text(l10n.manage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
                     ),
                   ],

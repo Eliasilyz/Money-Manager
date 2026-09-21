@@ -6,14 +6,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/domain/entities/account.dart';
 import 'package:money_manager/domain/entities/category.dart';
+import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
-  const AddTransactionScreen({super.key});
+  final Transaction? transaction;
+  const AddTransactionScreen({super.key, this.transaction});
 
   @override
   ConsumerState<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -31,6 +34,23 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   final _descCtrl = TextEditingController();
   final _noteCtrl = TextEditingController();
 
+  bool get _isEditing => widget.transaction != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final t = widget.transaction;
+    if (t != null) {
+      _type = t.type;
+      _selectedAccountId = t.accountId;
+      _selectedCategoryId = t.categoryId;
+      _selectedDate = t.date;
+      _amountCtrl.text = t.amount.toString();
+      _descCtrl.text = t.description ?? '';
+      _noteCtrl.text = t.note ?? '';
+    }
+  }
+
   @override
   void dispose() {
     _amountCtrl.dispose();
@@ -42,6 +62,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
+    final l10n = AppLocalizations.of(context);
     final accountsAsync = ref.watch(accountsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
@@ -55,14 +76,20 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Tambah transaksi', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-            Text('Catatan dengan cepat', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+            Text(
+              _isEditing ? l10n.editTransaction : l10n.addTransaction,
+              style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: colors.textPrimary),
+            ),
+            Text(
+              _isEditing ? l10n.editTransactionSubtitle : l10n.addTransactionSubtitle,
+              style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Tutup', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.primary)),
+            child: Text(l10n.close, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.primary)),
           ),
         ],
       ),
@@ -76,15 +103,19 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               const SizedBox(height: 24),
               _buildCenteredAmount(colors),
               const SizedBox(height: 32),
-              _buildFormRow(Icons.category_outlined, 'Kategori', _getCategoryLabel(categoriesAsync), colors, () => _showCategoryPicker(categoriesAsync, colors)),
-              _buildFormRow(Icons.account_balance_wallet_outlined, 'Akun', _getAccountLabel(accountsAsync), colors, () => _showAccountPicker(accountsAsync, colors)),
-              _buildFormRow(Icons.calendar_today_outlined, 'Tanggal', DateFormat('dd MMMM yyyy • HH:mm', 'id').format(_selectedDate), colors, () => _pickDate()),
-              _buildFormRow(Icons.notes_outlined, 'Catatan', _noteCtrl.text.isEmpty ? 'Tambahkan catatan...' : _noteCtrl.text, colors, () => _showNoteDialog(colors)),
+              _buildFormRow(Icons.category_outlined, l10n.category, _getCategoryLabel(categoriesAsync), colors, () => _showCategoryPicker(categoriesAsync, colors)),
+              _buildFormRow(Icons.account_balance_wallet_outlined, l10n.accounts, _getAccountLabel(accountsAsync), colors, () => _showAccountPicker(accountsAsync, colors)),
+              _buildFormRow(Icons.calendar_today_outlined, l10n.date, DateFormat('dd MMMM yyyy • HH:mm', 'id').format(_selectedDate), colors, () => _pickDate()),
+              _buildFormRow(Icons.notes_outlined, l10n.note, _noteCtrl.text.isEmpty ? l10n.addTransactionSubtitle : _noteCtrl.text, colors, () => _showNoteDialog(colors)),
               _buildRecurringRow(colors),
               const SizedBox(height: 32),
-              _buildSaveButton(colors),
+              _buildSaveButton(colors, l10n),
               const SizedBox(height: 12),
-              Text('Anda masih bisa mengedit setelah menyimpan', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary), textAlign: TextAlign.center),
+              Text(
+                _isEditing ? '' : 'Anda masih bisa mengedit setelah menyimpan',
+                style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -248,7 +279,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     );
   }
 
-  Widget _buildSaveButton(AppColorsT colors) {
+  Widget _buildSaveButton(AppColorsT colors, AppLocalizations l10n) {
     return SizedBox(
       height: 52,
       child: FilledButton(
@@ -260,7 +291,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         ),
         child: _saving
             ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-            : Text('Simpan', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
+            : Text(
+                _isEditing ? l10n.saveChanges : l10n.saveTransaction,
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
+              ),
       ),
     );
   }
@@ -388,6 +422,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final amountText = _amountCtrl.text.trim();
     final amount = int.tryParse(amountText.replaceAll(RegExp(r'[^0-9]'), ''));
     if (amount == null || amount <= 0 || _selectedAccountId == null) {
@@ -404,31 +439,45 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     if (match.isNotEmpty) currencyCode = match.first.currencyCode;
 
     final description = _descCtrl.text.trim().isNotEmpty ? _descCtrl.text.trim() : null;
+    final note = _noteCtrl.text.trim().isNotEmpty ? _noteCtrl.text.trim() : null;
 
     setState(() => _saving = true);
     try {
-      final service = ref.read(transactionServiceProvider);
-      if (_type == 'income') {
-        await service.addIncome(
-          accountId: _selectedAccountId!, categoryId: _selectedCategoryId, amount: amount,
-          currencyCode: currencyCode, description: description, date: _selectedDate,
-          note: _noteCtrl.text.trim().isNotEmpty ? _noteCtrl.text.trim() : null,
+      if (_isEditing) {
+        final updated = widget.transaction!.copyWith(
+          type: _type,
+          accountId: _selectedAccountId!,
+          categoryId: _selectedCategoryId,
+          amount: amount,
+          currencyCode: currencyCode,
+          description: description,
+          date: _selectedDate,
+          note: note,
+          updatedAt: DateTime.now(),
         );
+        await ref.read(transactionsNotifierProvider.notifier).updateTransaction(updated);
       } else {
-        await service.addExpense(
-          accountId: _selectedAccountId!, categoryId: _selectedCategoryId, amount: amount,
-          currencyCode: currencyCode, description: description, date: _selectedDate,
-          note: _noteCtrl.text.trim().isNotEmpty ? _noteCtrl.text.trim() : null,
-        );
+        final service = ref.read(transactionServiceProvider);
+        if (_type == 'income') {
+          await service.addIncome(
+            accountId: _selectedAccountId!, categoryId: _selectedCategoryId, amount: amount,
+            currencyCode: currencyCode, description: description, date: _selectedDate, note: note,
+          );
+        } else {
+          await service.addExpense(
+            accountId: _selectedAccountId!, categoryId: _selectedCategoryId, amount: amount,
+            currencyCode: currencyCode, description: description, date: _selectedDate, note: note,
+          );
+        }
+        ref.read(transactionsNotifierProvider.notifier).loadTransactions();
       }
-      ref.read(transactionsNotifierProvider.notifier).loadTransactions();
       ref.read(accountsNotifierProvider.notifier).loadAccounts();
       ref.invalidate(dashboardProvider);
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e', style: GoogleFonts.inter())),
+          SnackBar(content: Text('${l10n.transactionSaveError}: $e', style: GoogleFonts.inter())),
         );
       }
     } finally {

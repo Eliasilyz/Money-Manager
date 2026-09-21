@@ -77,6 +77,9 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(debtsTable, debtsTable.billingDay);
             await m.addColumn(recurringTransactionsTable, recurringTransactionsTable.isSubscription);
           }
+          if (from < 3) {
+            await m.addColumn(accountsTable, accountsTable.sortOrder);
+          }
         },
       );
 

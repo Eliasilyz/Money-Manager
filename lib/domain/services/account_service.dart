@@ -42,4 +42,5 @@ class AccountService {
   Future<void> updateAccount(Account account) => _accountRepository.updateAccount(account);
   Future<void> deleteAccount(String id) => _accountRepository.deleteAccount(id);
   Future<void> archiveAccount(String id, bool archived) => _accountRepository.archiveAccount(id, archived);
+  Future<void> updateSortOrders(List<({String id, int sortOrder})> orders) => _accountRepository.updateSortOrders(orders);
 }

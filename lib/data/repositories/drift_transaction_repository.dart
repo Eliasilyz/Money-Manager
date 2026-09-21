@@ -60,6 +60,26 @@ class DriftTransactionRepository implements ITransactionRepository {
   }
 
   @override
+  Future<void> updateTransaction(domain.Transaction transaction) async {
+    await _db.transactionsDao.updateTransaction(
+      drift.TransactionsTableCompanion(
+        id: Value(transaction.id),
+        type: Value(transaction.type),
+        accountId: Value(transaction.accountId),
+        categoryId: Value(transaction.categoryId),
+        amount: Value(transaction.amount),
+        currencyCode: Value(transaction.currencyCode),
+        description: Value(transaction.description),
+        date: Value(transaction.date),
+        note: Value(transaction.note),
+        transferId: Value(transaction.transferId),
+        createdAt: Value(transaction.createdAt),
+        updatedAt: Value(transaction.updatedAt),
+      ),
+    );
+  }
+
+  @override
   Future<void> deleteTransaction(String id) async {
     await _db.transactionsDao.deleteTransaction(id);
   }

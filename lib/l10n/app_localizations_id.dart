@@ -434,7 +434,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get notificationSettings => 'Pengaturan Notifikasi';
 
   @override
-  String get notificationSettingsExplanation => 'Pengingat membantu kamu tidak melewatkan tagihan dan mengontrol anggaran';
+  String get notificationSettingsExplanation =>
+      'Pengingat membantu kamu tidak melewatkan tagihan dan mengontrol anggaran';
 
   @override
   String get notificationPermissionAllowed => 'Diizinkan';
@@ -449,31 +450,37 @@ class AppLocalizationsId extends AppLocalizations {
   String get notificationTypeRecurring => 'Tagihan & transaksi berulang';
 
   @override
-  String get notificationTypeRecurringDesc => 'Pengingat H-0, H-1, H-3 sebelum jatuh tempo';
+  String get notificationTypeRecurringDesc =>
+      'Pengingat H-0, H-1, H-3 sebelum jatuh tempo';
 
   @override
   String get notificationTypeDebt => 'Jatuh tempo hutang/cicilan';
 
   @override
-  String get notificationTypeDebtDesc => 'Pengingat H-0, H-1, H-3 sebelum jatuh tempo';
+  String get notificationTypeDebtDesc =>
+      'Pengingat H-0, H-1, H-3 sebelum jatuh tempo';
 
   @override
   String get notificationTypeBudget => 'Peringatan anggaran';
 
   @override
-  String get notificationTypeBudgetDesc => 'Notifikasi saat anggaran mencapai 80% dan 100%';
+  String get notificationTypeBudgetDesc =>
+      'Notifikasi saat anggaran mencapai 80% dan 100%';
 
   @override
-  String get notificationTypeDailyReminder => 'Pengingat catat transaksi harian';
+  String get notificationTypeDailyReminder =>
+      'Pengingat catat transaksi harian';
 
   @override
-  String get notificationTypeDailyReminderDesc => 'Pengingat harian, dilewati jika sudah ada transaksi';
+  String get notificationTypeDailyReminderDesc =>
+      'Pengingat harian, dilewati jika sudah ada transaksi';
 
   @override
   String get notificationTypeBackupStatus => 'Status backup';
 
   @override
-  String get notificationTypeBackupStatusDesc => 'Notifikasi jika backup gagal beberapa kali berturut-turut';
+  String get notificationTypeBackupStatusDesc =>
+      'Notifikasi jika backup gagal beberapa kali berturut-turut';
 
   @override
   String get notificationTestButton => 'Kirim notifikasi tes';
@@ -482,7 +489,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get notificationTestSent => 'Notifikasi tes terkirim';
 
   @override
-  String notificationActiveCount(int count) => '$count pengingat aktif';
+  String notificationActiveCount(Object count) {
+    return '$count pengingat aktif';
+  }
 
   @override
   String get view => 'Tampilan';
@@ -782,4 +791,25 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Disalin ke clipboard';
+
+  @override
+  String get editTransaction => 'Ubah transaksi';
+
+  @override
+  String get editTransactionSubtitle => 'Perbarui data transaksi';
+
+  @override
+  String get saveChanges => 'Simpan perubahan';
+
+  @override
+  String get confirmDelete => 'Hapus transaksi ini?';
+
+  @override
+  String get transactionUpdated => 'Transaksi berhasil diperbarui';
+
+  @override
+  String get transactionDeleted => 'Transaksi berhasil dihapus';
+
+  @override
+  String get transactionSaveError => 'Gagal menyimpan transaksi';
 }

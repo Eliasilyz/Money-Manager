@@ -21,6 +21,7 @@ class DriftAccountRepository implements IAccountRepository {
           color: a.color,
           note: a.note,
           isArchived: a.isArchived,
+          sortOrder: a.sortOrder,
           createdAt: a.createdAt,
           updatedAt: a.updatedAt,
         )).toList();
@@ -39,6 +40,7 @@ class DriftAccountRepository implements IAccountRepository {
           color: a.color,
           note: a.note,
           isArchived: a.isArchived,
+          sortOrder: a.sortOrder,
           createdAt: a.createdAt,
           updatedAt: a.updatedAt,
         )).toList();
@@ -58,6 +60,7 @@ class DriftAccountRepository implements IAccountRepository {
       color: account.color,
       note: account.note,
       isArchived: account.isArchived,
+      sortOrder: account.sortOrder,
       createdAt: account.createdAt,
       updatedAt: account.updatedAt,
     );
@@ -76,6 +79,7 @@ class DriftAccountRepository implements IAccountRepository {
                 color: a.color,
                 note: a.note,
                 isArchived: a.isArchived,
+                sortOrder: a.sortOrder,
                 createdAt: a.createdAt,
                 updatedAt: a.updatedAt,
               )).toList());
@@ -93,6 +97,7 @@ class DriftAccountRepository implements IAccountRepository {
                 color: a.color,
                 note: a.note,
                 isArchived: a.isArchived,
+                sortOrder: a.sortOrder,
                 createdAt: a.createdAt,
                 updatedAt: a.updatedAt,
               )).toList());
@@ -110,6 +115,7 @@ class DriftAccountRepository implements IAccountRepository {
         color: Value(account.color),
         note: Value(account.note),
         isArchived: Value(account.isArchived),
+        sortOrder: Value(account.sortOrder),
         createdAt: Value(account.createdAt),
         updatedAt: Value(account.updatedAt),
       ),
@@ -129,6 +135,7 @@ class DriftAccountRepository implements IAccountRepository {
         color: Value(account.color),
         note: Value(account.note),
         isArchived: Value(account.isArchived),
+        sortOrder: Value(account.sortOrder),
         createdAt: Value(account.createdAt),
         updatedAt: Value(account.updatedAt),
       ),
@@ -143,5 +150,10 @@ class DriftAccountRepository implements IAccountRepository {
   @override
   Future<void> archiveAccount(String id, bool archived) async {
     await _db.accountsDao.archiveAccount(id, archived);
+  }
+
+  @override
+  Future<void> updateSortOrders(List<({String id, int sortOrder})> orders) async {
+    await _db.accountsDao.updateSortOrders(orders);
   }
 }

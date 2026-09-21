@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:money_manager/domain/entities/account.dart';
 import 'package:money_manager/domain/entities/currency.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/currencies/application/currency_provider.dart';
@@ -9,7 +10,9 @@ import 'package:money_manager/features/dashboard/application/dashboard_provider.
 import 'package:money_manager/theme/app_theme.dart';
 
 class AddAccountScreen extends ConsumerStatefulWidget {
-  const AddAccountScreen({super.key});
+  const AddAccountScreen({super.key, this.editAccount});
+
+  final Account? editAccount;
 
   @override
   ConsumerState<AddAccountScreen> createState() => _AddAccountScreenState();
@@ -17,12 +20,14 @@ class AddAccountScreen extends ConsumerStatefulWidget {
 
 class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   AppColorsT get colors => AppColorsT.of(context);
-  final _nameCtrl = TextEditingController();
-  final _balanceCtrl = TextEditingController(text: '0');
-  final _noteCtrl = TextEditingController();
-  String _accountType = 'wallet';
-  String _currencyCode = 'IDR';
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _balanceCtrl;
+  late final TextEditingController _noteCtrl;
+  late String _accountType;
+  late String _currencyCode;
   bool _saving = false;
+
+  bool get _isEditing => widget.editAccount != null;
 
   static const _defaultCurrencies = [
     Currency(code: 'IDR', name: 'Indonesian Rupiah', symbol: 'Rp', decimalDigits: 0),
@@ -39,6 +44,17 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
     ('cash', 'Tunai', Icons.payments_outlined, AppColors.orange),
     ('investment', 'Investasi', Icons.trending_up_rounded, AppColors.lilac),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    final acct = widget.editAccount;
+    _nameCtrl = TextEditingController(text: acct?.name ?? '');
+    _balanceCtrl = TextEditingController(text: acct?.initialBalance.toString() ?? '0');
+    _noteCtrl = TextEditingController(text: acct?.note ?? '');
+    _accountType = acct?.accountType ?? 'wallet';
+    _currencyCode = acct?.currencyCode ?? 'IDR';
+  }
 
   @override
   void dispose() {
@@ -60,7 +76,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Akun', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(_isEditing ? 'Edit Akun' : 'Tambah Akun', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -195,7 +211,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                         )
                       : Text(
-                          'Simpan Akun',
+                          _isEditing ? 'Simpan Perubahan' : 'Simpan Akun',
                           style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                         ),
                 ),
@@ -220,13 +236,26 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
 
     setState(() => _saving = true);
     try {
-      await ref.read(accountsNotifierProvider.notifier).addAccount(
-        name: name,
-        accountType: _accountType,
-        currencyCode: _currencyCode,
-        initialBalance: balance,
-        note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
-      );
+      final notifier = ref.read(accountsNotifierProvider.notifier);
+      if (_isEditing) {
+        final updated = widget.editAccount!.copyWith(
+          name: name,
+          accountType: _accountType,
+          currencyCode: _currencyCode,
+          initialBalance: balance,
+          note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
+          updatedAt: DateTime.now(),
+        );
+        await notifier.updateAccount(updated);
+      } else {
+        await notifier.addAccount(
+          name: name,
+          accountType: _accountType,
+          currencyCode: _currencyCode,
+          initialBalance: balance,
+          note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
+        );
+      }
       ref.invalidate(dashboardProvider);
       if (mounted) context.pop();
     } catch (e) {

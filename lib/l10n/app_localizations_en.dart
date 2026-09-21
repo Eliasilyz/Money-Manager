@@ -435,7 +435,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationSettings => 'Notification Settings';
 
   @override
-  String get notificationSettingsExplanation => 'Reminders help you never miss bills and control your budget';
+  String get notificationSettingsExplanation =>
+      'Reminders help you never miss bills and control your budget';
 
   @override
   String get notificationPermissionAllowed => 'Allowed';
@@ -450,31 +451,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationTypeRecurring => 'Bills & recurring transactions';
 
   @override
-  String get notificationTypeRecurringDesc => 'Reminder H-0, H-1, H-3 before due date';
+  String get notificationTypeRecurringDesc =>
+      'Reminder H-0, H-1, H-3 before due date';
 
   @override
   String get notificationTypeDebt => 'Debt/installment due date';
 
   @override
-  String get notificationTypeDebtDesc => 'Reminder H-0, H-1, H-3 before due date';
+  String get notificationTypeDebtDesc =>
+      'Reminder H-0, H-1, H-3 before due date';
 
   @override
   String get notificationTypeBudget => 'Budget alerts';
 
   @override
-  String get notificationTypeBudgetDesc => 'Notification when budget reaches 80% and 100%';
+  String get notificationTypeBudgetDesc =>
+      'Notification when budget reaches 80% and 100%';
 
   @override
   String get notificationTypeDailyReminder => 'Daily transaction reminder';
 
   @override
-  String get notificationTypeDailyReminderDesc => 'Daily reminder, skipped if transactions already recorded';
+  String get notificationTypeDailyReminderDesc =>
+      'Daily reminder, skipped if transactions already recorded';
 
   @override
   String get notificationTypeBackupStatus => 'Backup status';
 
   @override
-  String get notificationTypeBackupStatusDesc => 'Notification if backup fails multiple times consecutively';
+  String get notificationTypeBackupStatusDesc =>
+      'Notification if backup fails multiple times consecutively';
 
   @override
   String get notificationTestButton => 'Send test notification';
@@ -483,7 +489,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationTestSent => 'Test notification sent';
 
   @override
-  String notificationActiveCount(int count) => '$count reminders active';
+  String notificationActiveCount(Object count) {
+    return '$count reminders active';
+  }
 
   @override
   String get view => 'Appearance';
@@ -767,7 +775,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountTypeInvestment => 'Investment';
 
   @override
-  String get changelog => "What's New";
+  String get changelog => 'What\'s New';
 
   @override
   String get donation => 'Support the Developer';
@@ -782,4 +790,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get editTransaction => 'Edit Transaction';
+
+  @override
+  String get editTransactionSubtitle => 'Update transaction data';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get confirmDelete => 'Delete this transaction?';
+
+  @override
+  String get transactionUpdated => 'Transaction updated successfully';
+
+  @override
+  String get transactionDeleted => 'Transaction deleted successfully';
+
+  @override
+  String get transactionSaveError => 'Failed to save transaction';
 }

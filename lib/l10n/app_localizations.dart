@@ -972,7 +972,7 @@ abstract class AppLocalizations {
   ///
   /// In id, this message translates to:
   /// **'{count} pengingat aktif'**
-  String notificationActiveCount(int count);
+  String notificationActiveCount(Object count);
 
   /// No description provided for @view.
   ///
@@ -1521,19 +1521,76 @@ abstract class AppLocalizations {
   String get accountTypeInvestment;
 
   /// No description provided for @changelog.
+  ///
+  /// In id, this message translates to:
+  /// **'Yang Baru'**
   String get changelog;
 
   /// No description provided for @donation.
+  ///
+  /// In id, this message translates to:
+  /// **'Dukung Pengembang'**
   String get donation;
 
   /// No description provided for @developerCredits.
+  ///
+  /// In id, this message translates to:
+  /// **'Dikembangkan oleh {name}'**
   String developerCredits(Object name);
 
   /// No description provided for @noChangelog.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada catatan perubahan.'**
   String get noChangelog;
 
   /// No description provided for @copiedToClipboard.
+  ///
+  /// In id, this message translates to:
+  /// **'Disalin ke clipboard'**
   String get copiedToClipboard;
+
+  /// No description provided for @editTransaction.
+  ///
+  /// In id, this message translates to:
+  /// **'Ubah transaksi'**
+  String get editTransaction;
+
+  /// No description provided for @editTransactionSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Perbarui data transaksi'**
+  String get editTransactionSubtitle;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan perubahan'**
+  String get saveChanges;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus transaksi ini?'**
+  String get confirmDelete;
+
+  /// No description provided for @transactionUpdated.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi berhasil diperbarui'**
+  String get transactionUpdated;
+
+  /// No description provided for @transactionDeleted.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi berhasil dihapus'**
+  String get transactionDeleted;
+
+  /// No description provided for @transactionSaveError.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menyimpan transaksi'**
+  String get transactionSaveError;
 }
 
 class _AppLocalizationsDelegate

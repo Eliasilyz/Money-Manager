@@ -40,4 +40,16 @@ class AccountsDao extends DatabaseAccessor<AppDatabase>
   Future<int> archiveAccount(String id, bool archived) =>
       (update(accountsTable)..where((a) => a.id.equals(id)))
           .write(AccountsTableCompanion(isArchived: Value(archived)));
+
+  Future<void> updateSortOrders(List<({String id, int sortOrder})> orders) async {
+    await batch((b) {
+      b.replaceAll(
+        accountsTable,
+        orders.map((o) => AccountsTableCompanion(
+              id: Value(o.id),
+              sortOrder: Value(o.sortOrder),
+            )),
+      );
+    });
+  }
 }

@@ -53,6 +53,11 @@ class AccountsNotifier extends StateNotifier<AsyncValue<List<Account>>> {
     await loadAccounts();
   }
 
+  Future<void> updateAccount(Account account) async {
+    await _service.updateAccount(account);
+    await loadAccounts();
+  }
+
   Future<void> deleteAccount(String id) async {
     await _service.deleteAccount(id);
     await loadAccounts();
@@ -60,6 +65,11 @@ class AccountsNotifier extends StateNotifier<AsyncValue<List<Account>>> {
 
   Future<void> archiveAccount(String id, bool archived) async {
     await _service.archiveAccount(id, archived);
+    await loadAccounts();
+  }
+
+  Future<void> updateSortOrders(List<({String id, int sortOrder})> orders) async {
+    await _service.updateSortOrders(orders);
     await loadAccounts();
   }
 }

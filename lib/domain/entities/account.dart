@@ -8,6 +8,7 @@ class Account {
   final String? color;
   final String? note;
   final bool isArchived;
+  final int sortOrder;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -21,6 +22,7 @@ class Account {
     this.color,
     this.note,
     this.isArchived = false,
+    this.sortOrder = 0,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -35,6 +37,7 @@ class Account {
     String? color,
     String? note,
     bool? isArchived,
+    int? sortOrder,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -48,6 +51,7 @@ class Account {
       color: color ?? this.color,
       note: note ?? this.note,
       isArchived: isArchived ?? this.isArchived,
+      sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -63,6 +67,7 @@ class Account {
     'color': color,
     'note': note,
     'isArchived': isArchived,
+    'sortOrder': sortOrder,
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
   };
@@ -77,6 +82,7 @@ class Account {
         color: json['color'] as String?,
         note: json['note'] as String?,
         isArchived: json['isArchived'] as bool? ?? false,
+        sortOrder: json['sortOrder'] as int? ?? 0,
         createdAt: DateTime.parse(json['createdAt'] as String),
         updatedAt: DateTime.parse(json['updatedAt'] as String),
       );

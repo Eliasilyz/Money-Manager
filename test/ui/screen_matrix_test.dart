@@ -66,6 +66,7 @@ class _EmptyAccountRepo implements IAccountRepository {
   @override Future<void> updateAccount(Account a) async {}
   @override Future<void> deleteAccount(String id) async {}
   @override Future<void> archiveAccount(String id, bool archived) async {}
+  @override Future<void> updateSortOrders(List<({String id, int sortOrder})> orders) async {}
 }
 
 class _EmptyCategoryRepo implements ICategoryRepository {
@@ -85,6 +86,7 @@ class _EmptyTransactionRepo implements ITransactionRepository {
   @override Stream<List<Transaction>> watchTransactionsByType(String type) => Stream.value([]);
   @override Future<List<Transaction>> getTransactionsByDateRange(DateTime start, DateTime end) async => [];
   @override Future<void> insertTransaction(Transaction t) async {}
+  @override Future<void> updateTransaction(Transaction t) async {}
   @override Future<void> deleteTransaction(String id) async {}
   @override Future<List<Transfer>> getAllTransfers() async => [];
   @override Stream<List<Transfer>> watchTransfersByAccount(String accountId) => Stream.value([]);

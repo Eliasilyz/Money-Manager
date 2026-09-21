@@ -33,6 +33,11 @@ class TransactionsNotifier extends StateNotifier<AsyncValue<List<Transaction>>> 
     await _repo.deleteTransaction(id);
     await loadTransactions();
   }
+
+  Future<void> updateTransaction(Transaction transaction) async {
+    await _repo.updateTransaction(transaction.copyWith(updatedAt: DateTime.now()));
+    await loadTransactions();
+  }
 }
 
 final transactionsNotifierProvider = StateNotifierProvider<TransactionsNotifier, AsyncValue<List<Transaction>>>((ref) {

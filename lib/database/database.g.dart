@@ -66,6 +66,14 @@ class $AccountsTableTable extends AccountsTable
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("is_archived" IN (0, 1))'),
       defaultValue: const Constant(false));
+  static const VerificationMeta _sortOrderMeta =
+      const VerificationMeta('sortOrder');
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+      'sort_order', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _systemKeyMeta =
       const VerificationMeta('systemKey');
   @override
@@ -99,6 +107,7 @@ class $AccountsTableTable extends AccountsTable
         color,
         note,
         isArchived,
+        sortOrder,
         systemKey,
         createdAt,
         updatedAt
@@ -162,6 +171,10 @@ class $AccountsTableTable extends AccountsTable
           isArchived.isAcceptableOrUnknown(
               data['is_archived']!, _isArchivedMeta));
     }
+    if (data.containsKey('sort_order')) {
+      context.handle(_sortOrderMeta,
+          sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta));
+    }
     if (data.containsKey('system_key')) {
       context.handle(_systemKeyMeta,
           systemKey.isAcceptableOrUnknown(data['system_key']!, _systemKeyMeta));
@@ -201,6 +214,8 @@ class $AccountsTableTable extends AccountsTable
           .read(DriftSqlType.string, data['${effectivePrefix}note']),
       isArchived: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_archived'])!,
+      sortOrder: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sort_order'])!,
       systemKey: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}system_key']),
       createdAt: attachedDatabase.typeMapping
@@ -226,6 +241,7 @@ class Account extends DataClass implements Insertable<Account> {
   final String? color;
   final String? note;
   final bool isArchived;
+  final int sortOrder;
   final String? systemKey;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -239,6 +255,7 @@ class Account extends DataClass implements Insertable<Account> {
       this.color,
       this.note,
       required this.isArchived,
+      required this.sortOrder,
       this.systemKey,
       required this.createdAt,
       required this.updatedAt});
@@ -260,6 +277,7 @@ class Account extends DataClass implements Insertable<Account> {
       map['note'] = Variable<String>(note);
     }
     map['is_archived'] = Variable<bool>(isArchived);
+    map['sort_order'] = Variable<int>(sortOrder);
     if (!nullToAbsent || systemKey != null) {
       map['system_key'] = Variable<String>(systemKey);
     }
@@ -280,6 +298,7 @@ class Account extends DataClass implements Insertable<Account> {
           color == null && nullToAbsent ? const Value.absent() : Value(color),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       isArchived: Value(isArchived),
+      sortOrder: Value(sortOrder),
       systemKey: systemKey == null && nullToAbsent
           ? const Value.absent()
           : Value(systemKey),
@@ -301,6 +320,7 @@ class Account extends DataClass implements Insertable<Account> {
       color: serializer.fromJson<String?>(json['color']),
       note: serializer.fromJson<String?>(json['note']),
       isArchived: serializer.fromJson<bool>(json['isArchived']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
       systemKey: serializer.fromJson<String?>(json['systemKey']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -319,6 +339,7 @@ class Account extends DataClass implements Insertable<Account> {
       'color': serializer.toJson<String?>(color),
       'note': serializer.toJson<String?>(note),
       'isArchived': serializer.toJson<bool>(isArchived),
+      'sortOrder': serializer.toJson<int>(sortOrder),
       'systemKey': serializer.toJson<String?>(systemKey),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -335,6 +356,7 @@ class Account extends DataClass implements Insertable<Account> {
           Value<String?> color = const Value.absent(),
           Value<String?> note = const Value.absent(),
           bool? isArchived,
+          int? sortOrder,
           Value<String?> systemKey = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt}) =>
@@ -348,6 +370,7 @@ class Account extends DataClass implements Insertable<Account> {
         color: color.present ? color.value : this.color,
         note: note.present ? note.value : this.note,
         isArchived: isArchived ?? this.isArchived,
+        sortOrder: sortOrder ?? this.sortOrder,
         systemKey: systemKey.present ? systemKey.value : this.systemKey,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -369,6 +392,7 @@ class Account extends DataClass implements Insertable<Account> {
       note: data.note.present ? data.note.value : this.note,
       isArchived:
           data.isArchived.present ? data.isArchived.value : this.isArchived,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       systemKey: data.systemKey.present ? data.systemKey.value : this.systemKey,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -387,6 +411,7 @@ class Account extends DataClass implements Insertable<Account> {
           ..write('color: $color, ')
           ..write('note: $note, ')
           ..write('isArchived: $isArchived, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('systemKey: $systemKey, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -405,6 +430,7 @@ class Account extends DataClass implements Insertable<Account> {
       color,
       note,
       isArchived,
+      sortOrder,
       systemKey,
       createdAt,
       updatedAt);
@@ -421,6 +447,7 @@ class Account extends DataClass implements Insertable<Account> {
           other.color == this.color &&
           other.note == this.note &&
           other.isArchived == this.isArchived &&
+          other.sortOrder == this.sortOrder &&
           other.systemKey == this.systemKey &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -436,6 +463,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
   final Value<String?> color;
   final Value<String?> note;
   final Value<bool> isArchived;
+  final Value<int> sortOrder;
   final Value<String?> systemKey;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -450,6 +478,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
     this.color = const Value.absent(),
     this.note = const Value.absent(),
     this.isArchived = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.systemKey = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -465,6 +494,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
     this.color = const Value.absent(),
     this.note = const Value.absent(),
     this.isArchived = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.systemKey = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -482,6 +512,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
     Expression<String>? color,
     Expression<String>? note,
     Expression<bool>? isArchived,
+    Expression<int>? sortOrder,
     Expression<String>? systemKey,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -497,6 +528,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
       if (color != null) 'color': color,
       if (note != null) 'note': note,
       if (isArchived != null) 'is_archived': isArchived,
+      if (sortOrder != null) 'sort_order': sortOrder,
       if (systemKey != null) 'system_key': systemKey,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -514,6 +546,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
       Value<String?>? color,
       Value<String?>? note,
       Value<bool>? isArchived,
+      Value<int>? sortOrder,
       Value<String?>? systemKey,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
@@ -528,6 +561,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
       color: color ?? this.color,
       note: note ?? this.note,
       isArchived: isArchived ?? this.isArchived,
+      sortOrder: sortOrder ?? this.sortOrder,
       systemKey: systemKey ?? this.systemKey,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -565,6 +599,9 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
     if (isArchived.present) {
       map['is_archived'] = Variable<bool>(isArchived.value);
     }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
     if (systemKey.present) {
       map['system_key'] = Variable<String>(systemKey.value);
     }
@@ -592,6 +629,7 @@ class AccountsTableCompanion extends UpdateCompanion<Account> {
           ..write('color: $color, ')
           ..write('note: $note, ')
           ..write('isArchived: $isArchived, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('systemKey: $systemKey, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -5953,6 +5991,7 @@ typedef $$AccountsTableTableCreateCompanionBuilder = AccountsTableCompanion
   Value<String?> color,
   Value<String?> note,
   Value<bool> isArchived,
+  Value<int> sortOrder,
   Value<String?> systemKey,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -5969,6 +6008,7 @@ typedef $$AccountsTableTableUpdateCompanionBuilder = AccountsTableCompanion
   Value<String?> color,
   Value<String?> note,
   Value<bool> isArchived,
+  Value<int> sortOrder,
   Value<String?> systemKey,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -6011,6 +6051,9 @@ class $$AccountsTableTableFilterComposer
 
   ColumnFilters<bool> get isArchived => $composableBuilder(
       column: $table.isArchived, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+      column: $table.sortOrder, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get systemKey => $composableBuilder(
       column: $table.systemKey, builder: (column) => ColumnFilters(column));
@@ -6060,6 +6103,9 @@ class $$AccountsTableTableOrderingComposer
   ColumnOrderings<bool> get isArchived => $composableBuilder(
       column: $table.isArchived, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+      column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get systemKey => $composableBuilder(
       column: $table.systemKey, builder: (column) => ColumnOrderings(column));
 
@@ -6106,6 +6152,9 @@ class $$AccountsTableTableAnnotationComposer
   GeneratedColumn<bool> get isArchived => $composableBuilder(
       column: $table.isArchived, builder: (column) => column);
 
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
   GeneratedColumn<String> get systemKey =>
       $composableBuilder(column: $table.systemKey, builder: (column) => column);
 
@@ -6148,6 +6197,7 @@ class $$AccountsTableTableTableManager extends RootTableManager<
             Value<String?> color = const Value.absent(),
             Value<String?> note = const Value.absent(),
             Value<bool> isArchived = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
             Value<String?> systemKey = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -6163,6 +6213,7 @@ class $$AccountsTableTableTableManager extends RootTableManager<
             color: color,
             note: note,
             isArchived: isArchived,
+            sortOrder: sortOrder,
             systemKey: systemKey,
             createdAt: createdAt,
             updatedAt: updatedAt,
@@ -6178,6 +6229,7 @@ class $$AccountsTableTableTableManager extends RootTableManager<
             Value<String?> color = const Value.absent(),
             Value<String?> note = const Value.absent(),
             Value<bool> isArchived = const Value.absent(),
+            Value<int> sortOrder = const Value.absent(),
             Value<String?> systemKey = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -6193,6 +6245,7 @@ class $$AccountsTableTableTableManager extends RootTableManager<
             color: color,
             note: note,
             isArchived: isArchived,
+            sortOrder: sortOrder,
             systemKey: systemKey,
             createdAt: createdAt,
             updatedAt: updatedAt,

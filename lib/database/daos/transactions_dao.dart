@@ -15,6 +15,9 @@ class TransactionsDao extends DatabaseAccessor<AppDatabase>
   Future<int> insertTransaction(TransactionsTableCompanion transaction) =>
       into(transactionsTable).insert(transaction);
 
+  Future<int> updateTransaction(TransactionsTableCompanion transaction) =>
+      (update(transactionsTable)..where((t) => t.id.equals(transaction.id.value))).write(transaction);
+
   Future<int> deleteTransaction(String id) =>
       (delete(transactionsTable)..where((t) => t.id.equals(id))).go();
 

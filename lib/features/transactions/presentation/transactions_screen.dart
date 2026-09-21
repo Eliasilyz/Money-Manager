@@ -8,6 +8,7 @@ import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -352,7 +353,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Navigator.pop(ctx);
-                      context.push('/add-transaction');
+                      context.push('/add-transaction', extra: t);
                     },
                     icon: const Icon(Icons.edit_outlined, size: 18),
                     label: Text(l10n.edit, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
@@ -361,7 +362,33 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () => Navigator.pop(ctx),
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (dCtx) => AlertDialog(
+                          title: Text(l10n.confirmDelete, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(dCtx, false), child: Text(l10n.cancel)),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(dCtx, true),
+                              style: FilledButton.styleFrom(backgroundColor: AppColors.rose),
+                              child: Text(l10n.delete),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed == true && mounted) {
+                        await ref.read(transactionsNotifierProvider.notifier).deleteTransaction(t.id);
+                        ref.read(accountsNotifierProvider.notifier).loadAccounts();
+                        ref.invalidate(dashboardProvider);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.transactionDeleted, style: GoogleFonts.inter())),
+                          );
+                        }
+                      }
+                    },
                     icon: const Icon(Icons.delete_outline, size: 18),
                     label: Text(l10n.delete, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
                     style: FilledButton.styleFrom(backgroundColor: AppColors.rose),

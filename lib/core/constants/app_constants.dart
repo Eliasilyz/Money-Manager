@@ -1,5 +1,5 @@
 class AppConstants {
-  static const int databaseSchemaVersion = 2;
+  static const int databaseSchemaVersion = 3;
   static const String defaultBaseCurrency = 'IDR';
   static const String defaultDateFormat = 'yyyy-MM-dd';
   static const int defaultCurrencyDecimalDigits = 0;

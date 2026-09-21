@@ -61,6 +61,15 @@ class TransactionService {
     await _transactionRepository.insertTransaction(transaction);
   }
 
+  Future<void> updateTransaction(Transaction transaction) async {
+    final updated = transaction.copyWith(updatedAt: DateTime.now());
+    await _transactionRepository.updateTransaction(updated);
+  }
+
+  Future<void> deleteTransaction(String id) async {
+    await _transactionRepository.deleteTransaction(id);
+  }
+
   Future<void> addTransfer({
     required String fromAccountId,
     required String toAccountId,
