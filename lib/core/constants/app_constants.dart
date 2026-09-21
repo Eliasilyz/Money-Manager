@@ -13,6 +13,7 @@ class AppConstants {
   static const Duration autoBackupInterval = Duration(hours: 24);
   static const String encryptionKeyAlias = 'money_manager_encryption_key';
   static const int paginationPageSize = 50;
+  static const int defaultMaxBackups = 5;
 
   AppConstants._();
 }

@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:crypto/crypto.dart';
 import 'package:money_manager/core/constants/app_constants.dart';
 import 'package:money_manager/core/crypto/crypto_utils.dart';
 import 'package:money_manager/database/database.dart' as db;
+import 'package:path_provider/path_provider.dart';
 
 const backupFormatIdentifier = 'money_manager_backup';
 const backupEncryptionMarker = 'encrypted_backup';
@@ -13,22 +17,10 @@ class BackupException implements Exception {
   String toString() => message;
 }
 
-/// Versioned JSON backup, independent of the SQLite schema.
-///
-/// Structure:
-/// ```json
-/// {
-///   "format": "money_manager_backup",
-///   "schemaVersion": 1,
-///   "appVersion": "1.0.0",
-///   "exportedAt": "iso8601",
-///   "data": { "accounts": [...], "categories": [...], ... }
-/// }
-/// ```
-/// When a password is set the whole object is AES-GCM encrypted and wrapped as
-/// `{ "format": "encrypted_backup", "payload": "<base64>" }`.
 class BackupService {
   const BackupService();
+
+  // --- Backup generation ---
 
   Future<String> generateBackup(db.AppDatabase database, {String? password}) async {
     final data = await _collectAll(database);
@@ -46,8 +38,32 @@ class BackupService {
     });
   }
 
-  /// Parses, decrypts (if password) and validates a backup payload.
-  /// Returns the raw data map keyed by collection name.
+  /// Creates a gzipped backup and returns the raw bytes.
+  Future<List<int>> createCompressedBackup(db.AppDatabase database, {String? password}) async {
+    final json = await generateBackup(database, password: password);
+    return gzip.encode(utf8.encode(json));
+  }
+
+  /// Computes a hash of the current database state. Returns null if the hash
+  /// matches the last recorded hash (i.e. no changes since last backup).
+  Future<bool> shouldSkipBackup(db.AppDatabase database) async {
+    final data = await _collectAll(database);
+    final canonical = const JsonEncoder().convert(data);
+    final hash = md5.convert(utf8.encode(canonical)).toString();
+    final lastHash = await _readLastHash();
+    return hash == lastHash;
+  }
+
+  Future<void> recordBackupSuccess() async {
+    // TODO_FILL_ME: persist last backup time + data hash to SharedPreferences
+  }
+
+  Future<void> recordBackupFailure(String reason) async {
+    // TODO_FILL_ME: persist failure reason + time to SharedPreferences
+  }
+
+  // --- Parsing & restore ---
+
   Map<String, List<Map<String, dynamic>>> parseBackup(String raw, {String? password}) {
     Map<String, dynamic> root;
     try {
@@ -98,15 +114,11 @@ class BackupService {
     });
   }
 
-  /// True when the backup contains a collection name we do not know.
   bool hasUnknownCollections(Map<String, List<Map<String, dynamic>>> data) {
     final known = _collections.keys.toSet();
     return data.keys.any((k) => !known.contains(k));
   }
 
-  /// Restores all data inside a single transaction. Old data is only wiped
-  /// after every collection row has been validated/counted first, so a
-  /// malformed row set leaves the current data untouched.
   Future<int> restoreBackup(
     db.AppDatabase database,
     Map<String, List<Map<String, dynamic>>> data,
@@ -121,6 +133,58 @@ class BackupService {
       }
     });
     return data.values.fold<int>(0, (sum, rows) => sum + rows.length);
+  }
+
+  // --- Safety snapshot ---
+
+  Future<void> createSafetySnapshot(db.AppDatabase database) async {
+    final json = await generateBackup(database);
+    final dir = await _safetyDir();
+    final file = File('${dir.path}/safety-snapshot.json');
+    await file.writeAsString(json);
+  }
+
+  Future<void> deleteSafetySnapshot() async {
+    final dir = await _safetyDir();
+    final file = File('${dir.path}/safety-snapshot.json');
+    if (await file.exists()) await file.delete();
+  }
+
+  Future<void> rollbackFromSafetySnapshot(db.AppDatabase database) async {
+    final dir = await _safetyDir();
+    final file = File('${dir.path}/safety-snapshot.json');
+    if (!await file.exists()) {
+      throw const BackupException('Snapshot cadangan tidak ditemukan.');
+    }
+    final raw = await file.readAsString();
+    final data = parseBackup(raw);
+    await restoreBackup(database, data);
+    await file.delete();
+  }
+
+  Future<Directory> _safetyDir() async {
+    final docs = await getApplicationDocumentsDirectory();
+    final dir = Directory('${docs.path}/backup_snapshots');
+    if (!await dir.exists()) await dir.create(recursive: true);
+    return dir;
+  }
+
+  // --- Retention ---
+
+  Future<void> trimOldBackups({int maxBackups = 5}) async {
+    // TODO_FILL_ME: list backups on Drive, sort by date, delete oldest auto backups beyond maxBackups
+  }
+
+  Future<String> getDriveBackupSize() async {
+    // TODO_FILL_ME: query total size from Drive
+    return '0 B';
+  }
+
+  // --- Internals ---
+
+  Future<String?> _readLastHash() async {
+    // TODO_FILL_ME: read from SharedPreferences
+    return null;
   }
 
   Future<Map<String, List<Map<String, dynamic>>>> _collectAll(db.AppDatabase database) async {
