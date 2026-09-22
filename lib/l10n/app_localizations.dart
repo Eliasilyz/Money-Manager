@@ -1712,6 +1712,18 @@ abstract class AppLocalizations {
   /// **'Edit Akun'**
   String get editAccount;
 
+  /// No description provided for @editBudget.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Anggaran'**
+  String get editBudget;
+
+  /// No description provided for @editGoal.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Target'**
+  String get editGoal;
+
   /// No description provided for @adjustBalance.
   ///
   /// In id, this message translates to:
@@ -1891,6 +1903,132 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Akun asal dan tujuan tidak boleh sama'**
   String get accountsMustBeDifferent;
+
+  /// No description provided for @appSettingsSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengaturan aplikasi & data'**
+  String get appSettingsSubtitle;
+
+  /// No description provided for @theme.
+  ///
+  /// In id, this message translates to:
+  /// **'Tema'**
+  String get theme;
+
+  /// No description provided for @otherFeatures.
+  ///
+  /// In id, this message translates to:
+  /// **'Fitur Lainnya'**
+  String get otherFeatures;
+
+  /// No description provided for @budgetsAndGoals.
+  ///
+  /// In id, this message translates to:
+  /// **'Anggaran & Target'**
+  String get budgetsAndGoals;
+
+  /// No description provided for @defaultCurrencyName.
+  ///
+  /// In id, this message translates to:
+  /// **'Rupiah Indonesia (IDR)'**
+  String get defaultCurrencyName;
+
+  /// No description provided for @dataAndSecurity.
+  ///
+  /// In id, this message translates to:
+  /// **'Data & keamanan'**
+  String get dataAndSecurity;
+
+  /// No description provided for @securitySubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'PIN, biometrik, dan akses akun'**
+  String get securitySubtitle;
+
+  /// No description provided for @helpAndInfo.
+  ///
+  /// In id, this message translates to:
+  /// **'Bantuan & informasi'**
+  String get helpAndInfo;
+
+  /// No description provided for @themeUppercase.
+  ///
+  /// In id, this message translates to:
+  /// **'TEMA'**
+  String get themeUppercase;
+
+  /// No description provided for @languageUppercase.
+  ///
+  /// In id, this message translates to:
+  /// **'BAHASA'**
+  String get languageUppercase;
+
+  /// No description provided for @backupAvailablePlatform.
+  ///
+  /// In id, this message translates to:
+  /// **'Backup tersedia di Android/iOS'**
+  String get backupAvailablePlatform;
+
+  /// No description provided for @backupRetention.
+  ///
+  /// In id, this message translates to:
+  /// **'Retensi backup'**
+  String get backupRetention;
+
+  /// No description provided for @maxBackups.
+  ///
+  /// In id, this message translates to:
+  /// **'Maks backup'**
+  String get maxBackups;
+
+  /// No description provided for @maxBackupsDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Backup otomatis tertua dihapus lebih dulu'**
+  String get maxBackupsDesc;
+
+  /// No description provided for @noBackupYet.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada backup'**
+  String get noBackupYet;
+
+  /// No description provided for @noChangesSkipBackup.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada perubahan, skip backup.'**
+  String get noChangesSkipBackup;
+
+  /// No description provided for @backupSuccessNoUpload.
+  ///
+  /// In id, this message translates to:
+  /// **'Backup berhasil (belum terupload — TODO Drive)'**
+  String get backupSuccessNoUpload;
+
+  /// No description provided for @restoreWillReplace.
+  ///
+  /// In id, this message translates to:
+  /// **'Restore akan mengganti data saat ini. Sebuah snapshot cadangan akan dibuat untuk jaga-jaga.'**
+  String get restoreWillReplace;
+
+  /// No description provided for @restoreSuccessDrive.
+  ///
+  /// In id, this message translates to:
+  /// **'Restore berhasil (TODO: implement Drive download)'**
+  String get restoreSuccessDrive;
+
+  /// No description provided for @interval.
+  ///
+  /// In id, this message translates to:
+  /// **'Interval'**
+  String get interval;
+
+  /// No description provided for @backupSuccessful.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil'**
+  String get backupSuccessful;
 }
 
 class _AppLocalizationsDelegate

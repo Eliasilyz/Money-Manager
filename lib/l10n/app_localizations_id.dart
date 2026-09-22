@@ -877,6 +877,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get editAccount => 'Edit Akun';
 
   @override
+  String get editBudget => 'Edit Anggaran';
+
+  @override
+  String get editGoal => 'Edit Target';
+
+  @override
   String get adjustBalance => 'Sesuaikan Saldo';
 
   @override
@@ -969,4 +975,70 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get accountsMustBeDifferent => 'Akun asal dan tujuan tidak boleh sama';
+
+  @override
+  String get appSettingsSubtitle => 'Pengaturan aplikasi & data';
+
+  @override
+  String get theme => 'Tema';
+
+  @override
+  String get otherFeatures => 'Fitur Lainnya';
+
+  @override
+  String get budgetsAndGoals => 'Anggaran & Target';
+
+  @override
+  String get defaultCurrencyName => 'Rupiah Indonesia (IDR)';
+
+  @override
+  String get dataAndSecurity => 'Data & keamanan';
+
+  @override
+  String get securitySubtitle => 'PIN, biometrik, dan akses akun';
+
+  @override
+  String get helpAndInfo => 'Bantuan & informasi';
+
+  @override
+  String get themeUppercase => 'TEMA';
+
+  @override
+  String get languageUppercase => 'BAHASA';
+
+  @override
+  String get backupAvailablePlatform => 'Backup tersedia di Android/iOS';
+
+  @override
+  String get backupRetention => 'Retensi backup';
+
+  @override
+  String get maxBackups => 'Maks backup';
+
+  @override
+  String get maxBackupsDesc => 'Backup otomatis tertua dihapus lebih dulu';
+
+  @override
+  String get noBackupYet => 'Belum ada backup';
+
+  @override
+  String get noChangesSkipBackup => 'Tidak ada perubahan, skip backup.';
+
+  @override
+  String get backupSuccessNoUpload =>
+      'Backup berhasil (belum terupload — TODO Drive)';
+
+  @override
+  String get restoreWillReplace =>
+      'Restore akan mengganti data saat ini. Sebuah snapshot cadangan akan dibuat untuk jaga-jaga.';
+
+  @override
+  String get restoreSuccessDrive =>
+      'Restore berhasil (TODO: implement Drive download)';
+
+  @override
+  String get interval => 'Interval';
+
+  @override
+  String get backupSuccessful => 'Berhasil';
 }

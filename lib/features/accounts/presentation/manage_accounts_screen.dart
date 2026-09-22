@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/domain/entities/account.dart';
+import 'package:money_manager/domain/entities/balance_calculation.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
+import 'package:money_manager/features/transfers/application/transfer_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -239,10 +241,13 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
 
   void _showAdjustBalance(Account account, AppColorsT colors, AppLocalizations l10n) {
     final transactions = ref.read(transactionsNotifierProvider).valueOrNull ?? [];
-    final txForAccount = transactions.where((t) => t.accountId == account.id);
-    final income = txForAccount.where((t) => t.type == 'income').fold<int>(0, (sum, t) => sum + t.amount);
-    final expense = txForAccount.where((t) => t.type == 'expense').fold<int>(0, (sum, t) => sum + t.amount);
-    final currentBalance = account.initialBalance + income - expense;
+    final transfers = ref.read(transfersNotifierProvider).valueOrNull ?? [];
+    final currentBalance = BalanceCalculation.accountBalance(
+      initialBalance: account.initialBalance,
+      accountId: account.id,
+      transactions: transactions,
+      transfers: transfers,
+    );
 
     final targetCtrl = TextEditingController(text: currentBalance.toString());
     final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);

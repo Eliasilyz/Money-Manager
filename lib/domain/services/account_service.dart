@@ -13,7 +13,7 @@ class AccountService {
 
   Future<Account?> getAccountById(String id) => _accountRepository.getAccountById(id);
 
-  Future<void> createAccount({
+  Future<Account> createAccount({
     required String name,
     required String accountType,
     required String currencyCode,
@@ -21,6 +21,7 @@ class AccountService {
     String? icon,
     String? color,
     String? note,
+    String? systemKey,
   }) async {
     final now = DateTime.now();
     final account = Account(
@@ -33,10 +34,30 @@ class AccountService {
       color: color,
       note: note,
       isArchived: false,
+      systemKey: systemKey,
       createdAt: now,
       updatedAt: now,
     );
     await _accountRepository.insertAccount(account);
+    return account;
+  }
+
+  Future<Account> ensurePocket({
+    required String systemKey,
+    required String name,
+    required String currencyCode,
+  }) async {
+    final accounts = await _accountRepository.getAllAccounts();
+    for (final a in accounts) {
+      if (a.systemKey == systemKey) return a;
+    }
+    return createAccount(
+      name: name,
+      accountType: 'savings',
+      currencyCode: currencyCode,
+      initialBalance: 0,
+      systemKey: systemKey,
+    );
   }
 
   Future<void> updateAccount(Account account) => _accountRepository.updateAccount(account);

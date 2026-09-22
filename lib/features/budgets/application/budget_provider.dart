@@ -28,6 +28,11 @@ class BudgetsNotifier extends StateNotifier<AsyncValue<List<Budget>>> {
     await loadBudgets();
   }
 
+  Future<void> updateBudget(Budget budget) async {
+    await _repo.updateBudget(budget);
+    await loadBudgets();
+  }
+
   Future<void> deleteBudget(String id) async {
     await _repo.deleteBudget(id);
     await loadBudgets();

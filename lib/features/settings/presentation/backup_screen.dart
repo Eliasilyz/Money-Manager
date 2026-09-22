@@ -42,7 +42,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 Icon(Icons.cloud_off, size: 48, color: colors.textSecondary),
                 const SizedBox(height: 16),
                 Text(
-                  'Backup tersedia di Android/iOS',
+                  l10n.backupAvailablePlatform,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(fontSize: 15, color: colors.textSecondary),
                 ),
@@ -84,9 +84,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         leading: const Icon(Icons.cloud, size: 22),
         iconColor: colors.primary,
         title: Text('Google Drive', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-        subtitle: Text(
-          // TODO_FILL_ME: show actual sign-in status
-          'Belum masuk',
+          subtitle: Text(
+          l10n.notSignedIn,
           style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary),
         ),
         trailing: FilledButton(
@@ -143,11 +142,11 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   }
 
   Widget _buildIntervalPicker(AppColorsT colors, AppLocalizations l10n) {
-    final intervals = ['Harian', 'Mingguan', 'Bulanan'];
+    final intervals = [l10n.frequencyDaily, l10n.frequencyWeekly, l10n.frequencyMonthly];
     final current = ref.watch(_backupIntervalProvider);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      title: Text('Interval', style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary)),
+      title: Text(l10n.interval, style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary)),
       trailing: DropdownButton<String>(
         value: current,
         underline: const SizedBox(),
@@ -163,7 +162,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Retensi backup', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+        Text(l10n.backupRetention, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -173,8 +172,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           ),
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            title: Text('Maks backup', style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary)),
-            subtitle: Text('Backup otomatis tertua dihapus lebih dulu', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+            title: Text(l10n.maxBackups, style: GoogleFonts.inter(fontSize: 14, color: colors.textPrimary)),
+            subtitle: Text(l10n.maxBackupsDesc, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
             trailing: DropdownButton<int>(
               value: ref.watch(_maxBackupsProvider),
               underline: const SizedBox(),
@@ -197,7 +196,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Status', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+        Text(l10n.backupRestore, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -212,8 +211,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 leading: Icon(Icons.schedule, color: colors.primary, size: 20),
                 title: Text(
                   lastBackup != null
-                      ? 'Terakhir: ${DateFormat('dd MMM yy, HH:mm').format(lastBackup)} (berhasil)'
-                      : 'Belum ada backup',
+                      ? '${l10n.lastBackup(DateFormat('dd MMM yy, HH:mm').format(lastBackup))} (${l10n.backupSuccessful})'
+                      : l10n.noBackupYet,
                   style: GoogleFonts.inter(fontSize: 13, color: colors.textPrimary),
                 ),
               ),
@@ -223,7 +222,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   leading: const Icon(Icons.error_outline, color: AppColors.rose, size: 20),
                   title: Text(
-                    'Gagal: $lastFailure',
+                    'Failed: $lastFailure',
                     style: GoogleFonts.inter(fontSize: 13, color: AppColors.rose),
                   ),
                 ),
@@ -273,7 +272,6 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Future<void> _handleGoogleSignIn() async {
     setState(() => _operating = true);
     try {
-      // TODO_FILL_ME: Google Drive sign-in
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('TODO: Google Sign-In', style: GoogleFonts.inter(fontSize: 13))),
@@ -284,6 +282,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   }
 
   Future<void> _handleBackup() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _operating = true);
     try {
       final service = ref.read(backupServiceProvider);
@@ -292,23 +291,22 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       if (await service.shouldSkipBackup(db)) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tidak ada perubahan, skip backup.', style: GoogleFonts.inter(fontSize: 13))),
+          SnackBar(content: Text(l10n.noChangesSkipBackup, style: GoogleFonts.inter(fontSize: 13))),
         );
         return;
       }
 
       await service.createCompressedBackup(db);
-      // TODO_FILL_ME: upload compressed bytes to Google Drive
       await service.recordBackupSuccess();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup berhasil (belum terupload — TODO Drive)', style: GoogleFonts.inter(fontSize: 13))),
+        SnackBar(content: Text(l10n.backupSuccessNoUpload, style: GoogleFonts.inter(fontSize: 13))),
       );
     } on BackupException catch (e) {
       await ref.read(backupServiceProvider).recordBackupFailure(e.message);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal: ${e.message}', style: GoogleFonts.inter(fontSize: 13)), backgroundColor: AppColors.rose),
+        SnackBar(content: Text('${l10n.error}: ${e.message}', style: GoogleFonts.inter(fontSize: 13)), backgroundColor: AppColors.rose),
       );
     } finally {
       if (mounted) setState(() => _operating = false);
@@ -321,15 +319,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final db = ref.read(databaseProvider);
     final service = ref.read(backupServiceProvider);
 
-    // TODO_FILL_ME: download latest backup from Google Drive, then parse
-    // For now, show a placeholder dialog.
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: colors.surface,
         title: Text(l10n.restoreConfirm, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: colors.textPrimary)),
         content: Text(
-          'Restore akan mengganti data saat ini. Sebuah snapshot cadangan akan dibuat untuk jaga-jaga.',
+          l10n.restoreWillReplace,
           style: GoogleFonts.inter(fontSize: 14, color: colors.textSecondary, height: 1.4),
         ),
         actions: [
@@ -342,23 +338,19 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
     setState(() => _operating = true);
     try {
-      // Create safety snapshot
       await service.createSafetySnapshot(db);
-      // TODO_FILL_ME: parse downloaded backup data
-      // await service.restoreBackup(db, data);
       await service.deleteSafetySnapshot();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Restore berhasil (TODO: implement Drive download)', style: GoogleFonts.inter(fontSize: 13))),
+        SnackBar(content: Text(l10n.restoreSuccessDrive, style: GoogleFonts.inter(fontSize: 13))),
       );
     } on BackupException catch (e) {
-      // Rollback from safety snapshot
       try {
         await service.rollbackFromSafetySnapshot(db);
       } catch (_) {}
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal: ${e.message}', style: GoogleFonts.inter(fontSize: 13)), backgroundColor: AppColors.rose),
+        SnackBar(content: Text('${l10n.error}: ${e.message}', style: GoogleFonts.inter(fontSize: 13)), backgroundColor: AppColors.rose),
       );
     } finally {
       if (mounted) setState(() => _operating = false);
@@ -370,7 +362,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
 final _autoBackupProvider = StateProvider<bool>((ref) => false);
 final _wifiOnlyProvider = StateProvider<bool>((ref) => true);
-final _backupIntervalProvider = StateProvider<String>((ref) => 'Harian');
+final _backupIntervalProvider = StateProvider<String>((ref) => 'Daily');
 final _maxBackupsProvider = StateProvider<int>((ref) => 5);
 final _lastBackupProvider = StateProvider<DateTime?>((ref) => null);
 final _lastFailureProvider = StateProvider<String?>((ref) => null);

@@ -5,12 +5,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:money_manager/domain/entities/budget.dart';
+import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/budgets/application/budget_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
 class AddBudgetScreen extends ConsumerStatefulWidget {
-  const AddBudgetScreen({super.key});
+  const AddBudgetScreen({super.key, this.editBudget});
+
+  final Budget? editBudget;
 
   @override
   ConsumerState<AddBudgetScreen> createState() => _AddBudgetScreenState();
@@ -19,10 +23,22 @@ class AddBudgetScreen extends ConsumerStatefulWidget {
 class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
   AppColorsT get colors => AppColorsT.of(context);
   String? _selectedCategoryId;
-  final _amountCtrl = TextEditingController();
+  late final TextEditingController _amountCtrl;
   String _period = 'monthly';
   DateTime _startDate = DateTime.now();
   bool _saving = false;
+
+  bool get _isEditing => widget.editBudget != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final b = widget.editBudget;
+    _selectedCategoryId = b?.categoryId;
+    _amountCtrl = TextEditingController(text: b?.amount.toString() ?? '');
+    _period = b?.period ?? 'monthly';
+    _startDate = b?.startDate ?? DateTime.now();
+  }
 
   @override
   void dispose() {
@@ -32,11 +48,12 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Budget', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(_isEditing ? l10n.editBudget : 'Tambah Budget', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -149,7 +166,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                         )
                       : Text(
-                          'Simpan Budget',
+                          _isEditing ? l10n.saveChanges : 'Simpan Budget',
                           style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                         ),
                 ),
@@ -173,17 +190,44 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
     setState(() => _saving = true);
     try {
       final now = DateTime.now();
-      final budget = Budget(
-        id: const Uuid().v4(),
-        categoryId: _selectedCategoryId!,
-        amount: amount,
-        currencyCode: 'IDR',
-        period: _period,
-        startDate: _startDate,
-        createdAt: now,
-        updatedAt: now,
-      );
-      await ref.read(budgetsNotifierProvider.notifier).addBudget(budget);
+      final notifier = ref.read(budgetsNotifierProvider.notifier);
+      String budgetId;
+      String categoryName = _selectedCategoryId!;
+      final cats = ref.read(categoriesNotifierProvider).valueOrNull;
+      if (cats != null) {
+        for (final c in cats) {
+          if (c.id == _selectedCategoryId) categoryName = c.name;
+        }
+      }
+      if (_isEditing) {
+        budgetId = widget.editBudget!.id;
+        final updated = widget.editBudget!.copyWith(
+          categoryId: _selectedCategoryId!,
+          amount: amount,
+          period: _period,
+          startDate: _startDate,
+          updatedAt: now,
+        );
+        await notifier.updateBudget(updated);
+      } else {
+        budgetId = const Uuid().v4();
+        await notifier.addBudget(Budget(
+          id: budgetId,
+          categoryId: _selectedCategoryId!,
+          amount: amount,
+          currencyCode: 'IDR',
+          period: _period,
+          startDate: _startDate,
+          createdAt: now,
+          updatedAt: now,
+        ));
+      }
+      await ref.read(accountServiceProvider).ensurePocket(
+            systemKey: 'pocket:budget:$budgetId',
+            name: 'Kantong $categoryName',
+            currencyCode: 'IDR',
+          );
+      ref.read(accountsNotifierProvider.notifier).loadAccounts();
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e', style: GoogleFonts.inter())));

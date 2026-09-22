@@ -3,229 +3,234 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/pocket_deposit_sheet.dart';
+import 'package:money_manager/domain/entities/balance_calculation.dart';
+import 'package:money_manager/domain/entities/goal.dart';
+import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/goals/application/goal_provider.dart';
+import 'package:money_manager/features/transfers/application/transfer_provider.dart';
+import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
-class GoalsScreen extends ConsumerWidget {
-  const GoalsScreen({super.key});
+class GoalsScreen extends ConsumerStatefulWidget {
+  const GoalsScreen({super.key, this.paneOnly = false});
+
+  /// When true, renders only the body (used inside the combined tabs screen).
+  final bool paneOnly;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GoalsScreen> createState() => _GoalsScreenState();
+}
+
+class _GoalsScreenState extends ConsumerState<GoalsScreen> {
+  String _short(int v, String locale) =>
+      'Rp ${NumberFormat.compact(locale: locale).format(v)}';
+
+  @override
+  Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final cardShadow = isLight
+        ? <BoxShadow>[BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))]
+        : null;
     final goalsAsync = ref.watch(goalsNotifierProvider);
-    final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+    final accounts = ref.watch(accountsNotifierProvider).valueOrNull ?? [];
+    final transactions = ref.watch(transactionsNotifierProvider).valueOrNull ?? [];
+    final transfers = ref.watch(transfersNotifierProvider).valueOrNull ?? [];
+    final accountById = {for (final a in accounts) a.id: a};
+
+    int goalProgress(Goal g) {
+      final link = g.linkedAccountId;
+      if (link == null || !accountById.containsKey(link)) return g.currentAmount;
+      return BalanceCalculation.accountBalance(
+        initialBalance: accountById[link]!.initialBalance,
+        accountId: link,
+        transactions: transactions,
+        transfers: transfers,
+      );
+    }
+
+    final content = goalsAsync.when(
+      data: (goals) {
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+          children: _buildGoals(goals, l10n, locale, colors, cardShadow, goalProgress),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
+      error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
+    );
+
+    if (widget.paneOnly) return content;
 
     return Scaffold(
+      backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text(l10n.goalsAndDebtsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        backgroundColor: colors.background,
+        elevation: 0,
+        iconTheme: IconThemeData(color: colors.textPrimary),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.savingsTarget, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            Text(l10n.financialPlan, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+          ],
+        ),
         actions: [
-          TextButton.icon(
+          TextButton(
             onPressed: () => context.push('/add-goal'),
-            icon: Icon(Icons.add, color: colors.primary, size: 18),
-            label: Text('Tambah', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+            child: Text(l10n.addTarget, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.primary)),
           ),
         ],
       ),
-      body: goalsAsync.when(
-        data: (goals) {
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      body: content,
+    );
+  }
+
+  List<Widget> _buildGoals(
+    List<Goal> goals,
+    AppLocalizations l10n,
+    String locale,
+    AppColorsT colors,
+    List<BoxShadow>? shadow,
+    int Function(Goal) goalProgress,
+  ) {
+    if (goals.isEmpty) return [_buildEmpty(colors, l10n)];
+    final primary = goals.first;
+    final secondary = goals.skip(1).take(2).toList();
+
+    return [
+      GestureDetector(
+        onTap: () => context.push('/add-goal', extra: primary),
+        child: _buildPriority(primary, l10n, locale, colors, goalProgress),
+      ),
+      const SizedBox(height: 12),
+      if (secondary.isNotEmpty) _buildSecondaryRow(secondary, l10n, locale, colors, shadow, goalProgress),
+    ];
+  }
+
+  Widget _buildPriority(Goal g, AppLocalizations l10n, String locale, AppColorsT colors, int Function(Goal) goalProgress) {
+    final current = goalProgress(g);
+    final pct = g.targetAmount > 0 ? (current / g.targetAmount).clamp(0.0, 1.0) : 0.0;
+    final pctText = g.targetAmount > 0 ? (current / g.targetAmount * 100).round() : 0;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.lilac.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: colors.border),
-                ),
-                child: Row(
-                  children: [
-                    _tabPill(context, l10n.savingsTarget, true),
-                    _tabPill(context, l10n.debts, false),
-                  ],
-                ),
+                width: 36, height: 36,
+                decoration: BoxDecoration(color: AppColors.lilac.withValues(alpha: 0.2), shape: BoxShape.circle),
+                child: const Icon(Icons.send_rounded, color: AppColors.lilac, size: 16),
               ),
-              const SizedBox(height: 20),
-              if (goals.isNotEmpty) ...[
-                // Priority card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [colors.primaryDark, colors.primary],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text('PRIORITAS', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white)),
-                          ),
-                          const Spacer(),
-                          Icon(Icons.star_outline, color: Colors.white.withValues(alpha: 0.7), size: 18),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(goals.first.name, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
-                      const SizedBox(height: 4),
-                      Text(fmt.format(goals.first.targetAmount), style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w700, color: Colors.white)),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${(goals.first.currentAmount / goals.first.targetAmount * 100).toStringAsFixed(0)}% dari ${fmt.format(goals.first.targetAmount)}',
-                        style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7)),
-                      ),
-                      if (goals.first.targetDate != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          DateFormat('MMM yyyy').format(goals.first.targetDate!),
-                          style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7)),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                // Secondary goal cards
-                if (goals.length > 1) ...[
-                  const SizedBox(height: 16),
-                  Row(
-                    children: goals.skip(1).take(2).map((g) {
-                      final pct = g.targetAmount > 0 ? (g.currentAmount / g.targetAmount * 100).toStringAsFixed(0) : '0';
-                      return Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: colors.border),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 32, height: 32,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.lilac.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Icon(Icons.savings_outlined, color: AppColors.lilac, size: 16),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(g.name, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: colors.textSecondary)),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Text(fmt.format(g.currentAmount), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                              const SizedBox(height: 6),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(3),
-                                child: LinearProgressIndicator(
-                                  value: (g.currentAmount / g.targetAmount).clamp(0.0, 1.0),
-                                  backgroundColor: colors.border,
-                                  color: colors.primary,
-                                  minHeight: 4,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text('$pct% tercapai', style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ] else ...[
-                _buildEmpty(context, l10n),
-              ],
-              const SizedBox(height: 28),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Ringkasan hutang', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                  GestureDetector(
-                    onTap: () => context.push('/debts'),
-                    child: Text('Lihat semua', style: GoogleFonts.inter(fontSize: 12, color: colors.primary)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              // Debt total card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colors.border),
-                ),
-                child: Column(
-                  children: [
-                    Text('Total sisa hutang', style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Rp 22.750.000',
-                      style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.rose),
-                    ),
-                  ],
-                ),
-              ),
+              const Spacer(),
+              Text(l10n.priority, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.lilac)),
             ],
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
-        error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
-      ),
-    );
-  }
-
-  Widget _tabPill(BuildContext context, String label, bool selected) {
-    final colors = AppColorsT.of(context);
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? colors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Center(
-          child: Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: selected ? Colors.white : colors.textSecondary)),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
-    final colors = AppColorsT.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          children: [
-            Container(
-              width: 72, height: 72,
-              decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(20), border: Border.all(color: colors.border)),
-              child: const Icon(Icons.flag_outlined, size: 32, color: AppColors.gold),
+          ),
+          const SizedBox(height: 12),
+          Text(g.name, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 4),
+          Text(_short(current, locale), style: GoogleFonts.outfit(fontSize: 26, fontWeight: FontWeight.w700, color: AppColors.lilac)),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: pct,
+              backgroundColor: colors.border,
+              color: AppColors.lilac,
+              minHeight: 6,
             ),
-            const SizedBox(height: 16),
-            Text(l10n.noData, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: Text(l10n.ofTarget('$pctText%', _short(g.targetAmount, locale)), style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis)),
+              Text(g.targetDate != null ? DateFormat('MMMM yyyy', locale).format(g.targetDate!) : '', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+            ],
+          ),
+          if (g.linkedAccountId != null) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => showPocketDepositSheet(
+                  context,
+                  pocketId: g.linkedAccountId!,
+                  pocketName: 'Kantong ${g.name}',
+                ),
+                icon: const Icon(Icons.savings_outlined, size: 16, color: AppColors.gold),
+                label: Text('Setor', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.gold)),
+              ),
+            ),
           ],
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSecondaryRow(List<Goal> secondary, AppLocalizations l10n, String locale, AppColorsT colors, List<BoxShadow>? shadow, int Function(Goal) goalProgress) {
+    return Row(
+      children: secondary.map((g) {
+        final current = goalProgress(g);
+        final pct = g.targetAmount > 0 ? (current / g.targetAmount * 100).round() : 0;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => context.push('/add-goal', extra: g),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: colors.border),
+                boxShadow: shadow,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(color: AppColors.lilac.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.savings_rounded, color: AppColors.lilac, size: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(g.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 6),
+                  Text(_short(current, locale), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                  const SizedBox(height: 4),
+                  Text(l10n.progress(pct), style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildEmpty(AppColorsT colors, AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 72, height: 72,
+            decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(20), border: Border.all(color: colors.border)),
+            child: const Icon(Icons.savings_outlined, size: 32, color: AppColors.gold),
+          ),
+          const SizedBox(height: 16),
+          Text(l10n.noData, style: GoogleFonts.inter(color: colors.textSecondary, fontSize: 14)),
+        ],
       ),
     );
   }

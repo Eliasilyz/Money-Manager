@@ -5,7 +5,7 @@ import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/features/accounts/presentation/accounts_screen.dart';
 import 'package:money_manager/features/accounts/presentation/add_account_screen.dart';
 import 'package:money_manager/features/accounts/presentation/manage_accounts_screen.dart';
-import 'package:money_manager/features/budgets/presentation/budgets_screen.dart';
+import 'package:money_manager/features/budgets/presentation/budgets_goals_screen.dart';
 import 'package:money_manager/features/budgets/presentation/add_budget_screen.dart';
 import 'package:money_manager/features/categories/presentation/categories_screen.dart';
 import 'package:money_manager/features/categories/presentation/add_category_screen.dart';
@@ -23,6 +23,8 @@ import 'package:money_manager/features/settings/presentation/notification_settin
 import 'package:money_manager/features/settings/presentation/settings_screen.dart';
 import 'package:money_manager/features/calendar/presentation/calendar_screen.dart';
 import 'package:money_manager/features/statistics/presentation/statistics_screen.dart';
+import 'package:money_manager/domain/entities/budget.dart';
+import 'package:money_manager/domain/entities/goal.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/transactions/presentation/transactions_screen.dart';
 import 'package:money_manager/features/transactions/presentation/add_transaction_screen.dart';
@@ -67,10 +69,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/manage-accounts', builder: (context, state) => const ManageAccountsScreen()),
       GoRoute(path: '/transfers', builder: (context, state) => const TransfersScreen()),
       GoRoute(path: '/add-transfer', builder: (context, state) => const AddTransferScreen()),
-      GoRoute(path: '/budgets', builder: (context, state) => const BudgetsScreen()),
-      GoRoute(path: '/add-budget', builder: (context, state) => const AddBudgetScreen()),
+      GoRoute(path: '/budgets', builder: (context, state) => const BudgetsGoalsScreen()),
+      GoRoute(
+        path: '/add-budget',
+        builder: (context, state) {
+          final budget = state.extra as Budget?;
+          return AddBudgetScreen(editBudget: budget);
+        },
+      ),
       GoRoute(path: '/goals', builder: (context, state) => const GoalsScreen()),
-      GoRoute(path: '/add-goal', builder: (context, state) => const AddGoalScreen()),
+      GoRoute(
+        path: '/add-goal',
+        builder: (context, state) {
+          final goal = state.extra as Goal?;
+          return AddGoalScreen(editGoal: goal);
+        },
+      ),
       GoRoute(path: '/debts', builder: (context, state) => const DebtsScreen()),
       GoRoute(path: '/add-debt', builder: (context, state) => const AddDebtScreen()),
       GoRoute(path: '/categories', builder: (context, state) => const CategoriesScreen()),

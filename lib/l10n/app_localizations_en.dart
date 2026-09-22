@@ -51,7 +51,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accounts => 'Accounts';
 
   @override
-  String get settings => 'Settings';
+  String get settings => 'Other Menu';
 
   @override
   String get noTransactions => 'No transactions yet';
@@ -379,7 +379,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exits => 'Out';
 
   @override
-  String get othersTitle => 'Settings';
+  String get othersTitle => 'Other';
 
   @override
   String get othersSubtitle => 'Settings & features';
@@ -876,6 +876,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editAccount => 'Edit Account';
 
   @override
+  String get editBudget => 'Edit Budget';
+
+  @override
+  String get editGoal => 'Edit Goal';
+
+  @override
   String get adjustBalance => 'Adjust Balance';
 
   @override
@@ -970,4 +976,70 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get accountsMustBeDifferent =>
       'Source and destination accounts must be different';
+
+  @override
+  String get appSettingsSubtitle => 'App settings & data';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get otherFeatures => 'Other Features';
+
+  @override
+  String get budgetsAndGoals => 'Budgets & Goals';
+
+  @override
+  String get defaultCurrencyName => 'Indonesian Rupiah (IDR)';
+
+  @override
+  String get dataAndSecurity => 'Data & security';
+
+  @override
+  String get securitySubtitle => 'PIN, biometrics, and account access';
+
+  @override
+  String get helpAndInfo => 'Help & information';
+
+  @override
+  String get themeUppercase => 'THEME';
+
+  @override
+  String get languageUppercase => 'LANGUAGE';
+
+  @override
+  String get backupAvailablePlatform => 'Backup available on Android/iOS';
+
+  @override
+  String get backupRetention => 'Backup retention';
+
+  @override
+  String get maxBackups => 'Max backups';
+
+  @override
+  String get maxBackupsDesc => 'Oldest automatic backups are deleted first';
+
+  @override
+  String get noBackupYet => 'No backups yet';
+
+  @override
+  String get noChangesSkipBackup => 'No changes, skipping backup.';
+
+  @override
+  String get backupSuccessNoUpload =>
+      'Backup successful (not uploaded — TODO Drive)';
+
+  @override
+  String get restoreWillReplace =>
+      'Restore will replace current data. A safety snapshot will be created.';
+
+  @override
+  String get restoreSuccessDrive =>
+      'Restore successful (TODO: implement Drive download)';
+
+  @override
+  String get interval => 'Interval';
+
+  @override
+  String get backupSuccessful => 'Successful';
 }

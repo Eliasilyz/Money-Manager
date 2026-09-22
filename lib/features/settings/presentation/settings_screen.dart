@@ -52,50 +52,50 @@ class SettingsScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
           children: [
-            Text('Lainnya', style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-            Text('Pengaturan aplikasi & data', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+            Text(l10n.othersTitle, style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+            Text(l10n.appSettingsSubtitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
             const SizedBox(height: 16),
 
             _buildProfileCard(context, colors),
             const SizedBox(height: 24),
 
-            Text('Tampilan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.view, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.palette_outlined, 'Tema', '$themeLabel • $langLabel', () => _showAppearanceDialog(context, ref)),
+              _tile(context, Icons.palette_outlined, l10n.theme, '$themeLabel • $langLabel', () => _showAppearanceDialog(context, ref)),
             ]),
             const SizedBox(height: 24),
 
-            Text('Fitur Lainnya', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.otherFeatures, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.category_outlined, 'Kategori', l10n.categoriesCount(categories.length), () => context.push('/categories')),
+              _tile(context, Icons.category_outlined, l10n.categories, l10n.categoriesCount(categories.length), () => context.push('/categories')),
               const Divider(height: 1),
-              _tile(context, Icons.repeat_rounded, 'Transaksi Berulang', l10n.activeRecurring(recurring.length), () => context.push('/recurring')),
+              _tile(context, Icons.repeat_rounded, l10n.recurring, l10n.activeRecurring(recurring.length), () => context.push('/recurring')),
               const Divider(height: 1),
-              _tile(context, Icons.pie_chart_outline, 'Anggaran & Target', l10n.budgetsGoalsCount(budgets.length, goals.length), () => context.push('/budgets')),
+              _tile(context, Icons.pie_chart_outline, l10n.budgetsAndGoals, l10n.budgetsGoalsCount(budgets.length, goals.length), () => context.push('/budgets')),
               const Divider(height: 1),
-              _tile(context, Icons.monetization_on_outlined, 'Mata Uang', 'Rupiah Indonesia (IDR)', () => context.push('/currencies')),
+              _tile(context, Icons.monetization_on_outlined, l10n.currency, l10n.defaultCurrencyName, () => context.push('/currencies')),
             ]),
             const SizedBox(height: 24),
 
-            Text('Data & keamanan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.dataAndSecurity, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.cloud_sync_outlined, 'Backup & Restore', l10n.backupNow, () => context.push('/backup')),
+              _tile(context, Icons.cloud_sync_outlined, l10n.backupRestore, l10n.backupNow, () => context.push('/backup')),
               const Divider(height: 1),
-              _tile(context, Icons.security_outlined, 'Keamanan & privasi', 'PIN, biometrik, dan akses akun', () => context.push('/security')),
+              _tile(context, Icons.security_outlined, l10n.securityPriv, l10n.securitySubtitle, () => context.push('/security')),
               const Divider(height: 1),
-              _tile(context, Icons.notifications_none_outlined, 'Notifikasi',
+              _tile(context, Icons.notifications_none_outlined, l10n.notifications,
                   notif ? l10n.notificationActiveCount(activeNotifCount) : l10n.notificationsInactive,
                   () => context.push('/notification-settings')),
             ]),
             const SizedBox(height: 24),
 
-            Text('Bantuan & informasi', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.helpAndInfo, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.info_outline, 'Tentang Aplikasi', 'Money Manager • ${l10n.version}', () {}),
+              _tile(context, Icons.info_outline, l10n.aboutApp, 'Money Manager • ${l10n.version}', () {}),
             ]),
             if (AppLinks.showDonation) ...[
               const SizedBox(height: 12),
@@ -172,15 +172,17 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.read(themeModeProvider);
     final locale = ref.read(localeProvider);
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.view, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
-        content: Column(
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('TEMA', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            Text(l10n.view, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            Text(l10n.themeUppercase, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -191,8 +193,8 @@ class SettingsScreen extends ConsumerWidget {
                 _themeOption(ctx, ref, l10n.followSystem, ThemeMode.system, themeMode == ThemeMode.system),
               ],
             ),
-            const SizedBox(height: 16),
-            Text('BAHASA', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+            const SizedBox(height: 20),
+            Text(l10n.languageUppercase, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -201,11 +203,21 @@ class SettingsScreen extends ConsumerWidget {
                 _langOption(ctx, ref, l10n.english, const Locale('en'), locale.languageCode == 'en'),
               ],
             ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 52,
+              child: FilledButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: AppColors.bg,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: Text(l10n.close, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+              ),
+            ),
           ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.close)),
-        ],
       ),
     );
   }

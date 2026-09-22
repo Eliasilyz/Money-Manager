@@ -5,11 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:money_manager/domain/entities/goal.dart';
+import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/goals/application/goal_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
 class AddGoalScreen extends ConsumerStatefulWidget {
-  const AddGoalScreen({super.key});
+  const AddGoalScreen({super.key, this.editGoal});
+
+  final Goal? editGoal;
 
   @override
   ConsumerState<AddGoalScreen> createState() => _AddGoalScreenState();
@@ -17,12 +21,25 @@ class AddGoalScreen extends ConsumerStatefulWidget {
 
 class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
   AppColorsT get colors => AppColorsT.of(context);
-  final _nameCtrl = TextEditingController();
-  final _targetCtrl = TextEditingController();
-  final _noteCtrl = TextEditingController();
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _targetCtrl;
+  late final TextEditingController _noteCtrl;
   DateTime _startDate = DateTime.now();
   DateTime? _targetDate;
   bool _saving = false;
+
+  bool get _isEditing => widget.editGoal != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final g = widget.editGoal;
+    _nameCtrl = TextEditingController(text: g?.name ?? '');
+    _targetCtrl = TextEditingController(text: g?.targetAmount.toString() ?? '');
+    _noteCtrl = TextEditingController(text: g?.note ?? '');
+    _startDate = g?.startDate ?? DateTime.now();
+    _targetDate = g?.targetDate;
+  }
 
   @override
   void dispose() {
@@ -34,9 +51,10 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Tujuan', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(_isEditing ? l10n.editGoal : 'Tambah Tujuan', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -161,7 +179,7 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                         )
                       : Text(
-                          'Simpan Tujuan',
+                          _isEditing ? l10n.saveChanges : 'Simpan Tujuan',
                           style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                         ),
                 ),
@@ -186,18 +204,44 @@ class _AddGoalScreenState extends ConsumerState<AddGoalScreen> {
     setState(() => _saving = true);
     try {
       final now = DateTime.now();
-      final goal = Goal(
-        id: const Uuid().v4(),
-        name: name,
-        targetAmount: target,
-        currencyCode: 'IDR',
-        startDate: _startDate,
-        targetDate: _targetDate,
-        note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
-        createdAt: now,
-        updatedAt: now,
-      );
-      await ref.read(goalsNotifierProvider.notifier).addGoal(goal);
+      final notifier = ref.read(goalsNotifierProvider.notifier);
+      if (_isEditing) {
+        final pocket = await ref.read(accountServiceProvider).ensurePocket(
+              systemKey: 'pocket:goal:${widget.editGoal!.id}',
+              name: 'Kantong ${widget.editGoal!.name}',
+              currencyCode: widget.editGoal!.currencyCode,
+            );
+        final updated = widget.editGoal!.copyWith(
+          name: name,
+          targetAmount: target,
+          startDate: _startDate,
+          targetDate: _targetDate,
+          note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
+          linkedAccountId: widget.editGoal!.linkedAccountId ?? pocket.id,
+          updatedAt: now,
+        );
+        await notifier.updateGoal(updated);
+      } else {
+        final goalId = const Uuid().v4();
+        final pocket = await ref.read(accountServiceProvider).ensurePocket(
+              systemKey: 'pocket:goal:$goalId',
+              name: 'Kantong $name',
+              currencyCode: 'IDR',
+            );
+        await notifier.addGoal(Goal(
+          id: goalId,
+          name: name,
+          targetAmount: target,
+          currencyCode: 'IDR',
+          linkedAccountId: pocket.id,
+          startDate: _startDate,
+          targetDate: _targetDate,
+          note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
+          createdAt: now,
+          updatedAt: now,
+        ));
+      }
+      ref.read(accountsNotifierProvider.notifier).loadAccounts();
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e', style: GoogleFonts.inter())));

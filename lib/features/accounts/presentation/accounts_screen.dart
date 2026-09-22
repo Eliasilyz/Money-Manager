@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/domain/entities/balance_calculation.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
+import 'package:money_manager/features/transfers/application/transfer_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -41,12 +43,15 @@ class AccountsScreen extends ConsumerWidget {
           data: (accounts) {
             if (accounts.isEmpty) return _buildEmpty(context, l10n);
             final transactions = transactionsAsync.valueOrNull ?? [];
+            final transfers = ref.watch(transfersNotifierProvider).valueOrNull ?? [];
             final accountBalances = <String, int>{};
             for (final a in accounts) {
-              final txForAccount = transactions.where((t) => t.accountId == a.id);
-              final income = txForAccount.where((t) => t.type == 'income').fold<int>(0, (sum, t) => sum + t.amount);
-              final expense = txForAccount.where((t) => t.type == 'expense').fold<int>(0, (sum, t) => sum + t.amount);
-              accountBalances[a.id] = a.initialBalance + income - expense;
+              accountBalances[a.id] = BalanceCalculation.accountBalance(
+                initialBalance: a.initialBalance,
+                accountId: a.id,
+                transactions: transactions,
+                transfers: transfers,
+              );
             }
             final totalBalance = accountBalances.values.fold<int>(0, (sum, b) => sum + b);
 
@@ -107,7 +112,7 @@ class AccountsScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(a.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-                              Text('${typeLabel} • $txCount ${l10n.transactions.toLowerCase()}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+                              Text('$typeLabel • $txCount ${l10n.transactions.toLowerCase()}', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                             ],
                           ),
                         ),

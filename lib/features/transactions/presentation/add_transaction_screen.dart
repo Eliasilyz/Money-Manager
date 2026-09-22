@@ -5,11 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/domain/entities/account.dart';
+import 'package:money_manager/domain/entities/balance_calculation.dart';
 import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
+import 'package:money_manager/features/goals/application/goal_provider.dart';
+import 'package:money_manager/features/transfers/application/transfer_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -440,6 +443,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
             accountId: _selectedAccountId!, categoryId: _selectedCategoryId, amount: amount,
             currencyCode: currencyCode, description: description, date: _selectedDate, note: note,
           );
+          await _allocateToGoalPockets(amount, _selectedAccountId!, currencyCode);
         } else {
           await service.addExpense(
             accountId: _selectedAccountId!, categoryId: _selectedCategoryId, amount: amount,
@@ -460,5 +464,50 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  Future<void> _allocateToGoalPockets(int amount, String fromAccountId, String currencyCode) async {
+    // ponytail: fixed 10% of income auto-saved to goal pockets below target; make it a setting when the app needs one
+    const autoAllocatePct = 0.10;
+    final pool = (amount * autoAllocatePct).round();
+    if (pool < 1000) return;
+
+    final goals = ref.read(goalsNotifierProvider).valueOrNull ?? [];
+    final accounts = ref.read(accountsNotifierProvider).valueOrNull ?? [];
+    final transactions = ref.read(transactionsNotifierProvider).valueOrNull ?? [];
+    final transfers = ref.read(transfersNotifierProvider).valueOrNull ?? [];
+    final accountById = {for (final a in accounts) a.id: a};
+
+    int balanceOf(String id) => BalanceCalculation.accountBalance(
+          initialBalance: accountById[id]?.initialBalance ?? 0,
+          accountId: id,
+          transactions: transactions,
+          transfers: transfers,
+        );
+
+    final eligible = goals
+        .where((g) =>
+            g.status == 'active' &&
+            g.linkedAccountId != null &&
+            g.targetAmount > 0 &&
+            accountById.containsKey(g.linkedAccountId))
+        .where((g) => balanceOf(g.linkedAccountId!) < g.targetAmount)
+        .toList();
+    if (eligible.isEmpty) return;
+
+    final share = pool ~/ eligible.length;
+    if (share < 1000) return;
+
+    final service = ref.read(transactionServiceProvider);
+    for (final g in eligible) {
+      await service.addTransfer(
+        fromAccountId: fromAccountId,
+        toAccountId: g.linkedAccountId!,
+        amount: share,
+        currencyCode: currencyCode,
+        description: 'Tabungan otomatis: ${g.name}',
+      );
+    }
+    await ref.read(transfersNotifierProvider.notifier).loadTransfers();
   }
 }
