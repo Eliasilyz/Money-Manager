@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:money_manager/features/budgets/presentation/budget_form_sheet.dart';
 import 'package:money_manager/features/budgets/presentation/budgets_screen.dart';
+import 'package:money_manager/features/goals/presentation/goal_form_sheet.dart';
 import 'package:money_manager/features/goals/presentation/goals_screen.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -56,7 +57,7 @@ class _BudgetsGoalsScreenState extends State<BudgetsGoalsScreen>
         ),
         actions: [
           TextButton(
-            onPressed: () => context.push(_tab == 0 ? '/add-budget' : '/add-goal'),
+            onPressed: () => _tab == 0 ? showBudgetFormSheet(context) : showGoalFormSheet(context),
             child: Text(
               _tab == 0 ? l10n.addBudget : l10n.addTarget,
               style: GoogleFonts.inter(

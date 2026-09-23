@@ -23,6 +23,13 @@ void main() {
               symbol: Value('Rp'),
             ),
           );
+      await db.into(db.currenciesTable).insert(
+            const CurrenciesTableCompanion(
+              code: Value('USD'),
+              name: Value('US Dollar'),
+              symbol: Value(r'$'),
+            ),
+          );
     });
 
     tearDown(() => db.close());
@@ -46,6 +53,21 @@ void main() {
       expect(acc.note, 'Gaji bulanan');
       expect(acc.id, isNotEmpty);
       expect(acc.id.length, 36); // Valid UUID length
+    });
+
+    test('createAccount persists non-IDR currencyCode', () async {
+      await accService.createAccount(
+        name: 'Pocket USD',
+        accountType: 'savings',
+        currencyCode: 'USD',
+        initialBalance: 500,
+        note: null,
+      );
+
+      final accounts = await accRepo.getAllAccounts();
+      expect(accounts.length, 1);
+      expect(accounts.first.currencyCode, 'USD');
+      expect(accounts.first.initialBalance, 500);
     });
   });
 }

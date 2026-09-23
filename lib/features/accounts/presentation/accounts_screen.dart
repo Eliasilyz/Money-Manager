@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/domain/entities/balance_calculation.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
+import 'package:money_manager/features/currencies/application/currency_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/features/transfers/application/transfer_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -27,7 +30,9 @@ class AccountsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final accountsAsync = ref.watch(accountsNotifierProvider);
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
-    final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    final rates = ref.watch(exchangeRatesProvider).valueOrNull ?? const <String, double>{};
+    final fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -53,7 +58,16 @@ class AccountsScreen extends ConsumerWidget {
                 transfers: transfers,
               );
             }
-            final totalBalance = accountBalances.values.fold<int>(0, (sum, b) => sum + b);
+            final totalBalance = accountBalances.entries.fold<int>(
+              0,
+              (sum, e) => sum +
+                  convertAmount(
+                    e.value,
+                    accounts.firstWhere((a) => a.id == e.key).currencyCode,
+                    baseCode,
+                    rates,
+                  ).round(),
+            );
 
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
@@ -88,6 +102,7 @@ class AccountsScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 ...accounts.map((a) {
                   final balance = accountBalances[a.id] ?? a.initialBalance;
+                  final accFmt = NumberFormat.currency(symbol: '${currencySymbol(a.currencyCode)} ', decimalDigits: currencyDigits(a.currencyCode));
                   final cfg = _typeIcons[a.accountType] ?? (Icons.account_circle_outlined, const Color(0xFFE1F1EA), const Color(0xFF1B6E4B));
                   final txCount = transactions.where((t) => t.accountId == a.id).length;
                   final typeLabel = _typeLabel(a.accountType, l10n);
@@ -117,7 +132,7 @@ class AccountsScreen extends ConsumerWidget {
                           ),
                         ),
                         Text(
-                          fmt.format(balance),
+                          accFmt.format(balance),
                           style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: balance >= 0 ? colors.textPrimary : AppColors.rose),
                         ),
                       ],

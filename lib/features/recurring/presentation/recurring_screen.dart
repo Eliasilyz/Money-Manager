@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
+import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/recurring/application/recurring_provider.dart';
+import 'package:money_manager/features/recurring/presentation/recurring_form_sheet.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
@@ -26,20 +29,17 @@ class RecurringScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final asyncItems = ref.watch(recurringTransactionsNotifierProvider);
     final locale = Localizations.localeOf(context).languageCode;
+    final categories = ref.watch(categoriesNotifierProvider).valueOrNull ?? [];
+    final categoryById = {for (final c in categories) c.id: c};
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.recurringTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         actions: [
           TextButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Buat transaksi baru dengan toggle "Transaksi berulang" aktif', style: GoogleFonts.inter())),
-              );
-              context.push('/add-transaction');
-            },
+            onPressed: () => showRecurringFormSheet(context),
             icon: Icon(Icons.add, color: colors.primary, size: 18),
-            label: Text('Tambah', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+            label: Text(l10n.add, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
           ),
         ],
       ),
@@ -78,10 +78,10 @@ class RecurringScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        _statBadge('$active ${l10n.expense.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
+                        _statBadge('$active ${l10n.active.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
                         if (inactive > 0) ...[
                           const SizedBox(width: 8),
-                          _statBadge('$inactive ${l10n.income.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
+                          _statBadge('$inactive ${l10n.inactive.toLowerCase()}', Colors.white.withValues(alpha: 0.2)),
                         ],
                       ],
                     ),
@@ -92,73 +92,77 @@ class RecurringScreen extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Akan datang', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+                  Text(l10n.comingSoon, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
                   Text('${items.length} item', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
                 ],
               ),
               const SizedBox(height: 12),
               ...items.map((rt) {
+                final cat = categoryById[rt.categoryId];
+                final amount = '${currencySymbol(rt.currencyCode)} ${NumberFormat('#,##0', locale).format(rt.amount)}';
+                final title = rt.description?.isNotEmpty == true
+                    ? rt.description!
+                    : (cat != null ? localizedCategoryName(l10n, cat.systemKey, cat.name) : l10n.other);
                 final daysUntil = rt.nextOccurrence.difference(DateTime.now()).inDays;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 42, height: 42,
-                        decoration: BoxDecoration(
-                          color: (rt.enabled ? AppColors.gold : colors.textSecondary).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                return GestureDetector(
+                  onTap: () => showRecurringFormSheet(context, edit: rt),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 2))],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: (rt.type == 'income' ? AppColors.teal : AppColors.gold).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            rt.type == 'income' ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+                            color: rt.type == 'income' ? AppColors.teal : AppColors.gold,
+                            size: 20,
+                          ),
                         ),
-                        child: Icon(Icons.repeat_rounded, color: rt.enabled ? AppColors.gold : colors.textSecondary, size: 20),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${_frequencyLabel(rt.frequency, l10n)} · ${l10n.everyDate} ${rt.interval}x',
-                              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${l10n.nextDate}: ${DateFormat('d MMMM yyyy', locale).format(rt.nextOccurrence)} · ${daysUntil > 0 ? '$daysUntil ${l10n.daysLeft}' : l10n.today}',
-                              style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
-                            ),
-                          ],
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${_frequencyLabel(rt.frequency, l10n)} · $amount',
+                                style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${l10n.nextDate}: ${DateFormat('d MMMM yyyy', locale).format(rt.nextOccurrence)} · ${daysUntil > 0 ? '$daysUntil ${l10n.daysLeft}' : l10n.today}',
+                                style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Switch(
-                        value: rt.enabled,
-                        onChanged: (_) => ref.read(recurringTransactionsNotifierProvider.notifier).toggle(rt),
-                        activeTrackColor: AppColors.gold,
-                      ),
-                    ],
+                        Switch(
+                          value: rt.enabled,
+                          onChanged: (_) => ref.read(recurringTransactionsNotifierProvider.notifier).toggle(rt),
+                          activeTrackColor: AppColors.gold,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Langganan', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                  Text('Kelola', style: GoogleFonts.inter(fontSize: 12, color: colors.primary)),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _subscriptionCard('Netflix', Icons.movie_rounded, const Color(0xFFE50914), 'Rp 186 rb/bulan', colors),
-                  const SizedBox(width: 10),
-                  _subscriptionCard('Spotify', Icons.music_note_rounded, const Color(0xFF1DB954), 'Rp 55 rb/bulan', colors),
-                ],
-              ),
             ],
           );
         },
@@ -176,37 +180,6 @@ class RecurringScreen extends ConsumerWidget {
     );
   }
 
-  Widget _subscriptionCard(String name, IconData icon, Color brandColor, String price, AppColorsT colors) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: brandColor.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 36, height: 36,
-              decoration: BoxDecoration(color: brandColor, borderRadius: BorderRadius.circular(10)),
-              child: Icon(icon, color: Colors.white, size: 18),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
-                  Text(price, style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Center(
@@ -214,7 +187,8 @@ class RecurringScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 72, height: 72,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(color: colors.surface, borderRadius: BorderRadius.circular(20), border: Border.all(color: colors.border)),
             child: const Icon(Icons.repeat_rounded, size: 32, color: AppColors.gold),
           ),

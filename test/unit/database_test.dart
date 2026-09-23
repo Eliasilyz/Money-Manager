@@ -13,7 +13,7 @@ void main() {
     tearDown(() => db.close());
 
     test('schema version is set', () {
-      expect(db.schemaVersion, 3);
+      expect(db.schemaVersion, 4);
     });
 
     test('can insert and retrieve account', () async {

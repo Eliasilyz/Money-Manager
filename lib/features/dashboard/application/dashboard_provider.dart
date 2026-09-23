@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_manager/domain/entities/account.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/currencies/application/currency_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 
 enum DashboardPeriod { thisMonth, threeMonths, thisYear }
@@ -43,6 +46,9 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
   final accountRepo = ref.watch(accountRepositoryProvider);
   final txRepo = ref.watch(transactionRepositoryProvider);
   final catRepo = ref.watch(categoryRepositoryProvider);
+  final baseCode = ref.watch(baseCurrencyCodeProvider);
+  final ratesAsync = ref.watch(exchangeRatesProvider);
+  final rates = ratesAsync.valueOrNull ?? const <String, double>{};
 
   final accounts = await accountRepo.getAllAccounts();
 
@@ -64,13 +70,17 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
 
   final transactions = await txRepo.getTransactionsByDateRange(periodStart, periodEnd);
 
-  final totalBalance = accounts.fold<int>(0, (sum, a) => sum + a.initialBalance);
+  final totalBalance = accounts.fold<int>(
+    0,
+    (sum, a) => sum +
+        convertAmount(a.initialBalance, a.currencyCode, baseCode, rates).round(),
+  );
   final totalIncome = transactions
       .where((t) => t.type == 'income')
-      .fold<int>(0, (sum, t) => sum + t.amount);
+      .fold<int>(0, (sum, t) => sum + convertAmount(t.amount, t.currencyCode, baseCode, rates).round());
   final totalExpenses = transactions
       .where((t) => t.type == 'expense')
-      .fold<int>(0, (sum, t) => sum + t.amount);
+      .fold<int>(0, (sum, t) => sum + convertAmount(t.amount, t.currencyCode, baseCode, rates).round());
 
   final expenseMap = <String, CategoryExpense>{};
   for (final t in transactions.where((t) => t.type == 'expense')) {

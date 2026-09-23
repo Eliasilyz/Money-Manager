@@ -1,6 +1,6 @@
 {
-    "name": "money_manager_tmp",
-    "short_name": "money_manager_tmp",
+    "name": "Money Manager",
+    "short_name": "Money Manager",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

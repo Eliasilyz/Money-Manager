@@ -5,6 +5,65 @@ import 'package:intl/intl.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
+String localizedCategoryName(AppLocalizations l10n, String? systemKey, String fallback) {
+  switch (systemKey) {
+    case 'food_drink':
+      return l10n.categoryDefaultFoodDrink;
+    case 'transport':
+      return l10n.categoryDefaultTransport;
+    case 'shopping':
+      return l10n.categoryDefaultShopping;
+    case 'housing':
+      return l10n.categoryDefaultHousing;
+    case 'utilities':
+      return l10n.categoryDefaultUtilities;
+    case 'health':
+      return l10n.categoryDefaultHealth;
+    case 'education':
+      return l10n.categoryDefaultEducation;
+    case 'entertainment':
+      return l10n.categoryDefaultEntertainment;
+    case 'vacation':
+      return l10n.categoryDefaultVacation;
+    case 'family':
+      return l10n.categoryDefaultFamily;
+    case 'personal_care':
+      return l10n.categoryDefaultPersonalCare;
+    case 'gifts':
+      return l10n.categoryDefaultGifts;
+    case 'debt_payment':
+      return l10n.categoryDefaultDebtPayment;
+    case 'insurance':
+      return l10n.categoryDefaultInsurance;
+    case 'subscriptions':
+      return l10n.categoryDefaultSubscriptions;
+    case 'other_expense':
+      return l10n.categoryDefaultOtherExpense;
+    case 'salary':
+      return l10n.categoryDefaultSalary;
+    case 'bonus':
+      return l10n.categoryDefaultBonus;
+    case 'business':
+      return l10n.categoryDefaultBusiness;
+    case 'investment':
+      return l10n.categoryDefaultInvestment;
+    case 'gift':
+      return l10n.categoryDefaultGift;
+    case 'sale':
+      return l10n.categoryDefaultSale;
+    case 'refund':
+      return l10n.categoryDefaultRefund;
+    case 'other_income':
+      return l10n.categoryDefaultOtherIncome;
+    case 'balance_adjustment':
+      return l10n.categoryDefaultBalanceAdjustment;
+    case 'transfer':
+      return l10n.categoryDefaultTransfer;
+    default:
+      return fallback;
+  }
+}
+
 class ScreenHeader extends StatelessWidget {
   final String title;
   final String? subtitle;

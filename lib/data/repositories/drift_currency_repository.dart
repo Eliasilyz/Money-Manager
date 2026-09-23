@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:money_manager/database/database.dart' as drift;
 import 'package:money_manager/domain/entities/currency.dart' as domain;
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/repositories/currency_repository.dart';
 
 class DriftCurrencyRepository implements ICurrencyRepository {
@@ -39,6 +40,31 @@ class DriftCurrencyRepository implements ICurrencyRepository {
         name: Value(currency.name),
         symbol: Value(currency.symbol),
         decimalDigits: Value(currency.decimalDigits),
+      ),
+    );
+  }
+
+  @override
+  Future<List<ExchangeRate>> getAllExchangeRates() async {
+    final rates = await _db.currenciesDao.getAllExchangeRates();
+    return rates
+        .map((r) => ExchangeRate(
+              baseCurrency: r.baseCurrency,
+              targetCurrency: r.targetCurrency,
+              rate: r.rate,
+              date: r.date,
+            ))
+        .toList();
+  }
+
+  @override
+  Future<void> saveExchangeRate(ExchangeRate rate) async {
+    await _db.currenciesDao.insertExchangeRate(
+      drift.ExchangeRatesTableCompanion(
+        baseCurrency: Value(rate.baseCurrency),
+        targetCurrency: Value(rate.targetCurrency),
+        rate: Value(rate.rate),
+        date: Value(rate.date),
       ),
     );
   }

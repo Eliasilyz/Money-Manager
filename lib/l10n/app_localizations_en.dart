@@ -318,6 +318,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get recurringAdd => 'New Recurring Transaction';
+
+  @override
+  String get editRecurring => 'Edit Recurring Transaction';
+
+  @override
+  String get frequency => 'Frequency';
+
+  @override
+  String get startDate => 'Start date';
+
+  @override
+  String get endDate => 'End date';
+
+  @override
   String get subscriptions => 'Subscriptions';
 
   @override
@@ -651,6 +666,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get deleteConfirm => 'Are you sure you want to delete?';
 
   @override
   String get edit => 'Edit';
@@ -993,6 +1011,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultCurrencyName => 'Indonesian Rupiah (IDR)';
 
   @override
+  String get baseCurrency => 'Base currency';
+
+  @override
+  String get refreshRates => 'Refresh rates';
+
+  @override
   String get dataAndSecurity => 'Data & security';
 
   @override
@@ -1042,4 +1066,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupSuccessful => 'Successful';
+
+  @override
+  String get categoryDefaultFoodDrink => 'Food & Drink';
+
+  @override
+  String get categoryDefaultTransport => 'Transport';
+
+  @override
+  String get categoryDefaultShopping => 'Shopping';
+
+  @override
+  String get categoryDefaultHousing => 'Housing & Rent';
+
+  @override
+  String get categoryDefaultUtilities => 'Bills & Utilities';
+
+  @override
+  String get categoryDefaultHealth => 'Health';
+
+  @override
+  String get categoryDefaultEducation => 'Education';
+
+  @override
+  String get categoryDefaultEntertainment => 'Entertainment';
+
+  @override
+  String get categoryDefaultVacation => 'Vacation';
+
+  @override
+  String get categoryDefaultFamily => 'Family & Kids';
+
+  @override
+  String get categoryDefaultPersonalCare => 'Personal Care';
+
+  @override
+  String get categoryDefaultGifts => 'Gifts & Donations';
+
+  @override
+  String get categoryDefaultDebtPayment => 'Installments & Debt';
+
+  @override
+  String get categoryDefaultInsurance => 'Insurance';
+
+  @override
+  String get categoryDefaultSubscriptions => 'Subscriptions';
+
+  @override
+  String get categoryDefaultOtherExpense => 'Other';
+
+  @override
+  String get categoryDefaultSalary => 'Salary';
+
+  @override
+  String get categoryDefaultBonus => 'Bonus';
+
+  @override
+  String get categoryDefaultBusiness => 'Business';
+
+  @override
+  String get categoryDefaultInvestment => 'Investment';
+
+  @override
+  String get categoryDefaultGift => 'Gift';
+
+  @override
+  String get categoryDefaultSale => 'Sales';
+
+  @override
+  String get categoryDefaultRefund => 'Refunds';
+
+  @override
+  String get categoryDefaultOtherIncome => 'Other';
+
+  @override
+  String get categoryDefaultBalanceAdjustment => 'Balance Adjustment';
+
+  @override
+  String get categoryDefaultTransfer => 'Transfer';
 }

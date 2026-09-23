@@ -317,6 +317,21 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get recurringAdd => 'Tambah Transaksi Berulang';
+
+  @override
+  String get editRecurring => 'Edit Transaksi Berulang';
+
+  @override
+  String get frequency => 'Frekuensi';
+
+  @override
+  String get startDate => 'Mulai';
+
+  @override
+  String get endDate => 'Selesai';
+
+  @override
   String get subscriptions => 'Langganan';
 
   @override
@@ -652,6 +667,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get delete => 'Hapus';
+
+  @override
+  String get deleteConfirm => 'Yakin ingin menghapus?';
 
   @override
   String get edit => 'Edit';
@@ -992,6 +1010,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get defaultCurrencyName => 'Rupiah Indonesia (IDR)';
 
   @override
+  String get baseCurrency => 'Mata uang dasar';
+
+  @override
+  String get refreshRates => 'Segarkan kurs';
+
+  @override
   String get dataAndSecurity => 'Data & keamanan';
 
   @override
@@ -1041,4 +1065,82 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get backupSuccessful => 'Berhasil';
+
+  @override
+  String get categoryDefaultFoodDrink => 'Makan & Minum';
+
+  @override
+  String get categoryDefaultTransport => 'Transportasi';
+
+  @override
+  String get categoryDefaultShopping => 'Belanja';
+
+  @override
+  String get categoryDefaultHousing => 'Rumah & Sewa';
+
+  @override
+  String get categoryDefaultUtilities => 'Tagihan & Utilitas';
+
+  @override
+  String get categoryDefaultHealth => 'Kesehatan';
+
+  @override
+  String get categoryDefaultEducation => 'Pendidikan';
+
+  @override
+  String get categoryDefaultEntertainment => 'Hiburan';
+
+  @override
+  String get categoryDefaultVacation => 'Liburan';
+
+  @override
+  String get categoryDefaultFamily => 'Keluarga & Anak';
+
+  @override
+  String get categoryDefaultPersonalCare => 'Perawatan Diri';
+
+  @override
+  String get categoryDefaultGifts => 'Hadiah & Donasi';
+
+  @override
+  String get categoryDefaultDebtPayment => 'Cicilan & Hutang';
+
+  @override
+  String get categoryDefaultInsurance => 'Asuransi';
+
+  @override
+  String get categoryDefaultSubscriptions => 'Langganan';
+
+  @override
+  String get categoryDefaultOtherExpense => 'Lainnya';
+
+  @override
+  String get categoryDefaultSalary => 'Gaji';
+
+  @override
+  String get categoryDefaultBonus => 'Bonus';
+
+  @override
+  String get categoryDefaultBusiness => 'Usaha';
+
+  @override
+  String get categoryDefaultInvestment => 'Investasi';
+
+  @override
+  String get categoryDefaultGift => 'Hadiah';
+
+  @override
+  String get categoryDefaultSale => 'Penjualan';
+
+  @override
+  String get categoryDefaultRefund => 'Pengembalian Dana';
+
+  @override
+  String get categoryDefaultOtherIncome => 'Lainnya';
+
+  @override
+  String get categoryDefaultBalanceAdjustment => 'Penyesuaian Saldo';
+
+  @override
+  String get categoryDefaultTransfer => 'Transfer';
 }

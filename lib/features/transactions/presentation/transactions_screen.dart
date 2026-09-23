@@ -6,11 +6,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/category.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
@@ -33,7 +35,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   String _datePeriod = 'all'; // all / today / week / month
 
   final _searchCtrl = TextEditingController();
-  static final _fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+  late NumberFormat _fmt;
 
   static const _catColors = <String, Color>{
     'makan': Color(0xFF1B6E4B),
@@ -74,6 +76,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).languageCode;
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    _fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
     final catMap = categoriesAsync.whenOrNull(data: (cats) => {for (final c in cats) c.id: c}) ?? const <String, Category>{};
@@ -268,7 +272,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     // Group by category
     final catTotals = <String, int>{};
     for (final t in expenses) {
-      final name = catMap[t.categoryId]?.name ?? 'Lainnya';
+      final cat = catMap[t.categoryId];
+      final name = cat == null ? l10n.other : localizedCategoryName(l10n, cat.systemKey, cat.name);
       catTotals[name] = (catTotals[name] ?? 0) + t.amount;
     }
 
@@ -621,7 +626,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
       list = list.where((t) {
         final desc = (t.description ?? '').toLowerCase();
         final note = (t.note ?? '').toLowerCase();
-        final catName = catMap[t.categoryId]?.name.toLowerCase() ?? '';
+        final cat = catMap[t.categoryId];
+        final catName = cat == null ? '' : localizedCategoryName(l10n, cat.systemKey, cat.name).toLowerCase();
         return desc.contains(_searchQuery) || note.contains(_searchQuery) || catName.contains(_searchQuery);
       }).toList();
     }
@@ -634,7 +640,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     // Category filter
     if (_selectedCategories.isNotEmpty) {
       list = list.where((t) {
-        final catName = catMap[t.categoryId]?.name ?? '';
+        final cat = catMap[t.categoryId];
+        final catName = cat == null ? '' : localizedCategoryName(l10n, cat.systemKey, cat.name);
         return _selectedCategories.contains(catName);
       }).toList();
     }
@@ -706,20 +713,23 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   Widget _buildTxTile(Transaction t, Map<String, Category> catMap, NumberFormat fmt, AppColorsT colors) {
     final isIncome = t.type == 'income';
     final cat = catMap[t.categoryId];
-    final catName = cat?.name ?? '';
+    final l10n = AppLocalizations.of(context);
+    final catName = cat == null ? '' : localizedCategoryName(l10n, cat.systemKey, cat.name);
     final sign = isIncome ? '+' : '-';
+    final amountCode = t.currencyCode;
+    final amountFmt = NumberFormat.currency(symbol: '${currencySymbol(amountCode)} ', decimalDigits: currencyDigits(amountCode));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: TransactionTile(
-        amount: '$sign${fmt.format(t.amount)}',
+        amount: '$sign${amountFmt.format(t.amount)}',
         isIncome: isIncome,
         date: t.date,
         categoryName: catName.isNotEmpty ? catName : null,
         note: t.note,
         description: t.description,
         isTransfer: t.transferId != null,
-        onTap: () => _showTransactionDetail(t, catName, fmt, colors),
+        onTap: () => _showTransactionDetail(t, catName, amountFmt, colors),
       ),
     );
   }

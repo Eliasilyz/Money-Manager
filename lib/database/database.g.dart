@@ -2235,12 +2235,40 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _transactionTemplateIdMeta =
-      const VerificationMeta('transactionTemplateId');
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
-  late final GeneratedColumn<String> transactionTemplateId =
-      GeneratedColumn<String>('transaction_template_id', aliasedName, false,
-          type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _accountIdMeta =
+      const VerificationMeta('accountId');
+  @override
+  late final GeneratedColumn<String> accountId = GeneratedColumn<String>(
+      'account_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryIdMeta =
+      const VerificationMeta('categoryId');
+  @override
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+      'category_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _currencyCodeMeta =
+      const VerificationMeta('currencyCode');
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+      'currency_code', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _frequencyMeta =
       const VerificationMeta('frequency');
   @override
@@ -2273,16 +2301,6 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
   late final GeneratedColumn<DateTime> nextOccurrence =
       GeneratedColumn<DateTime>('next_occurrence', aliasedName, false,
           type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _autoCreateMeta =
-      const VerificationMeta('autoCreate');
-  @override
-  late final GeneratedColumn<bool> autoCreate = GeneratedColumn<bool>(
-      'auto_create', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("auto_create" IN (0, 1))'),
-      defaultValue: const Constant(true));
   static const VerificationMeta _enabledMeta =
       const VerificationMeta('enabled');
   @override
@@ -2293,16 +2311,6 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("enabled" IN (0, 1))'),
       defaultValue: const Constant(true));
-  static const VerificationMeta _isSubscriptionMeta =
-      const VerificationMeta('isSubscription');
-  @override
-  late final GeneratedColumn<bool> isSubscription = GeneratedColumn<bool>(
-      'is_subscription', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("is_subscription" IN (0, 1))'),
-      defaultValue: const Constant(false));
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -2322,15 +2330,18 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
   @override
   List<GeneratedColumn> get $columns => [
         id,
-        transactionTemplateId,
+        type,
+        accountId,
+        categoryId,
+        amount,
+        currencyCode,
+        description,
         frequency,
         interval,
         startDate,
         endDate,
         nextOccurrence,
-        autoCreate,
         enabled,
-        isSubscription,
         createdAt,
         updatedAt
       ];
@@ -2350,13 +2361,43 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
     } else if (isInserting) {
       context.missing(_idMeta);
     }
-    if (data.containsKey('transaction_template_id')) {
+    if (data.containsKey('type')) {
       context.handle(
-          _transactionTemplateIdMeta,
-          transactionTemplateId.isAcceptableOrUnknown(
-              data['transaction_template_id']!, _transactionTemplateIdMeta));
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
     } else if (isInserting) {
-      context.missing(_transactionTemplateIdMeta);
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('account_id')) {
+      context.handle(_accountIdMeta,
+          accountId.isAcceptableOrUnknown(data['account_id']!, _accountIdMeta));
+    } else if (isInserting) {
+      context.missing(_accountIdMeta);
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+          _currencyCodeMeta,
+          currencyCode.isAcceptableOrUnknown(
+              data['currency_code']!, _currencyCodeMeta));
+    } else if (isInserting) {
+      context.missing(_currencyCodeMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
     }
     if (data.containsKey('frequency')) {
       context.handle(_frequencyMeta,
@@ -2386,21 +2427,9 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
     } else if (isInserting) {
       context.missing(_nextOccurrenceMeta);
     }
-    if (data.containsKey('auto_create')) {
-      context.handle(
-          _autoCreateMeta,
-          autoCreate.isAcceptableOrUnknown(
-              data['auto_create']!, _autoCreateMeta));
-    }
     if (data.containsKey('enabled')) {
       context.handle(_enabledMeta,
           enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta));
-    }
-    if (data.containsKey('is_subscription')) {
-      context.handle(
-          _isSubscriptionMeta,
-          isSubscription.isAcceptableOrUnknown(
-              data['is_subscription']!, _isSubscriptionMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -2421,9 +2450,18 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
     return RecurringTransaction(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      transactionTemplateId: attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}transaction_template_id'])!,
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      accountId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}account_id'])!,
+      categoryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category_id']),
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+      currencyCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}currency_code'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
       frequency: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}frequency'])!,
       interval: attachedDatabase.typeMapping
@@ -2434,12 +2472,8 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
           .read(DriftSqlType.dateTime, data['${effectivePrefix}end_date']),
       nextOccurrence: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}next_occurrence'])!,
-      autoCreate: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}auto_create'])!,
       enabled: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}enabled'])!,
-      isSubscription: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_subscription'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -2456,35 +2490,50 @@ class $RecurringTransactionsTableTable extends RecurringTransactionsTable
 class RecurringTransaction extends DataClass
     implements Insertable<RecurringTransaction> {
   final String id;
-  final String transactionTemplateId;
+  final String type;
+  final String accountId;
+  final String? categoryId;
+  final int amount;
+  final String currencyCode;
+  final String? description;
   final String frequency;
   final int interval;
   final DateTime startDate;
   final DateTime? endDate;
   final DateTime nextOccurrence;
-  final bool autoCreate;
   final bool enabled;
-  final bool isSubscription;
   final DateTime createdAt;
   final DateTime updatedAt;
   const RecurringTransaction(
       {required this.id,
-      required this.transactionTemplateId,
+      required this.type,
+      required this.accountId,
+      this.categoryId,
+      required this.amount,
+      required this.currencyCode,
+      this.description,
       required this.frequency,
       required this.interval,
       required this.startDate,
       this.endDate,
       required this.nextOccurrence,
-      required this.autoCreate,
       required this.enabled,
-      required this.isSubscription,
       required this.createdAt,
       required this.updatedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['transaction_template_id'] = Variable<String>(transactionTemplateId);
+    map['type'] = Variable<String>(type);
+    map['account_id'] = Variable<String>(accountId);
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<String>(categoryId);
+    }
+    map['amount'] = Variable<int>(amount);
+    map['currency_code'] = Variable<String>(currencyCode);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
     map['frequency'] = Variable<String>(frequency);
     map['interval'] = Variable<int>(interval);
     map['start_date'] = Variable<DateTime>(startDate);
@@ -2492,9 +2541,7 @@ class RecurringTransaction extends DataClass
       map['end_date'] = Variable<DateTime>(endDate);
     }
     map['next_occurrence'] = Variable<DateTime>(nextOccurrence);
-    map['auto_create'] = Variable<bool>(autoCreate);
     map['enabled'] = Variable<bool>(enabled);
-    map['is_subscription'] = Variable<bool>(isSubscription);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -2503,7 +2550,16 @@ class RecurringTransaction extends DataClass
   RecurringTransactionsTableCompanion toCompanion(bool nullToAbsent) {
     return RecurringTransactionsTableCompanion(
       id: Value(id),
-      transactionTemplateId: Value(transactionTemplateId),
+      type: Value(type),
+      accountId: Value(accountId),
+      categoryId: categoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryId),
+      amount: Value(amount),
+      currencyCode: Value(currencyCode),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
       frequency: Value(frequency),
       interval: Value(interval),
       startDate: Value(startDate),
@@ -2511,9 +2567,7 @@ class RecurringTransaction extends DataClass
           ? const Value.absent()
           : Value(endDate),
       nextOccurrence: Value(nextOccurrence),
-      autoCreate: Value(autoCreate),
       enabled: Value(enabled),
-      isSubscription: Value(isSubscription),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -2524,16 +2578,18 @@ class RecurringTransaction extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return RecurringTransaction(
       id: serializer.fromJson<String>(json['id']),
-      transactionTemplateId:
-          serializer.fromJson<String>(json['transactionTemplateId']),
+      type: serializer.fromJson<String>(json['type']),
+      accountId: serializer.fromJson<String>(json['accountId']),
+      categoryId: serializer.fromJson<String?>(json['categoryId']),
+      amount: serializer.fromJson<int>(json['amount']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      description: serializer.fromJson<String?>(json['description']),
       frequency: serializer.fromJson<String>(json['frequency']),
       interval: serializer.fromJson<int>(json['interval']),
       startDate: serializer.fromJson<DateTime>(json['startDate']),
       endDate: serializer.fromJson<DateTime?>(json['endDate']),
       nextOccurrence: serializer.fromJson<DateTime>(json['nextOccurrence']),
-      autoCreate: serializer.fromJson<bool>(json['autoCreate']),
       enabled: serializer.fromJson<bool>(json['enabled']),
-      isSubscription: serializer.fromJson<bool>(json['isSubscription']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -2543,15 +2599,18 @@ class RecurringTransaction extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'transactionTemplateId': serializer.toJson<String>(transactionTemplateId),
+      'type': serializer.toJson<String>(type),
+      'accountId': serializer.toJson<String>(accountId),
+      'categoryId': serializer.toJson<String?>(categoryId),
+      'amount': serializer.toJson<int>(amount),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'description': serializer.toJson<String?>(description),
       'frequency': serializer.toJson<String>(frequency),
       'interval': serializer.toJson<int>(interval),
       'startDate': serializer.toJson<DateTime>(startDate),
       'endDate': serializer.toJson<DateTime?>(endDate),
       'nextOccurrence': serializer.toJson<DateTime>(nextOccurrence),
-      'autoCreate': serializer.toJson<bool>(autoCreate),
       'enabled': serializer.toJson<bool>(enabled),
-      'isSubscription': serializer.toJson<bool>(isSubscription),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -2559,29 +2618,34 @@ class RecurringTransaction extends DataClass
 
   RecurringTransaction copyWith(
           {String? id,
-          String? transactionTemplateId,
+          String? type,
+          String? accountId,
+          Value<String?> categoryId = const Value.absent(),
+          int? amount,
+          String? currencyCode,
+          Value<String?> description = const Value.absent(),
           String? frequency,
           int? interval,
           DateTime? startDate,
           Value<DateTime?> endDate = const Value.absent(),
           DateTime? nextOccurrence,
-          bool? autoCreate,
           bool? enabled,
-          bool? isSubscription,
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       RecurringTransaction(
         id: id ?? this.id,
-        transactionTemplateId:
-            transactionTemplateId ?? this.transactionTemplateId,
+        type: type ?? this.type,
+        accountId: accountId ?? this.accountId,
+        categoryId: categoryId.present ? categoryId.value : this.categoryId,
+        amount: amount ?? this.amount,
+        currencyCode: currencyCode ?? this.currencyCode,
+        description: description.present ? description.value : this.description,
         frequency: frequency ?? this.frequency,
         interval: interval ?? this.interval,
         startDate: startDate ?? this.startDate,
         endDate: endDate.present ? endDate.value : this.endDate,
         nextOccurrence: nextOccurrence ?? this.nextOccurrence,
-        autoCreate: autoCreate ?? this.autoCreate,
         enabled: enabled ?? this.enabled,
-        isSubscription: isSubscription ?? this.isSubscription,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -2589,9 +2653,16 @@ class RecurringTransaction extends DataClass
       RecurringTransactionsTableCompanion data) {
     return RecurringTransaction(
       id: data.id.present ? data.id.value : this.id,
-      transactionTemplateId: data.transactionTemplateId.present
-          ? data.transactionTemplateId.value
-          : this.transactionTemplateId,
+      type: data.type.present ? data.type.value : this.type,
+      accountId: data.accountId.present ? data.accountId.value : this.accountId,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      description:
+          data.description.present ? data.description.value : this.description,
       frequency: data.frequency.present ? data.frequency.value : this.frequency,
       interval: data.interval.present ? data.interval.value : this.interval,
       startDate: data.startDate.present ? data.startDate.value : this.startDate,
@@ -2599,12 +2670,7 @@ class RecurringTransaction extends DataClass
       nextOccurrence: data.nextOccurrence.present
           ? data.nextOccurrence.value
           : this.nextOccurrence,
-      autoCreate:
-          data.autoCreate.present ? data.autoCreate.value : this.autoCreate,
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
-      isSubscription: data.isSubscription.present
-          ? data.isSubscription.value
-          : this.isSubscription,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2614,15 +2680,18 @@ class RecurringTransaction extends DataClass
   String toString() {
     return (StringBuffer('RecurringTransaction(')
           ..write('id: $id, ')
-          ..write('transactionTemplateId: $transactionTemplateId, ')
+          ..write('type: $type, ')
+          ..write('accountId: $accountId, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('amount: $amount, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('description: $description, ')
           ..write('frequency: $frequency, ')
           ..write('interval: $interval, ')
           ..write('startDate: $startDate, ')
           ..write('endDate: $endDate, ')
           ..write('nextOccurrence: $nextOccurrence, ')
-          ..write('autoCreate: $autoCreate, ')
           ..write('enabled: $enabled, ')
-          ..write('isSubscription: $isSubscription, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2632,15 +2701,18 @@ class RecurringTransaction extends DataClass
   @override
   int get hashCode => Object.hash(
       id,
-      transactionTemplateId,
+      type,
+      accountId,
+      categoryId,
+      amount,
+      currencyCode,
+      description,
       frequency,
       interval,
       startDate,
       endDate,
       nextOccurrence,
-      autoCreate,
       enabled,
-      isSubscription,
       createdAt,
       updatedAt);
   @override
@@ -2648,15 +2720,18 @@ class RecurringTransaction extends DataClass
       identical(this, other) ||
       (other is RecurringTransaction &&
           other.id == this.id &&
-          other.transactionTemplateId == this.transactionTemplateId &&
+          other.type == this.type &&
+          other.accountId == this.accountId &&
+          other.categoryId == this.categoryId &&
+          other.amount == this.amount &&
+          other.currencyCode == this.currencyCode &&
+          other.description == this.description &&
           other.frequency == this.frequency &&
           other.interval == this.interval &&
           other.startDate == this.startDate &&
           other.endDate == this.endDate &&
           other.nextOccurrence == this.nextOccurrence &&
-          other.autoCreate == this.autoCreate &&
           other.enabled == this.enabled &&
-          other.isSubscription == this.isSubscription &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2664,79 +2739,96 @@ class RecurringTransaction extends DataClass
 class RecurringTransactionsTableCompanion
     extends UpdateCompanion<RecurringTransaction> {
   final Value<String> id;
-  final Value<String> transactionTemplateId;
+  final Value<String> type;
+  final Value<String> accountId;
+  final Value<String?> categoryId;
+  final Value<int> amount;
+  final Value<String> currencyCode;
+  final Value<String?> description;
   final Value<String> frequency;
   final Value<int> interval;
   final Value<DateTime> startDate;
   final Value<DateTime?> endDate;
   final Value<DateTime> nextOccurrence;
-  final Value<bool> autoCreate;
   final Value<bool> enabled;
-  final Value<bool> isSubscription;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const RecurringTransactionsTableCompanion({
     this.id = const Value.absent(),
-    this.transactionTemplateId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.accountId = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.description = const Value.absent(),
     this.frequency = const Value.absent(),
     this.interval = const Value.absent(),
     this.startDate = const Value.absent(),
     this.endDate = const Value.absent(),
     this.nextOccurrence = const Value.absent(),
-    this.autoCreate = const Value.absent(),
     this.enabled = const Value.absent(),
-    this.isSubscription = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RecurringTransactionsTableCompanion.insert({
     required String id,
-    required String transactionTemplateId,
+    required String type,
+    required String accountId,
+    this.categoryId = const Value.absent(),
+    required int amount,
+    required String currencyCode,
+    this.description = const Value.absent(),
     required String frequency,
     this.interval = const Value.absent(),
     required DateTime startDate,
     this.endDate = const Value.absent(),
     required DateTime nextOccurrence,
-    this.autoCreate = const Value.absent(),
     this.enabled = const Value.absent(),
-    this.isSubscription = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
-        transactionTemplateId = Value(transactionTemplateId),
+        type = Value(type),
+        accountId = Value(accountId),
+        amount = Value(amount),
+        currencyCode = Value(currencyCode),
         frequency = Value(frequency),
         startDate = Value(startDate),
         nextOccurrence = Value(nextOccurrence);
   static Insertable<RecurringTransaction> custom({
     Expression<String>? id,
-    Expression<String>? transactionTemplateId,
+    Expression<String>? type,
+    Expression<String>? accountId,
+    Expression<String>? categoryId,
+    Expression<int>? amount,
+    Expression<String>? currencyCode,
+    Expression<String>? description,
     Expression<String>? frequency,
     Expression<int>? interval,
     Expression<DateTime>? startDate,
     Expression<DateTime>? endDate,
     Expression<DateTime>? nextOccurrence,
-    Expression<bool>? autoCreate,
     Expression<bool>? enabled,
-    Expression<bool>? isSubscription,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (transactionTemplateId != null)
-        'transaction_template_id': transactionTemplateId,
+      if (type != null) 'type': type,
+      if (accountId != null) 'account_id': accountId,
+      if (categoryId != null) 'category_id': categoryId,
+      if (amount != null) 'amount': amount,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (description != null) 'description': description,
       if (frequency != null) 'frequency': frequency,
       if (interval != null) 'interval': interval,
       if (startDate != null) 'start_date': startDate,
       if (endDate != null) 'end_date': endDate,
       if (nextOccurrence != null) 'next_occurrence': nextOccurrence,
-      if (autoCreate != null) 'auto_create': autoCreate,
       if (enabled != null) 'enabled': enabled,
-      if (isSubscription != null) 'is_subscription': isSubscription,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2745,30 +2837,35 @@ class RecurringTransactionsTableCompanion
 
   RecurringTransactionsTableCompanion copyWith(
       {Value<String>? id,
-      Value<String>? transactionTemplateId,
+      Value<String>? type,
+      Value<String>? accountId,
+      Value<String?>? categoryId,
+      Value<int>? amount,
+      Value<String>? currencyCode,
+      Value<String?>? description,
       Value<String>? frequency,
       Value<int>? interval,
       Value<DateTime>? startDate,
       Value<DateTime?>? endDate,
       Value<DateTime>? nextOccurrence,
-      Value<bool>? autoCreate,
       Value<bool>? enabled,
-      Value<bool>? isSubscription,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<int>? rowid}) {
     return RecurringTransactionsTableCompanion(
       id: id ?? this.id,
-      transactionTemplateId:
-          transactionTemplateId ?? this.transactionTemplateId,
+      type: type ?? this.type,
+      accountId: accountId ?? this.accountId,
+      categoryId: categoryId ?? this.categoryId,
+      amount: amount ?? this.amount,
+      currencyCode: currencyCode ?? this.currencyCode,
+      description: description ?? this.description,
       frequency: frequency ?? this.frequency,
       interval: interval ?? this.interval,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       nextOccurrence: nextOccurrence ?? this.nextOccurrence,
-      autoCreate: autoCreate ?? this.autoCreate,
       enabled: enabled ?? this.enabled,
-      isSubscription: isSubscription ?? this.isSubscription,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -2781,9 +2878,23 @@ class RecurringTransactionsTableCompanion
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (transactionTemplateId.present) {
-      map['transaction_template_id'] =
-          Variable<String>(transactionTemplateId.value);
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (accountId.present) {
+      map['account_id'] = Variable<String>(accountId.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
     if (frequency.present) {
       map['frequency'] = Variable<String>(frequency.value);
@@ -2800,14 +2911,8 @@ class RecurringTransactionsTableCompanion
     if (nextOccurrence.present) {
       map['next_occurrence'] = Variable<DateTime>(nextOccurrence.value);
     }
-    if (autoCreate.present) {
-      map['auto_create'] = Variable<bool>(autoCreate.value);
-    }
     if (enabled.present) {
       map['enabled'] = Variable<bool>(enabled.value);
-    }
-    if (isSubscription.present) {
-      map['is_subscription'] = Variable<bool>(isSubscription.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -2825,15 +2930,18 @@ class RecurringTransactionsTableCompanion
   String toString() {
     return (StringBuffer('RecurringTransactionsTableCompanion(')
           ..write('id: $id, ')
-          ..write('transactionTemplateId: $transactionTemplateId, ')
+          ..write('type: $type, ')
+          ..write('accountId: $accountId, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('amount: $amount, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('description: $description, ')
           ..write('frequency: $frequency, ')
           ..write('interval: $interval, ')
           ..write('startDate: $startDate, ')
           ..write('endDate: $endDate, ')
           ..write('nextOccurrence: $nextOccurrence, ')
-          ..write('autoCreate: $autoCreate, ')
           ..write('enabled: $enabled, ')
-          ..write('isSubscription: $isSubscription, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -7047,15 +7155,18 @@ typedef $$TransfersTableTableProcessedTableManager = ProcessedTableManager<
 typedef $$RecurringTransactionsTableTableCreateCompanionBuilder
     = RecurringTransactionsTableCompanion Function({
   required String id,
-  required String transactionTemplateId,
+  required String type,
+  required String accountId,
+  Value<String?> categoryId,
+  required int amount,
+  required String currencyCode,
+  Value<String?> description,
   required String frequency,
   Value<int> interval,
   required DateTime startDate,
   Value<DateTime?> endDate,
   required DateTime nextOccurrence,
-  Value<bool> autoCreate,
   Value<bool> enabled,
-  Value<bool> isSubscription,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
@@ -7063,15 +7174,18 @@ typedef $$RecurringTransactionsTableTableCreateCompanionBuilder
 typedef $$RecurringTransactionsTableTableUpdateCompanionBuilder
     = RecurringTransactionsTableCompanion Function({
   Value<String> id,
-  Value<String> transactionTemplateId,
+  Value<String> type,
+  Value<String> accountId,
+  Value<String?> categoryId,
+  Value<int> amount,
+  Value<String> currencyCode,
+  Value<String?> description,
   Value<String> frequency,
   Value<int> interval,
   Value<DateTime> startDate,
   Value<DateTime?> endDate,
   Value<DateTime> nextOccurrence,
-  Value<bool> autoCreate,
   Value<bool> enabled,
-  Value<bool> isSubscription,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<int> rowid,
@@ -7089,9 +7203,23 @@ class $$RecurringTransactionsTableTableFilterComposer
   ColumnFilters<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get transactionTemplateId => $composableBuilder(
-      column: $table.transactionTemplateId,
-      builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get accountId => $composableBuilder(
+      column: $table.accountId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+      column: $table.currencyCode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get frequency => $composableBuilder(
       column: $table.frequency, builder: (column) => ColumnFilters(column));
@@ -7109,15 +7237,8 @@ class $$RecurringTransactionsTableTableFilterComposer
       column: $table.nextOccurrence,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get autoCreate => $composableBuilder(
-      column: $table.autoCreate, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<bool> get enabled => $composableBuilder(
       column: $table.enabled, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get isSubscription => $composableBuilder(
-      column: $table.isSubscription,
-      builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -7138,9 +7259,24 @@ class $$RecurringTransactionsTableTableOrderingComposer
   ColumnOrderings<String> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get transactionTemplateId => $composableBuilder(
-      column: $table.transactionTemplateId,
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get accountId => $composableBuilder(
+      column: $table.accountId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+      column: $table.currencyCode,
       builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get frequency => $composableBuilder(
       column: $table.frequency, builder: (column) => ColumnOrderings(column));
@@ -7158,15 +7294,8 @@ class $$RecurringTransactionsTableTableOrderingComposer
       column: $table.nextOccurrence,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get autoCreate => $composableBuilder(
-      column: $table.autoCreate, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<bool> get enabled => $composableBuilder(
       column: $table.enabled, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get isSubscription => $composableBuilder(
-      column: $table.isSubscription,
-      builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
@@ -7187,8 +7316,23 @@ class $$RecurringTransactionsTableTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get transactionTemplateId => $composableBuilder(
-      column: $table.transactionTemplateId, builder: (column) => column);
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get accountId =>
+      $composableBuilder(column: $table.accountId, builder: (column) => column);
+
+  GeneratedColumn<String> get categoryId => $composableBuilder(
+      column: $table.categoryId, builder: (column) => column);
+
+  GeneratedColumn<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+      column: $table.currencyCode, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
 
   GeneratedColumn<String> get frequency =>
       $composableBuilder(column: $table.frequency, builder: (column) => column);
@@ -7205,14 +7349,8 @@ class $$RecurringTransactionsTableTableAnnotationComposer
   GeneratedColumn<DateTime> get nextOccurrence => $composableBuilder(
       column: $table.nextOccurrence, builder: (column) => column);
 
-  GeneratedColumn<bool> get autoCreate => $composableBuilder(
-      column: $table.autoCreate, builder: (column) => column);
-
   GeneratedColumn<bool> get enabled =>
       $composableBuilder(column: $table.enabled, builder: (column) => column);
-
-  GeneratedColumn<bool> get isSubscription => $composableBuilder(
-      column: $table.isSubscription, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -7253,60 +7391,72 @@ class $$RecurringTransactionsTableTableTableManager extends RootTableManager<
                   $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
-            Value<String> transactionTemplateId = const Value.absent(),
+            Value<String> type = const Value.absent(),
+            Value<String> accountId = const Value.absent(),
+            Value<String?> categoryId = const Value.absent(),
+            Value<int> amount = const Value.absent(),
+            Value<String> currencyCode = const Value.absent(),
+            Value<String?> description = const Value.absent(),
             Value<String> frequency = const Value.absent(),
             Value<int> interval = const Value.absent(),
             Value<DateTime> startDate = const Value.absent(),
             Value<DateTime?> endDate = const Value.absent(),
             Value<DateTime> nextOccurrence = const Value.absent(),
-            Value<bool> autoCreate = const Value.absent(),
             Value<bool> enabled = const Value.absent(),
-            Value<bool> isSubscription = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               RecurringTransactionsTableCompanion(
             id: id,
-            transactionTemplateId: transactionTemplateId,
+            type: type,
+            accountId: accountId,
+            categoryId: categoryId,
+            amount: amount,
+            currencyCode: currencyCode,
+            description: description,
             frequency: frequency,
             interval: interval,
             startDate: startDate,
             endDate: endDate,
             nextOccurrence: nextOccurrence,
-            autoCreate: autoCreate,
             enabled: enabled,
-            isSubscription: isSubscription,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String id,
-            required String transactionTemplateId,
+            required String type,
+            required String accountId,
+            Value<String?> categoryId = const Value.absent(),
+            required int amount,
+            required String currencyCode,
+            Value<String?> description = const Value.absent(),
             required String frequency,
             Value<int> interval = const Value.absent(),
             required DateTime startDate,
             Value<DateTime?> endDate = const Value.absent(),
             required DateTime nextOccurrence,
-            Value<bool> autoCreate = const Value.absent(),
             Value<bool> enabled = const Value.absent(),
-            Value<bool> isSubscription = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               RecurringTransactionsTableCompanion.insert(
             id: id,
-            transactionTemplateId: transactionTemplateId,
+            type: type,
+            accountId: accountId,
+            categoryId: categoryId,
+            amount: amount,
+            currencyCode: currencyCode,
+            description: description,
             frequency: frequency,
             interval: interval,
             startDate: startDate,
             endDate: endDate,
             nextOccurrence: nextOccurrence,
-            autoCreate: autoCreate,
             enabled: enabled,
-            isSubscription: isSubscription,
             createdAt: createdAt,
             updatedAt: updatedAt,
             rowid: rowid,

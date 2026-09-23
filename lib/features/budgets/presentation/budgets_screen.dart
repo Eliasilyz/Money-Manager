@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/core/widgets/pocket_deposit_sheet.dart';
+import 'package:money_manager/features/budgets/presentation/budget_form_sheet.dart';
 import 'package:money_manager/domain/entities/balance_calculation.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/budgets/application/budget_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/features/transfers/application/transfer_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -85,8 +88,8 @@ class BudgetsScreen extends ConsumerWidget {
     return Icons.category_rounded;
   }
 
-  String _short(int v, String locale) =>
-      'Rp ${NumberFormat.compact(locale: locale).format(v)}';
+  String _short(int v, String locale, String symbol) =>
+      '$symbol ${NumberFormat.compact(locale: locale).format(v)}';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -98,6 +101,8 @@ class BudgetsScreen extends ConsumerWidget {
         ? <BoxShadow>[BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))]
         : null;
     final now = DateTime.now();
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    final symbol = currencySymbol(baseCode);
     final budgetsAsync = ref.watch(budgetsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
@@ -122,7 +127,7 @@ class BudgetsScreen extends ConsumerWidget {
           transfers: transfers,
         );
     final catNames = categoriesAsync.whenOrNull(
-          data: (cats) => {for (final c in cats) c.id: c.name},
+          data: (cats) => {for (final c in cats) c.id: localizedCategoryName(l10n, c.systemKey, c.name)},
         ) ??
         const <String, String>{};
 
@@ -134,7 +139,7 @@ class BudgetsScreen extends ConsumerWidget {
         spentByCat[t.categoryId!] = (spentByCat[t.categoryId!] ?? 0) + t.amount;
       }
     }
-    final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+    final fmt = NumberFormat.currency(symbol: '$symbol ', decimalDigits: currencyDigits(baseCode));
     final monthLabel = DateFormat('MMMM yyyy', locale).format(now);
 
     final content = budgetsAsync.when(
@@ -171,7 +176,7 @@ class BudgetsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.spent(_short(totalSpent, locale), _short(totalBudget, locale)),
+                      l10n.spent(_short(totalSpent, locale, symbol), _short(totalBudget, locale, symbol)),
                       style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.7)),
                     ),
                   ],
@@ -195,8 +200,8 @@ class BudgetsScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     GestureDetector(
-                      onTap: () => context.push('/add-budget', extra: b),
-                      child: _buildBudgetTile(context, catName, spent, b.amount, pct, _getColor(b.categoryId), _getIconColor(b.categoryId), _getIcon(b.categoryId), l10n, locale, cardShadow),
+                      onTap: () => showBudgetFormSheet(context, edit: b),
+                      child: _buildBudgetTile(context, catName, spent, b.amount, pct, _getColor(b.categoryId), _getIconColor(b.categoryId), _getIcon(b.categoryId), l10n, locale, cardShadow, symbol),
                     ),
                     if (pocketId != null)
                       Padding(
@@ -204,9 +209,10 @@ class BudgetsScreen extends ConsumerWidget {
                         child: _buildPocketRow(
                           context,
                           pocketId,
-                          pocketNames[pocketId] ?? catName,
+                          pocketNames[pocketId] ?? '',
                           pocketBalance(pocketId),
-                          () => showPocketDepositSheet(context, pocketId: pocketId, pocketName: pocketNames[pocketId] ?? catName),
+                          () => showPocketDepositSheet(context, pocketId: pocketId, pocketName: pocketNames[pocketId] ?? ''),
+                          fmt,
                         ),
                       ),
                   ],
@@ -253,7 +259,7 @@ class BudgetsScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => context.push('/add-budget'),
+            onPressed: () => showBudgetFormSheet(context),
             child: Text(l10n.addBudget, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.primary)),
           ),
         ],
@@ -262,7 +268,7 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBudgetTile(BuildContext context, String catName, int spent, int total, int pct, Color bgColor, Color iconColor, IconData icon, AppLocalizations l10n, String locale, List<BoxShadow>? shadow) {
+  Widget _buildBudgetTile(BuildContext context, String catName, int spent, int total, int pct, Color bgColor, Color iconColor, IconData icon, AppLocalizations l10n, String locale, List<BoxShadow>? shadow, String symbol) {
     final colors = AppColorsT.of(context);
     final progressColor = _getProgressBarColor(pct);
     return Container(
@@ -299,7 +305,7 @@ class BudgetsScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 2),
-                    Text(l10n.spent(_short(spent, locale), _short(total, locale)), style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+                    Text(l10n.spent(_short(spent, locale, symbol), _short(total, locale, symbol)), style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                   ],
                 ),
               ),
@@ -320,9 +326,8 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPocketRow(BuildContext context, String pocketId, String pocketName, int balance, VoidCallback onDeposit) {
+  Widget _buildPocketRow(BuildContext context, String pocketId, String pocketName, int balance, VoidCallback onDeposit, NumberFormat fmt) {
     final colors = AppColorsT.of(context);
-    final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Row(
