@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.moneymanager" "\0"
-            VALUE "FileDescription", "money_manager_tmp" "\0"
+            VALUE "CompanyName", "eliasilyz" "\0"
+            VALUE "FileDescription", "Money Manager" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "money_manager_tmp" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.moneymanager. All rights reserved." "\0"
-            VALUE "OriginalFilename", "money_manager_tmp.exe" "\0"
-            VALUE "ProductName", "money_manager_tmp" "\0"
+            VALUE "InternalName", "Money Manager" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 eliasilyz. All rights reserved." "\0"
+            VALUE "OriginalFilename", "money_manager.exe" "\0"
+            VALUE "ProductName", "Money Manager" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
