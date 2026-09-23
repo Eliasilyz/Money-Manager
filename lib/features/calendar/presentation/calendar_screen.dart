@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -18,7 +21,7 @@ class CalendarScreen extends ConsumerStatefulWidget {
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   DateTime _currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
   DateTime _selectedDate = DateTime.now();
-  final _fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+  late NumberFormat _fmt;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +30,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final locale = Localizations.localeOf(context).languageCode;
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    _fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
 
     return Scaffold(
       appBar: AppBar(
@@ -262,7 +267,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final color = isIncome ? AppColors.teal : AppColors.rose;
     final sign = isIncome ? '+' : '-';
     final cat = catMap[t.categoryId];
-    final catName = cat?.name ?? l10n.other;
+    final catName = cat == null ? l10n.other : localizedCategoryName(l10n, cat.systemKey, cat.name);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),

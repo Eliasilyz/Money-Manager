@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:money_manager/features/currencies/application/currency_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
@@ -13,10 +14,25 @@ class CurrenciesScreen extends ConsumerWidget {
     final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
     final asyncCurrencies = ref.watch(currenciesNotifierProvider);
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    final refreshing = ref.watch(refreshExchangeRatesProvider);
+    final rates = ref.watch(exchangeRatesProvider).valueOrNull ?? const <String, double>{};
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.currency, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        actions: [
+          refreshing.isLoading
+              ? const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.gold)),
+                )
+              : IconButton(
+                  tooltip: l10n.refreshRates,
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () => ref.invalidate(refreshExchangeRatesProvider),
+                ),
+        ],
       ),
       body: asyncCurrencies.when(
         data: (currencies) {
@@ -26,45 +42,61 @@ class CurrenciesScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: currencies.map((c) {
-              return Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colors.border),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 42,
-                      height: 42,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: colors.primary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        c.symbol,
-                        style: GoogleFonts.jetBrainsMono(fontSize: 14, fontWeight: FontWeight.w700, color: colors.primary),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${c.code} — ${c.name}',
-                          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
+              final isBase = c.code == baseCode;
+              final rate = c.code == baseCode ? 1.0 : rates['$baseCode:${c.code}'];
+              return GestureDetector(
+                onTap: () {
+                  ref.read(baseCurrencyCodeProvider.notifier).state = c.code;
+                  ref.read(settingsServiceProvider).saveBaseCurrencyCode(c.code);
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: isBase ? colors.primary : colors.border),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${c.decimalDigits} decimal',
-                          style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                        child: Text(
+                          c.symbol,
+                          style: GoogleFonts.jetBrainsMono(fontSize: 14, fontWeight: FontWeight.w700, color: colors.primary),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${c.code} — ${c.name}',
+                              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              rate != null
+                                  ? '1 $baseCode = ${rate.toStringAsFixed(rate < 1 ? 4 : 2)} ${c.code}'
+                                  : '${c.decimalDigits} decimal',
+                              style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isBase)
+                        const Icon(Icons.check_circle, color: AppColors.gold, size: 20)
+                      else
+                        const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
+                    ],
+                  ),
                 ),
               );
             }).toList(),

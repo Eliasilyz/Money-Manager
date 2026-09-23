@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/category.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -19,20 +22,31 @@ class StatisticsScreen extends ConsumerStatefulWidget {
 
 class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   String _period = 'Bulan';
-  final _fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+  late NumberFormat _fmt;
 
   static const _catColors = <String, Color>{
     'makan': Color(0xFF1B6E4B),
+    'food': Color(0xFF1B6E4B),
     'minum': Color(0xFF3B82F6),
+    'drink': Color(0xFF3B82F6),
     'belanja': Color(0xFFF59E0B),
+    'shopping': Color(0xFFF59E0B),
     'transportasi': Color(0xFFE0524A),
+    'transport': Color(0xFFE0524A),
     'rumah': Color(0xFF8B5CF6),
+    'housing': Color(0xFF8B5CF6),
     'hiburan': Color(0xFF10B981),
+    'entertainment': Color(0xFF10B981),
     'kesehatan': Color(0xFFEF4444),
+    'health': Color(0xFFEF4444),
     'pendidikan': Color(0xFF0EA5E9),
+    'education': Color(0xFF0EA5E9),
     'gaji': Color(0xFF1B6E4B),
+    'salary': Color(0xFF1B6E4B),
     'investasi': Color(0xFF3B82F6),
+    'investment': Color(0xFF3B82F6),
     'lainnya': Color(0xFF9CA3AF),
+    'other': Color(0xFF9CA3AF),
   };
 
   static const _fallbackColors = [
@@ -54,6 +68,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).languageCode;
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    _fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
@@ -90,7 +106,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           final expenseTx = periodTx.where((t) => t.type == 'expense').toList();
           final catTotals = <String, int>{};
           for (final t in expenseTx) {
-            final catName = catMap[t.categoryId]?.name ?? l10n.other;
+            final cat = catMap[t.categoryId];
+            final catName = cat == null ? l10n.other : localizedCategoryName(l10n, cat.systemKey, cat.name);
             catTotals[catName] = (catTotals[catName] ?? 0) + t.amount;
           }
           final sortedCats = catTotals.entries.toList()..sort((a, b) => b.value.compareTo(a.value));

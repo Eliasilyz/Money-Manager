@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:money_manager/core/widgets/app_widgets.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
@@ -39,7 +41,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       body: SafeArea(
         child: dashboardAsync.when(
           data: (data) {
-            final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+            final baseCode = ref.watch(baseCurrencyCodeProvider);
+            final fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
             final categoriesAsync = ref.watch(categoriesNotifierProvider);
             final catMap = categoriesAsync.whenOrNull(data: (cats) => {for (final c in cats) c.id: c}) ?? {};
             final accountMap = {for (final a in data.accounts) a.id: a};
@@ -52,7 +55,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(context, l10n),
-                    _buildBalanceCard(context, data, fmt, l10n),
+                    _buildBalanceCard(context, data, fmt, baseCode, l10n),
                     const SizedBox(height: 12),
                     _buildStatTrio(context, data, fmt, l10n),
                     const SizedBox(height: 20),
@@ -103,7 +106,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildBalanceCard(BuildContext context, DashboardData data, NumberFormat fmt, AppLocalizations l10n) {
+  Widget _buildBalanceCard(BuildContext context, DashboardData data, NumberFormat fmt, String baseCode, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -132,7 +135,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _showBalance ? fmt.format(data.totalBalance) : 'Rp ********',
+            _showBalance ? fmt.format(data.totalBalance) : '${currencySymbol(baseCode)} ********',
             style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.w700, color: Colors.white),
           ),
           const SizedBox(height: 16),
@@ -323,9 +326,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final color = isIncome ? AppColors.teal : AppColors.rose;
     final sign = isIncome ? '+' : '-';
     final cat = catMap[t.categoryId];
-    final catName = cat?.name ?? '';
+    final catName = cat == null ? '' : localizedCategoryName(l10n, cat.systemKey, cat.name);
     final account = accountMap[t.accountId];
     final accountName = account?.name ?? '';
+    final amountCode = (account?.currencyCode ?? t.currencyCode);
+    final amountFmt = NumberFormat.currency(symbol: '${currencySymbol(amountCode)} ', decimalDigits: currencyDigits(amountCode));
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -363,7 +368,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ],
             ),
           ),
-          Text('$sign${fmt.format(t.amount)}', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+          Text('$sign${amountFmt.format(t.amount)}', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
         ],
       ),
     );

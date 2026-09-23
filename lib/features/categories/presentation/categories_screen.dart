@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -105,7 +106,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
               context: context,
               builder: (ctx) => AlertDialog(
                 title: Text('${l10n.delete}?'),
-                content: Text('${cat.name} ${l10n.delete}'),
+                content: Text('${localizedCategoryName(l10n, cat.systemKey, cat.name)} ${l10n.delete}'),
                 actions: [
                   TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
                   TextButton(
@@ -138,7 +139,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
                   size: 18,
                 ),
               ),
-              title: Text(cat.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500)),
+              title: Text(localizedCategoryName(l10n, cat.systemKey, cat.name), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500)),
             ),
           ),
         );

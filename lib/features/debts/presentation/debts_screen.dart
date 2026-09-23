@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/features/debts/application/debt_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
 
@@ -15,7 +17,8 @@ class DebtsScreen extends ConsumerWidget {
     final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
     final debtsAsync = ref.watch(debtsNotifierProvider);
-    final fmt = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    final fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
 
     return Scaffold(
       appBar: AppBar(

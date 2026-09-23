@@ -22,7 +22,7 @@ class AppTheme {
     snackBarTheme: SnackBarThemeData(backgroundColor: const Color(0xFFFFFFFF), contentTextStyle: GoogleFonts.inter(color: const Color(0xFF1A1F1C), fontSize: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), behavior: SnackBarBehavior.floating),
     dialogTheme: DialogThemeData(backgroundColor: const Color(0xFFFFFFFF), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
     bottomSheetTheme: const BottomSheetThemeData(backgroundColor: Color(0xFFFFFFFF), shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24)))),
-    tabBarTheme: TabBarThemeData(labelColor: const Color(0xFF1B6E4B), unselectedLabelColor: const Color(0xFF7A857F), indicatorColor: const Color(0xFF1B6E4B), labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14), unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 14)),
+    tabBarTheme: TabBarThemeData(labelColor: Colors.white, unselectedLabelColor: Colors.white.withValues(alpha: 0.6), indicatorColor: Colors.white, labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14), unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 14)),
     listTileTheme: const ListTileThemeData(contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4)),
   );
 

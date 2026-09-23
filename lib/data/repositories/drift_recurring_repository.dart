@@ -27,15 +27,19 @@ class DriftRecurringRepository implements IRecurringRepository {
   @override
   Future<void> insertRecurring(domain.RecurringTransaction recurring) async {
     await _db.recurringDao.insertRecurring(
-      drift.RecurringTransactionsTableCompanion(
-        id: Value(recurring.id),
-        transactionTemplateId: Value(recurring.transactionTemplateId),
-        frequency: Value(recurring.frequency),
+      drift.RecurringTransactionsTableCompanion.insert(
+        id: recurring.id,
+        type: recurring.type,
+        accountId: recurring.accountId,
+        categoryId: Value(recurring.categoryId),
+        amount: recurring.amount,
+        currencyCode: recurring.currencyCode,
+        description: Value(recurring.description),
+        frequency: recurring.frequency,
         interval: Value(recurring.interval),
-        startDate: Value(recurring.startDate),
+        startDate: recurring.startDate,
         endDate: Value(recurring.endDate),
-        nextOccurrence: Value(recurring.nextOccurrence),
-        autoCreate: Value(recurring.autoCreate),
+        nextOccurrence: recurring.nextOccurrence,
         enabled: Value(recurring.enabled),
         createdAt: Value(recurring.createdAt),
         updatedAt: Value(recurring.updatedAt),
@@ -48,16 +52,18 @@ class DriftRecurringRepository implements IRecurringRepository {
     await _db.recurringDao.updateRecurring(
       drift.RecurringTransactionsTableCompanion(
         id: Value(recurring.id),
-        transactionTemplateId: Value(recurring.transactionTemplateId),
+        type: Value(recurring.type),
+        accountId: Value(recurring.accountId),
+        categoryId: Value(recurring.categoryId),
+        amount: Value(recurring.amount),
+        currencyCode: Value(recurring.currencyCode),
+        description: Value(recurring.description),
         frequency: Value(recurring.frequency),
         interval: Value(recurring.interval),
         startDate: Value(recurring.startDate),
         endDate: Value(recurring.endDate),
         nextOccurrence: Value(recurring.nextOccurrence),
-        autoCreate: Value(recurring.autoCreate),
         enabled: Value(recurring.enabled),
-        createdAt: Value(recurring.createdAt),
-        updatedAt: Value(recurring.updatedAt),
       ),
     );
   }
@@ -70,13 +76,17 @@ class DriftRecurringRepository implements IRecurringRepository {
   domain.RecurringTransaction _toDomain(drift.RecurringTransaction r) =>
       domain.RecurringTransaction(
         id: r.id,
-        transactionTemplateId: r.transactionTemplateId,
+        type: r.type,
+        accountId: r.accountId,
+        categoryId: r.categoryId,
+        amount: r.amount,
+        currencyCode: r.currencyCode,
+        description: r.description,
         frequency: r.frequency,
         interval: r.interval,
         startDate: r.startDate,
         endDate: r.endDate,
         nextOccurrence: r.nextOccurrence,
-        autoCreate: r.autoCreate,
         enabled: r.enabled,
         createdAt: r.createdAt,
         updatedAt: r.updatedAt,

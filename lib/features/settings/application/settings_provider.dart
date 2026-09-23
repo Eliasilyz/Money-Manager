@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:money_manager/core/constants/app_constants.dart';
 import 'package:money_manager/features/settings/application/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +22,7 @@ class SettingsService {
   static const _notifDailyKey = 'notif_daily_enabled';
   static const _notifBackupKey = 'notif_backup_enabled';
   static const _notifDailyTimeKey = 'notif_daily_time';
+  static const _baseCurrencyKey = 'base_currency';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -91,6 +93,10 @@ class SettingsService {
   Future<void> saveNotifBackup(bool v) async => (await _prefs).setBool(_notifBackupKey, v);
   Future<String> getNotifDailyTime() async => (await _prefs).getString(_notifDailyTimeKey) ?? '19:00';
   Future<void> saveNotifDailyTime(String v) async => (await _prefs).setString(_notifDailyTimeKey, v);
+
+  Future<String> getBaseCurrencyCode() async =>
+      (await _prefs).getString(_baseCurrencyKey) ?? AppConstants.defaultBaseCurrency;
+  Future<void> saveBaseCurrencyCode(String v) async => (await _prefs).setString(_baseCurrencyKey, v);
 }
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
@@ -102,6 +108,7 @@ final notifBudgetProvider = StateProvider<bool>((ref) => true);
 final notifDailyProvider = StateProvider<bool>((ref) => true);
 final notifBackupProvider = StateProvider<bool>((ref) => true);
 final notifDailyTimeProvider = StateProvider<String>((ref) => '19:00');
+final baseCurrencyCodeProvider = StateProvider<String>((ref) => AppConstants.defaultBaseCurrency);
 
 final notificationServiceProvider = Provider<NotificationService>((ref) => NotificationService());
 
@@ -119,6 +126,7 @@ final settingsInitProvider = FutureProvider<void>((ref) async {
   ref.read(notifDailyProvider.notifier).state = await service.getNotifDaily();
   ref.read(notifBackupProvider.notifier).state = await service.getNotifBackup();
   ref.read(notifDailyTimeProvider.notifier).state = await service.getNotifDailyTime();
+  ref.read(baseCurrencyCodeProvider.notifier).state = await service.getBaseCurrencyCode();
   if (notif) {
     await ref.read(notificationServiceProvider).scheduleDaily();
   }

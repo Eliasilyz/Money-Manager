@@ -10,6 +10,7 @@ import 'package:money_manager/domain/entities/budget.dart';
 import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/domain/entities/currency.dart';
 import 'package:money_manager/domain/entities/debt.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/goal.dart';
 import 'package:money_manager/domain/entities/note.dart';
 import 'package:money_manager/domain/entities/recurring_transaction.dart';
@@ -132,6 +133,8 @@ class _EmptyCurrencyRepo implements ICurrencyRepository {
   @override Future<Currency?> getCurrencyByCode(String code) async => null;
   @override Stream<List<Currency>> watchAllCurrencies() => Stream.value([]);
   @override Future<void> insertCurrency(Currency c) async {}
+  @override Future<List<ExchangeRate>> getAllExchangeRates() async => [];
+  @override Future<void> saveExchangeRate(ExchangeRate r) async {}
 }
 
 class _EmptyDebtRepo implements IDebtRepository {

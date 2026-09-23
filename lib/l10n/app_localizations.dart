@@ -662,6 +662,36 @@ abstract class AppLocalizations {
   /// **'Setiap tanggal {day}'**
   String everyDate(Object day);
 
+  /// No description provided for @recurringAdd.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Transaksi Berulang'**
+  String get recurringAdd;
+
+  /// No description provided for @editRecurring.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Transaksi Berulang'**
+  String get editRecurring;
+
+  /// No description provided for @frequency.
+  ///
+  /// In id, this message translates to:
+  /// **'Frekuensi'**
+  String get frequency;
+
+  /// No description provided for @startDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Mulai'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai'**
+  String get endDate;
+
   /// No description provided for @subscriptions.
   ///
   /// In id, this message translates to:
@@ -1279,6 +1309,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Hapus'**
   String get delete;
+
+  /// No description provided for @deleteConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Yakin ingin menghapus?'**
+  String get deleteConfirm;
 
   /// No description provided for @edit.
   ///
@@ -1934,6 +1970,18 @@ abstract class AppLocalizations {
   /// **'Rupiah Indonesia (IDR)'**
   String get defaultCurrencyName;
 
+  /// No description provided for @baseCurrency.
+  ///
+  /// In id, this message translates to:
+  /// **'Mata uang dasar'**
+  String get baseCurrency;
+
+  /// No description provided for @refreshRates.
+  ///
+  /// In id, this message translates to:
+  /// **'Segarkan kurs'**
+  String get refreshRates;
+
   /// No description provided for @dataAndSecurity.
   ///
   /// In id, this message translates to:
@@ -2029,6 +2077,162 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Berhasil'**
   String get backupSuccessful;
+
+  /// No description provided for @categoryDefaultFoodDrink.
+  ///
+  /// In id, this message translates to:
+  /// **'Makan & Minum'**
+  String get categoryDefaultFoodDrink;
+
+  /// No description provided for @categoryDefaultTransport.
+  ///
+  /// In id, this message translates to:
+  /// **'Transportasi'**
+  String get categoryDefaultTransport;
+
+  /// No description provided for @categoryDefaultShopping.
+  ///
+  /// In id, this message translates to:
+  /// **'Belanja'**
+  String get categoryDefaultShopping;
+
+  /// No description provided for @categoryDefaultHousing.
+  ///
+  /// In id, this message translates to:
+  /// **'Rumah & Sewa'**
+  String get categoryDefaultHousing;
+
+  /// No description provided for @categoryDefaultUtilities.
+  ///
+  /// In id, this message translates to:
+  /// **'Tagihan & Utilitas'**
+  String get categoryDefaultUtilities;
+
+  /// No description provided for @categoryDefaultHealth.
+  ///
+  /// In id, this message translates to:
+  /// **'Kesehatan'**
+  String get categoryDefaultHealth;
+
+  /// No description provided for @categoryDefaultEducation.
+  ///
+  /// In id, this message translates to:
+  /// **'Pendidikan'**
+  String get categoryDefaultEducation;
+
+  /// No description provided for @categoryDefaultEntertainment.
+  ///
+  /// In id, this message translates to:
+  /// **'Hiburan'**
+  String get categoryDefaultEntertainment;
+
+  /// No description provided for @categoryDefaultVacation.
+  ///
+  /// In id, this message translates to:
+  /// **'Liburan'**
+  String get categoryDefaultVacation;
+
+  /// No description provided for @categoryDefaultFamily.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluarga & Anak'**
+  String get categoryDefaultFamily;
+
+  /// No description provided for @categoryDefaultPersonalCare.
+  ///
+  /// In id, this message translates to:
+  /// **'Perawatan Diri'**
+  String get categoryDefaultPersonalCare;
+
+  /// No description provided for @categoryDefaultGifts.
+  ///
+  /// In id, this message translates to:
+  /// **'Hadiah & Donasi'**
+  String get categoryDefaultGifts;
+
+  /// No description provided for @categoryDefaultDebtPayment.
+  ///
+  /// In id, this message translates to:
+  /// **'Cicilan & Hutang'**
+  String get categoryDefaultDebtPayment;
+
+  /// No description provided for @categoryDefaultInsurance.
+  ///
+  /// In id, this message translates to:
+  /// **'Asuransi'**
+  String get categoryDefaultInsurance;
+
+  /// No description provided for @categoryDefaultSubscriptions.
+  ///
+  /// In id, this message translates to:
+  /// **'Langganan'**
+  String get categoryDefaultSubscriptions;
+
+  /// No description provided for @categoryDefaultOtherExpense.
+  ///
+  /// In id, this message translates to:
+  /// **'Lainnya'**
+  String get categoryDefaultOtherExpense;
+
+  /// No description provided for @categoryDefaultSalary.
+  ///
+  /// In id, this message translates to:
+  /// **'Gaji'**
+  String get categoryDefaultSalary;
+
+  /// No description provided for @categoryDefaultBonus.
+  ///
+  /// In id, this message translates to:
+  /// **'Bonus'**
+  String get categoryDefaultBonus;
+
+  /// No description provided for @categoryDefaultBusiness.
+  ///
+  /// In id, this message translates to:
+  /// **'Usaha'**
+  String get categoryDefaultBusiness;
+
+  /// No description provided for @categoryDefaultInvestment.
+  ///
+  /// In id, this message translates to:
+  /// **'Investasi'**
+  String get categoryDefaultInvestment;
+
+  /// No description provided for @categoryDefaultGift.
+  ///
+  /// In id, this message translates to:
+  /// **'Hadiah'**
+  String get categoryDefaultGift;
+
+  /// No description provided for @categoryDefaultSale.
+  ///
+  /// In id, this message translates to:
+  /// **'Penjualan'**
+  String get categoryDefaultSale;
+
+  /// No description provided for @categoryDefaultRefund.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengembalian Dana'**
+  String get categoryDefaultRefund;
+
+  /// No description provided for @categoryDefaultOtherIncome.
+  ///
+  /// In id, this message translates to:
+  /// **'Lainnya'**
+  String get categoryDefaultOtherIncome;
+
+  /// No description provided for @categoryDefaultBalanceAdjustment.
+  ///
+  /// In id, this message translates to:
+  /// **'Penyesuaian Saldo'**
+  String get categoryDefaultBalanceAdjustment;
+
+  /// No description provided for @categoryDefaultTransfer.
+  ///
+  /// In id, this message translates to:
+  /// **'Transfer'**
+  String get categoryDefaultTransfer;
 }
 
 class _AppLocalizationsDelegate

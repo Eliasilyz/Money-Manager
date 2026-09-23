@@ -31,6 +31,7 @@ class SettingsScreen extends ConsumerWidget {
     final budgets = ref.watch(budgetsNotifierProvider).valueOrNull ?? [];
     final goals = ref.watch(goalsNotifierProvider).valueOrNull ?? [];
     final recurring = ref.watch(recurringTransactionsNotifierProvider).valueOrNull ?? [];
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
 
     final activeNotifCount = [
       if (notif && notifRecurring) 1,
@@ -75,7 +76,7 @@ class SettingsScreen extends ConsumerWidget {
               const Divider(height: 1),
               _tile(context, Icons.pie_chart_outline, l10n.budgetsAndGoals, l10n.budgetsGoalsCount(budgets.length, goals.length), () => context.push('/budgets')),
               const Divider(height: 1),
-              _tile(context, Icons.monetization_on_outlined, l10n.currency, l10n.defaultCurrencyName, () => context.push('/currencies')),
+              _tile(context, Icons.monetization_on_outlined, l10n.currency, '${l10n.baseCurrency}: $baseCode', () => context.push('/currencies')),
             ]),
             const SizedBox(height: 24),
 

@@ -28,6 +28,11 @@ class RecurringTransactionsNotifier extends StateNotifier<AsyncValue<List<Recurr
     await loadAll();
   }
 
+  Future<void> update(RecurringTransaction rt) async {
+    await _repo.updateRecurring(rt);
+    await loadAll();
+  }
+
   Future<void> toggle(RecurringTransaction rt) async {
     await _repo.updateRecurring(rt.copyWith(enabled: !rt.enabled));
     await loadAll();

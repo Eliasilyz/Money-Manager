@@ -4,14 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/account.dart';
 import 'package:money_manager/domain/entities/balance_calculation.dart';
 import 'package:money_manager/domain/entities/category.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/features/goals/application/goal_provider.dart';
+import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/features/transfers/application/transfer_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -131,7 +134,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
         : categoriesAsync.value!.where((c) => c.type == 'expense').toList();
     if (_selectedCategoryId != null) {
       final match = filtered.where((c) => c.id == _selectedCategoryId);
-      if (match.isNotEmpty) return match.first.name;
+      if (match.isNotEmpty) return localizedCategoryName(l10n, match.first.systemKey, match.first.name);
     }
     return l10n.selectCategory;
   }
@@ -144,6 +147,13 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       if (match.isNotEmpty) return match.first.name;
     }
     return l10n.selectAccount;
+  }
+
+  String _getAmountSymbol() {
+    final accounts = ref.read(accountsNotifierProvider).valueOrNull ?? const <Account>[];
+    final selected = accounts.where((a) => a.id == _selectedAccountId).firstOrNull;
+    if (selected != null) return currencySymbol(selected.currencyCode);
+    return currencySymbol(ref.read(baseCurrencyCodeProvider));
   }
 
   Widget _buildTypeSelector(AppColorsT colors, AppLocalizations l10n) {
@@ -204,7 +214,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Rp', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+              Text(_getAmountSymbol(), style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: colors.textSecondary)),
               const SizedBox(width: 4),
               IntrinsicWidth(
                 child: TextField(
@@ -296,7 +306,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
             Text(l10n.selectCategory, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             ...filtered.map((c) => ListTile(
-              title: Text(c.name, style: GoogleFonts.inter(fontSize: 14)),
+              title: Text(localizedCategoryName(l10n, c.systemKey, c.name), style: GoogleFonts.inter(fontSize: 14)),
               trailing: _selectedCategoryId == c.id ? Icon(Icons.check, color: colors.primary) : null,
               onTap: () {
                 setState(() => _selectedCategoryId = c.id);
