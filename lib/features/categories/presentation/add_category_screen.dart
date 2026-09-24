@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_theme.dart';
 import 'package:uuid/uuid.dart';
 
@@ -20,17 +22,18 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
   String _type = 'expense';
   bool _saving = false;
 
+  // (systemKey | null, fallback name, emoji, color) — systemKey reuses default-category l10n.
   static const _presets = [
-    ('Makanan', '🍜', AppColors.rose),
-    ('Transport', '🚗', AppColors.sky),
-    ('Belanja', '🛒', AppColors.lilac),
-    ('Tagihan', '💡', AppColors.rose),
-    ('Hiburan', '🎮', AppColors.lilac),
-    ('Kesehatan', '🏥', AppColors.teal),
-    ('Pendidikan', '📚', AppColors.orange),
-    ('Gaji', '💼', AppColors.teal),
-    ('Freelance', '💻', AppColors.sky),
-    ('Investasi', '📈', AppColors.lilac),
+    ('food_drink', 'Makanan', '🍜', AppColors.rose),
+    ('transport', 'Transport', '🚗', AppColors.sky),
+    ('shopping', 'Belanja', '🛒', AppColors.lilac),
+    ('utilities', 'Tagihan', '💡', AppColors.rose),
+    ('entertainment', 'Hiburan', '🎮', AppColors.lilac),
+    ('health', 'Kesehatan', '🏥', AppColors.teal),
+    ('education', 'Pendidikan', '📚', AppColors.orange),
+    ('salary', 'Gaji', '💼', AppColors.teal),
+    (null, 'Freelance', '💻', AppColors.sky),
+    ('investment', 'Investasi', '📈', AppColors.lilac),
   ];
 
   @override
@@ -41,33 +44,34 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Kategori', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text('${l10n.add} ${l10n.categories}', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('TIPE', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
+            Text(l10n.type, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(child: _typeButton('Pengeluaran', 'expense', AppColors.rose)),
+                Expanded(child: _typeButton(l10n.expense, 'expense', AppColors.rose)),
                 const SizedBox(width: 12),
-                Expanded(child: _typeButton('Pemasukan', 'income', AppColors.teal)),
+                Expanded(child: _typeButton(l10n.income, 'income', AppColors.teal)),
               ],
             ),
             const SizedBox(height: 24),
 
-            Text('NAMA KATEGORI', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
+            Text(l10n.name, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8)),
             const SizedBox(height: 8),
             TextField(
               controller: _nameCtrl,
               style: GoogleFonts.inter(color: colors.textPrimary),
               decoration: InputDecoration(
-                hintText: 'Contoh: Makanan & Minuman',
+                hintText: localizedCategoryName(l10n, 'food_drink', 'Makanan & Minuman'),
                 prefixIcon: Icon(Icons.label_outline, color: colors.textSecondary),
               ),
               textCapitalization: TextCapitalization.words,
@@ -80,21 +84,22 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
               spacing: 8,
               runSpacing: 8,
               children: _presets.map((p) {
+                final label = localizedCategoryName(l10n, p.$1, p.$2);
                 return GestureDetector(
-                  onTap: () => _nameCtrl.text = p.$1,
+                  onTap: () => _nameCtrl.text = label,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: p.$3.withValues(alpha: 0.08),
+                      color: p.$4.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: p.$3.withValues(alpha: 0.2)),
+                      border: Border.all(color: p.$4.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(p.$2, style: const TextStyle(fontSize: 14)),
+                        Text(p.$3, style: const TextStyle(fontSize: 14)),
                         const SizedBox(width: 6),
-                        Text(p.$1, style: GoogleFonts.inter(fontSize: 13, color: colors.textPrimary)),
+                        Text(label, style: GoogleFonts.inter(fontSize: 13, color: colors.textPrimary)),
                       ],
                     ),
                   ),
@@ -114,7 +119,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
                 ),
                 child: _saving
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : Text('Simpan Kategori', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
+                    : Text(l10n.save, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
               ),
             ),
           ],

@@ -11,6 +11,7 @@ import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
+import 'package:money_manager/features/currencies/application/currency_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -36,6 +37,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 
   final _searchCtrl = TextEditingController();
   late NumberFormat _fmt;
+  String _baseCode = 'IDR';
+  Map<String, double> _rates = const {};
+
+  int _toBase(Transaction t) =>
+      convertAmount(t.amount, t.currencyCode, _baseCode, _rates).round();
 
   static const _catColors = <String, Color>{
     'makan': Color(0xFF1B6E4B),
@@ -78,6 +84,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     final locale = Localizations.localeOf(context).languageCode;
     final baseCode = ref.watch(baseCurrencyCodeProvider);
     _fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
+    _baseCode = baseCode;
+    _rates = ref.watch(exchangeRatesProvider).valueOrNull ?? const <String, double>{};
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
     final catMap = categoriesAsync.whenOrNull(data: (cats) => {for (final c in cats) c.id: c}) ?? const <String, Category>{};
@@ -274,12 +282,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     for (final t in expenses) {
       final cat = catMap[t.categoryId];
       final name = cat == null ? l10n.other : localizedCategoryName(l10n, cat.systemKey, cat.name);
-      catTotals[name] = (catTotals[name] ?? 0) + t.amount;
+      catTotals[name] = (catTotals[name] ?? 0) + _toBase(t);
     }
 
     final sortedCats = catTotals.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    final totalExpense = expenses.fold<int>(0, (s, t) => s + t.amount);
-    final totalIncome = income.fold<int>(0, (s, t) => s + t.amount);
+    final totalExpense = expenses.fold<int>(0, (s, t) => s + _toBase(t));
+    final totalIncome = income.fold<int>(0, (s, t) => s + _toBase(t));
     final balance = totalIncome - totalExpense;
 
     return ListView(
@@ -519,7 +527,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               if (i < startPad) return const SizedBox.shrink();
               final day = i - startPad + 1;
               final dayTx = dayMap[day] ?? [];
-              final dayTotal = dayTx.fold<int>(0, (s, t) => s + (t.type == 'income' ? t.amount : -t.amount));
+              final dayTotal = dayTx.fold<int>(0, (s, t) => s + (t.type == 'income' ? _toBase(t) : -_toBase(t)));
               final isToday = year == now.year && month == now.month && day == now.day;
               final hasTx = dayTx.isNotEmpty;
 
@@ -571,7 +579,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 
   void _showDayDetail(int day, List<Transaction> dayTx, Map<String, Category> catMap, AppColorsT colors, String locale) {
     final dayDate = DateTime(_calMonth.year, _calMonth.month, day);
-    final dayTotal = dayTx.fold<int>(0, (s, t) => s + (t.type == 'income' ? t.amount : -t.amount));
+    final dayTotal = dayTx.fold<int>(0, (s, t) => s + (t.type == 'income' ? _toBase(t) : -_toBase(t)));
     final formattedTotal = '${dayTotal >= 0 ? '+' : '-'}${_fmt.format(dayTotal.abs())}';
 
     showModalBottomSheet(
@@ -686,7 +694,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         final dayTx = entry.value;
         final dayDate = dayTx.first.date;
         final dayOnly = DateTime(dayDate.year, dayDate.month, dayDate.day);
-        final dayTotal = dayTx.fold<int>(0, (s, t) => s + (t.type == 'income' ? t.amount : -t.amount));
+        final dayTotal = dayTx.fold<int>(0, (s, t) => s + (t.type == 'income' ? _toBase(t) : -_toBase(t)));
         final dayName = dayOnly == today ? l10n.todayTitle : dayOnly == yesterday ? l10n.yesterdayTitle : DateFormat('EEEE', locale).format(dayOnly);
         final formattedTotal = '${dayTotal >= 0 ? '+' : '-'}${_fmt.format(dayTotal.abs())}';
 

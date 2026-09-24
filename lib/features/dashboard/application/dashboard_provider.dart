@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_manager/domain/entities/account.dart';
+import 'package:money_manager/domain/entities/balance_calculation.dart';
 import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
@@ -70,11 +71,18 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
 
   final transactions = await txRepo.getTransactionsByDateRange(periodStart, periodEnd);
 
-  final totalBalance = accounts.fold<int>(
-    0,
-    (sum, a) => sum +
-        convertAmount(a.initialBalance, a.currencyCode, baseCode, rates).round(),
-  );
+  // Net worth: all-time per-account balance (initial + all tx + transfers), converted to base.
+  final allTransactions = await txRepo.getAllTransactions();
+  final allTransfers = await txRepo.getAllTransfers();
+  final totalBalance = accounts.fold<int>(0, (sum, a) {
+    final balance = BalanceCalculation.accountBalance(
+      initialBalance: a.initialBalance,
+      accountId: a.id,
+      transactions: allTransactions,
+      transfers: allTransfers,
+    );
+    return sum + convertAmount(balance, a.currencyCode, baseCode, rates).round();
+  });
   final totalIncome = transactions
       .where((t) => t.type == 'income')
       .fold<int>(0, (sum, t) => sum + convertAmount(t.amount, t.currencyCode, baseCode, rates).round());
@@ -87,8 +95,9 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
     final cat = t.categoryId != null ? await catRepo.getCategoryById(t.categoryId!) : null;
     final name = cat?.name ?? 'Uncategorized';
     final icon = cat?.icon ?? '📁';
-    expenseMap.update(name, (val) => CategoryExpense(name, icon, val.amount + t.amount),
-        ifAbsent: () => CategoryExpense(name, icon, t.amount));
+    final amount = convertAmount(t.amount, t.currencyCode, baseCode, rates).round();
+    expenseMap.update(name, (val) => CategoryExpense(name, icon, val.amount + amount),
+        ifAbsent: () => CategoryExpense(name, icon, amount));
   }
   final expenseBreakdown = expenseMap.values.toList()
     ..sort((a, b) => b.amount.compareTo(a.amount));
@@ -97,7 +106,7 @@ final dashboardProvider = FutureProvider<DashboardData>((ref) async {
     ..sort((a, b) => b.date.compareTo(a.date));
 
   return DashboardData(
-    totalBalance: totalBalance + totalIncome - totalExpenses,
+    totalBalance: totalBalance,
     totalIncome: totalIncome,
     totalExpenses: totalExpenses,
     recentTransactions: recent.take(10).toList(),

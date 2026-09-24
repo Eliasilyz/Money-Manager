@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:money_manager/core/widgets/app_widgets.dart';
 import 'package:money_manager/domain/entities/budget.dart';
 import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/features/accounts/application/account_provider.dart';
@@ -99,7 +100,7 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
                   hint: Text('Pilih Kategori', style: GoogleFonts.inter(color: colors.textSecondary)),
                   items: expenseCats.map((c) => DropdownMenuItem(
                     value: c.id,
-                    child: Text(c.name, style: GoogleFonts.inter(color: colors.textPrimary)),
+                    child: Text(localizedCategoryName(l10n, c.systemKey, c.name), style: GoogleFonts.inter(color: colors.textPrimary)),
                   )).toList(),
                   onChanged: (val) => setState(() => _selectedCategoryId = val),
                   decoration: InputDecoration(
@@ -235,10 +236,11 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
       final notifier = ref.read(budgetsNotifierProvider.notifier);
       String budgetId;
       String categoryName = _selectedCategoryId!;
+      final l10n = AppLocalizations.of(context);
       final cats = ref.read(categoriesNotifierProvider).valueOrNull;
       if (cats != null) {
         for (final c in cats) {
-          if (c.id == _selectedCategoryId) categoryName = c.name;
+          if (c.id == _selectedCategoryId) categoryName = localizedCategoryName(l10n, c.systemKey, c.name);
         }
       }
       if (_isEditing) {

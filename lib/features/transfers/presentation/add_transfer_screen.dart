@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart' show currencySymbol;
 import 'package:money_manager/features/accounts/application/account_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/features/transfers/application/transfer_provider.dart';
@@ -38,6 +39,9 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final accountsAsync = ref.watch(accountsNotifierProvider);
+    final accounts = accountsAsync.valueOrNull ?? const [];
+    final fromAccount = accounts.where((a) => a.id == _fromAccountId).firstOrNull;
+    final fromSymbol = fromAccount == null ? '' : '${currencySymbol(fromAccount.currencyCode)} ';
 
     return Scaffold(
       appBar: AppBar(
@@ -125,7 +129,7 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
                 decoration: InputDecoration(
                   hintText: '0',
                   prefixIcon: Icon(Icons.attach_money, color: colors.textSecondary),
-                  prefixText: 'Rp ',
+                  prefixText: fromSymbol,
                   prefixStyle: GoogleFonts.jetBrainsMono(color: AppColors.gold, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -238,12 +242,16 @@ class _AddTransferScreenState extends ConsumerState<AddTransferScreen> {
 
     setState(() => _saving = true);
     try {
+      final fromCurrency = (ref.read(accountsNotifierProvider).valueOrNull ?? const [])
+          .where((a) => a.id == _fromAccountId)
+          .map((a) => a.currencyCode)
+          .firstOrNull ?? 'IDR';
       final service = ref.read(transactionServiceProvider);
       await service.addTransfer(
         fromAccountId: _fromAccountId!,
         toAccountId: _toAccountId!,
         amount: amount,
-        currencyCode: 'IDR',
+        currencyCode: fromCurrency,
         exchangeRate: exchangeRate,
         date: _selectedDate,
         description: _descriptionCtrl.text.isNotEmpty ? _descriptionCtrl.text : null,

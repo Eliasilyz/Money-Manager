@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,13 +35,30 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = AppColorsT.of(context);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.categories, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        backgroundColor: colors.background,
+        elevation: 0,
+        iconTheme: IconThemeData(color: colors.textPrimary),
+        systemOverlayStyle: Theme.of(context).brightness == Brightness.light
+            ? SystemUiOverlayStyle.dark
+            : SystemUiOverlayStyle.light,
+        title: Text(
+          l10n.categories,
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.w700,
+            color: colors.textPrimary,
+          ),
+        ),
         bottom: TabBar(
           controller: _tabCtrl,
+          labelColor: colors.primary,
+          unselectedLabelColor: colors.textSecondary,
+          indicatorColor: colors.primary,
+          indicatorWeight: 2,
           tabs: [
             Tab(text: l10n.expense),
             Tab(text: l10n.income),
