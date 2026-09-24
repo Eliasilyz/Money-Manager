@@ -8,6 +8,7 @@ import 'package:money_manager/domain/entities/category.dart';
 import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
+import 'package:money_manager/features/currencies/application/currency_provider.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -70,6 +71,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final locale = Localizations.localeOf(context).languageCode;
     final baseCode = ref.watch(baseCurrencyCodeProvider);
     _fmt = NumberFormat.currency(symbol: '${currencySymbol(baseCode)} ', decimalDigits: currencyDigits(baseCode));
+    final rates = ref.watch(exchangeRatesProvider).valueOrNull ?? const <String, double>{};
+    int toBase(Transaction t) => convertAmount(t.amount, t.currencyCode, baseCode, rates).round();
     final transactionsAsync = ref.watch(transactionsNotifierProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
@@ -99,8 +102,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               periodLabel = DateFormat('MMMM yyyy', locale).format(now);
           }
 
-          final income = periodTx.where((t) => t.type == 'income').fold<int>(0, (int sum, t) => sum + t.amount);
-          final expense = periodTx.where((t) => t.type == 'expense').fold<int>(0, (int sum, t) => sum + t.amount);
+          final income = periodTx.where((t) => t.type == 'income').fold<int>(0, (int sum, t) => sum + toBase(t));
+          final expense = periodTx.where((t) => t.type == 'expense').fold<int>(0, (int sum, t) => sum + toBase(t));
           final diff = income - expense;
 
           final expenseTx = periodTx.where((t) => t.type == 'expense').toList();
@@ -108,7 +111,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
           for (final t in expenseTx) {
             final cat = catMap[t.categoryId];
             final catName = cat == null ? l10n.other : localizedCategoryName(l10n, cat.systemKey, cat.name);
-            catTotals[catName] = (catTotals[catName] ?? 0) + t.amount;
+            catTotals[catName] = (catTotals[catName] ?? 0) + toBase(t);
           }
           final sortedCats = catTotals.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
           final topItems = sortedCats.take(6).toList();

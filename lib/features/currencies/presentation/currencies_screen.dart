@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/features/currencies/application/currency_provider.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
@@ -57,46 +58,52 @@ class CurrenciesScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: isBase ? colors.primary : colors.border),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: colors.primary.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          c.symbol,
-                          style: GoogleFonts.jetBrainsMono(fontSize: 14, fontWeight: FontWeight.w700, color: colors.primary),
-                        ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${c.code} — ${c.name}',
-                              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              rate != null
-                                  ? '1 $baseCode = ${rate.toStringAsFixed(rate < 1 ? 4 : 2)} ${c.code}'
-                                  : '${c.decimalDigits} decimal',
-                              style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
-                            ),
-                          ],
-                        ),
+                      child: Text(
+                        c.symbol,
+                        style: GoogleFonts.jetBrainsMono(fontSize: 14, fontWeight: FontWeight.w700, color: colors.primary),
                       ),
-                      if (isBase)
-                        const Icon(Icons.check_circle, color: AppColors.gold, size: 20)
-                      else
-                        const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${c.code} — ${c.name}',
+                            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            rate != null
+                                ? '1 $baseCode = ${rate.toStringAsFixed(rate < 1 ? 4 : 2)} ${c.code}'
+                                : '${c.decimalDigits} decimal',
+                            style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!isBase)
+                      IconButton(
+                        tooltip: l10n.exchangeRateLabel,
+                        icon: Icon(Icons.edit_outlined, size: 18, color: colors.textSecondary),
+                        onPressed: () => _showManualRateDialog(context, ref, l10n, baseCode, c.code, rate),
+                      ),
+                    if (isBase)
+                      const Icon(Icons.check_circle, color: AppColors.gold, size: 20)
+                    else
+                      const Icon(Icons.circle_outlined, color: AppColors.textMuted, size: 20),
+                  ],
+                ),
                 ),
               );
             }).toList(),
@@ -106,6 +113,51 @@ class CurrenciesScreen extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
       ),
     );
+  }
+
+  Future<void> _showManualRateDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    String baseCode,
+    String code,
+    double? current,
+  ) async {
+    final ctrl = TextEditingController(text: current?.toString() ?? '');
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('1 $baseCode → $code', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          style: GoogleFonts.jetBrainsMono(fontSize: 16),
+          decoration: InputDecoration(hintText: '0', labelText: l10n.exchangeRateLabel),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.save, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+    final value = double.tryParse(ctrl.text.trim());
+    if (saved == true && value != null && value > 0) {
+      await ref.read(currencyRepositoryProvider).saveExchangeRate(ExchangeRate(
+            baseCurrency: baseCode,
+            targetCurrency: code,
+            rate: value,
+            date: DateTime.now(),
+          ));
+      ref.read(ratesRefreshTickProvider.notifier).state++;
+    }
+    ctrl.dispose();
   }
 
   Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {

@@ -9,6 +9,7 @@ import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
+import 'package:money_manager/features/currencies/application/currency_provider.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -220,12 +221,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final months = <String>[];
     final incomes = <double>[];
     final expenses = <double>[];
+    final baseCode = ref.watch(baseCurrencyCodeProvider);
+    final rates = ref.watch(exchangeRatesProvider).valueOrNull ?? const <String, double>{};
     for (int i = 5; i >= 0; i--) {
       final m = DateTime(now.year, now.month - i, 1);
       months.add(DateFormat('MMM', locale).format(m));
       final monthTx = data.recentTransactions.where((t) => t.date.year == m.year && t.date.month == m.month);
-      incomes.add(monthTx.where((t) => t.type == 'income').fold<int>(0, (s, t) => s + t.amount).toDouble());
-      expenses.add(monthTx.where((t) => t.type == 'expense').fold<int>(0, (s, t) => s + t.amount).toDouble());
+      int toBase(Transaction t) => convertAmount(t.amount, t.currencyCode, baseCode, rates).round();
+      incomes.add(monthTx.where((t) => t.type == 'income').fold<int>(0, (s, t) => s + toBase(t)).toDouble());
+      expenses.add(monthTx.where((t) => t.type == 'expense').fold<int>(0, (s, t) => s + toBase(t)).toDouble());
     }
     final maxVal = [...incomes, ...expenses].fold<double>(0, (a, b) => math.max(a, b));
     if (maxVal == 0) return const SizedBox.shrink();
