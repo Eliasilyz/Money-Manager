@@ -103,19 +103,19 @@ class SettingsScreen extends ConsumerWidget {
               _tile(context, Icons.info_outline, l10n.aboutApp, 'Money Manager • v${AppConstants.appVersion}', () => _showAboutBottomSheet(context, colors, l10n)),
               if (AppLinks.hasContactUrl) ...[
                 const Divider(height: 1),
-                _tile(context, Icons.mail_outline, l10n.contact, AppLinks.contactUrl.replaceFirst('mailto:', ''), () => _openExternalUrl(AppLinks.contactUrl)),
+                _tile(context, Icons.mail_outline, l10n.contact, AppLinks.contactUrl.replaceFirst('mailto:', ''), () => _openExternalUrl(context, AppLinks.contactUrl)),
               ],
               if (AppLinks.hasPrivacyPolicy) ...[
                 const Divider(height: 1),
-                _tile(context, Icons.privacy_tip_outlined, l10n.privacyPolicy, l10n.privacyPolicy, () => _openExternalUrl(AppLinks.privacyPolicyUrl)),
+                _tile(context, Icons.privacy_tip_outlined, l10n.privacyPolicy, l10n.privacyPolicy, () => _openExternalUrl(context, AppLinks.privacyPolicyUrl)),
               ],
               if (AppLinks.hasTermsOfService) ...[
                 const Divider(height: 1),
-                _tile(context, Icons.description_outlined, l10n.termsOfService, l10n.termsOfService, () => _openExternalUrl(AppLinks.termsOfServiceUrl)),
+                _tile(context, Icons.description_outlined, l10n.termsOfService, l10n.termsOfService, () => _openExternalUrl(context, AppLinks.termsOfServiceUrl)),
               ],
               if (AppLinks.hasRateApp) ...[
                 const Divider(height: 1),
-                _tile(context, Icons.star_outline, l10n.rateApp, l10n.rateApp, () => _openExternalUrl(AppLinks.rateAppUrl)),
+                _tile(context, Icons.star_outline, l10n.rateApp, l10n.rateApp, () => _openExternalUrl(context, AppLinks.rateAppUrl)),
               ],
             ]),
             if (AppLinks.showDonation) ...[
@@ -346,22 +346,19 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _openExternalUrl(String urlString) async {
-    final uri = Uri.parse(urlString);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+  Future<void> _openExternalUrl(BuildContext context, String urlString) async {
+    final ok = await launchUrl(Uri.parse(urlString), mode: LaunchMode.externalApplication);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).openLinkFailed)),
+      );
     }
   }
 
   Widget _buildDonationCard(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
     return _buildSectionCard(context, [
       ListTile(
-        onTap: () async {
-          final uri = Uri.parse(AppLinks.donationUrl);
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          }
-        },
+        onTap: () => _openExternalUrl(context, AppLinks.donationUrl),
         leading: Icon(Icons.favorite_outline, color: colors.expense, size: 22),
         title: Text(l10n.donation, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary)),
         trailing: Icon(Icons.chevron_right, color: colors.textSecondary, size: 18),
@@ -431,12 +428,9 @@ class SettingsScreen extends ConsumerWidget {
                   width: double.infinity,
                   height: 46,
                   child: OutlinedButton.icon(
-                    onPressed: () async {
+                    onPressed: () {
                       Navigator.pop(ctx);
-                      final uri = Uri.parse(AppLinks.donationUrl);
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri, mode: LaunchMode.externalApplication);
-                      }
+                      _openExternalUrl(context, AppLinks.donationUrl);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: colors.expense,

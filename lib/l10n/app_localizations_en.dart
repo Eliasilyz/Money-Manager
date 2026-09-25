@@ -886,6 +886,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transactionSaveError => 'Failed to save transaction';
 
   @override
+  String get openLinkFailed => 'Couldn\'t open this link on your device';
+
+  @override
   String get analytics => 'Analytics';
 
   @override
@@ -1323,12 +1326,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String trendPosTip(Object month, Object pct) {
-    return 'Expenses this month dropped $pct% vs $month. Keep it up!';
+    return 'Expenses this month are $pct% lower than last month ($month). Keep it up!';
   }
 
   @override
   String get trendKeepMonitoring =>
-      'Keep monitoring your expenses to reach your financial goals.';
+      'No data from last month to compare against.';
 
   @override
   String get hintTransactionNote => 'Dinner with team...';
@@ -1354,8 +1357,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteTransaction => 'Delete Transaction';
 
   @override
-  String trendVsLastMonth(Object lastMonth, Object percent) {
-    return '$percent% vs $lastMonth';
+  String trendHigherVsLastMonth(Object lastMonth, Object percent) {
+    return '$percent% higher than last month ($lastMonth)';
+  }
+
+  @override
+  String trendLowerVsLastMonth(Object lastMonth, Object percent) {
+    return '$percent% lower than last month ($lastMonth)';
+  }
+
+  @override
+  String trendSameVsLastMonth(Object lastMonth) {
+    return 'No change vs last month ($lastMonth)';
   }
 
   @override
@@ -1447,27 +1460,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String trendExpenseIncreaseTip(Object month, Object pct) {
-    return 'Expenses this month increased $pct% vs $month. Watch your budget!';
+    return 'Expenses this month are $pct% higher than last month ($month). Watch your budget!';
   }
 
   @override
   String trendIncomeIncreaseTip(Object month, Object pct) {
-    return 'Income this month increased $pct% vs $month. Great job!';
+    return 'Income this month is $pct% higher than last month ($month). Great job!';
   }
 
   @override
   String trendIncomeDecreaseTip(Object month, Object pct) {
-    return 'Income this month dropped $pct% vs $month.';
+    return 'Income this month is $pct% lower than last month ($month).';
   }
 
   @override
   String trendCashFlowIncreaseTip(Object month, Object pct) {
-    return 'Cash flow increased $pct% vs $month.';
+    return 'Cash flow is $pct% higher than last month ($month).';
   }
 
   @override
   String trendCashFlowDecreaseTip(Object month, Object pct) {
-    return 'Cash flow decreased $pct% vs $month.';
+    return 'Cash flow is $pct% lower than last month ($month).';
   }
 
   @override

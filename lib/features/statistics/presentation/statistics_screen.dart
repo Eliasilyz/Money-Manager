@@ -273,7 +273,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
           final Color calloutTitleColor;
           final Color calloutBodyColor;
 
-          final pctStr = trendPct.abs().toStringAsFixed(1);
+          final pctStr = NumberFormat('#,##0.0', localeStr).format(trendPct.abs());
           final bool isGoodTrend;
 
           if (prevValue <= 0) {
@@ -285,33 +285,33 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
             if (trendPct <= 0) {
               isGoodTrend = true;
               calloutTitle = l10n.positiveTrend;
-              calloutBody = l10n.trendPosTip(pctStr, prevMonthName);
+              calloutBody = l10n.trendPosTip(prevMonthName, pctStr);
             } else {
               isGoodTrend = false;
               calloutTitle = l10n.attentionNeeded;
-              calloutBody = l10n.trendExpenseIncreaseTip(pctStr, prevMonthName);
+              calloutBody = l10n.trendExpenseIncreaseTip(prevMonthName, pctStr);
             }
           } else if (_tab == 1) {
             // Income Tab
             if (trendPct >= 0) {
               isGoodTrend = true;
               calloutTitle = l10n.positiveTrend;
-              calloutBody = l10n.trendIncomeIncreaseTip(pctStr, prevMonthName);
+              calloutBody = l10n.trendIncomeIncreaseTip(prevMonthName, pctStr);
             } else {
               isGoodTrend = false;
               calloutTitle = l10n.attentionNeeded;
-              calloutBody = l10n.trendIncomeDecreaseTip(pctStr, prevMonthName);
+              calloutBody = l10n.trendIncomeDecreaseTip(prevMonthName, pctStr);
             }
           } else {
             // Cash Flow Tab
             if (trendPct >= 0) {
               isGoodTrend = true;
               calloutTitle = l10n.positiveTrend;
-              calloutBody = l10n.trendCashFlowIncreaseTip(pctStr, prevMonthName);
+              calloutBody = l10n.trendCashFlowIncreaseTip(prevMonthName, pctStr);
             } else {
               isGoodTrend = false;
               calloutTitle = l10n.attentionNeeded;
-              calloutBody = l10n.trendCashFlowDecreaseTip(pctStr, prevMonthName);
+              calloutBody = l10n.trendCashFlowDecreaseTip(prevMonthName, pctStr);
             }
           }
 
@@ -412,24 +412,29 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          trendDown ? Icons.trending_down_rounded : Icons.trending_up_rounded,
-                          color: trendColor,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          l10n.trendVsLastMonth('${trendPct >= 0 ? '+' : ''}${trendPct.toStringAsFixed(1)}', prevMonthName),
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                    if (prevValue > 0)
+                      Row(
+                        children: [
+                          Icon(
+                            trendDown ? Icons.trending_down_rounded : Icons.trending_up_rounded,
                             color: trendColor,
+                            size: 16,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 5),
+                          Text(
+                            trendPct.abs() < 0.05
+                                ? l10n.trendSameVsLastMonth(prevMonthName)
+                                : trendDown
+                                    ? l10n.trendLowerVsLastMonth(prevMonthName, pctStr)
+                                    : l10n.trendHigherVsLastMonth(prevMonthName, pctStr),
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: trendColor,
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),

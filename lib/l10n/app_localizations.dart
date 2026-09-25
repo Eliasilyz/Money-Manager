@@ -1724,6 +1724,12 @@ abstract class AppLocalizations {
   /// **'Gagal menyimpan transaksi'**
   String get transactionSaveError;
 
+  /// No description provided for @openLinkFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak bisa membuka tautan di perangkat ini'**
+  String get openLinkFailed;
+
   /// No description provided for @analytics.
   ///
   /// In id, this message translates to:
@@ -2561,13 +2567,13 @@ abstract class AppLocalizations {
   /// No description provided for @trendPosTip.
   ///
   /// In id, this message translates to:
-  /// **'Pengeluaran bulan ini turun {pct}% dibanding {month}. Pertahankan!'**
+  /// **'Pengeluaran bulan ini {pct}% lebih rendah dari bulan lalu ({month}). Pertahankan!'**
   String trendPosTip(Object month, Object pct);
 
   /// No description provided for @trendKeepMonitoring.
   ///
   /// In id, this message translates to:
-  /// **'Pantau terus pengeluaran untuk mencapai target keuanganmu.'**
+  /// **'Belum ada data bulan lalu untuk dibandingkan.'**
   String get trendKeepMonitoring;
 
   /// No description provided for @hintTransactionNote.
@@ -2612,11 +2618,23 @@ abstract class AppLocalizations {
   /// **'Hapus Transaksi'**
   String get deleteTransaction;
 
-  /// No description provided for @trendVsLastMonth.
+  /// No description provided for @trendHigherVsLastMonth.
   ///
   /// In id, this message translates to:
-  /// **'{percent}% dibanding {lastMonth}'**
-  String trendVsLastMonth(Object lastMonth, Object percent);
+  /// **'{percent}% lebih tinggi dari bulan lalu ({lastMonth})'**
+  String trendHigherVsLastMonth(Object lastMonth, Object percent);
+
+  /// No description provided for @trendLowerVsLastMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'{percent}% lebih rendah dari bulan lalu ({lastMonth})'**
+  String trendLowerVsLastMonth(Object lastMonth, Object percent);
+
+  /// No description provided for @trendSameVsLastMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak berubah dari bulan lalu ({lastMonth})'**
+  String trendSameVsLastMonth(Object lastMonth);
 
   /// No description provided for @noRecurringTransactions.
   ///
@@ -2771,31 +2789,31 @@ abstract class AppLocalizations {
   /// No description provided for @trendExpenseIncreaseTip.
   ///
   /// In id, this message translates to:
-  /// **'Pengeluaran bulan ini naik {pct}% dibanding {month}. Perhatikan anggaranmu!'**
+  /// **'Pengeluaran bulan ini {pct}% lebih tinggi dari bulan lalu ({month}). Perhatikan anggaranmu!'**
   String trendExpenseIncreaseTip(Object month, Object pct);
 
   /// No description provided for @trendIncomeIncreaseTip.
   ///
   /// In id, this message translates to:
-  /// **'Pemasukan bulan ini naik {pct}% dibanding {month}. Kerja bagus!'**
+  /// **'Pemasukan bulan ini {pct}% lebih tinggi dari bulan lalu ({month}). Kerja bagus!'**
   String trendIncomeIncreaseTip(Object month, Object pct);
 
   /// No description provided for @trendIncomeDecreaseTip.
   ///
   /// In id, this message translates to:
-  /// **'Pemasukan bulan ini turun {pct}% dibanding {month}.'**
+  /// **'Pemasukan bulan ini {pct}% lebih rendah dari bulan lalu ({month}).'**
   String trendIncomeDecreaseTip(Object month, Object pct);
 
   /// No description provided for @trendCashFlowIncreaseTip.
   ///
   /// In id, this message translates to:
-  /// **'Arus kas bulan ini meningkat {pct}% dibanding {month}.'**
+  /// **'Arus kas bulan ini {pct}% lebih tinggi dari bulan lalu ({month}).'**
   String trendCashFlowIncreaseTip(Object month, Object pct);
 
   /// No description provided for @trendCashFlowDecreaseTip.
   ///
   /// In id, this message translates to:
-  /// **'Arus kas bulan ini menurun {pct}% dibanding {month}.'**
+  /// **'Arus kas bulan ini {pct}% lebih rendah dari bulan lalu ({month}).'**
   String trendCashFlowDecreaseTip(Object month, Object pct);
 
   /// No description provided for @notificationDailyBody.

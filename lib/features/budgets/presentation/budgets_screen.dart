@@ -525,7 +525,7 @@ class BudgetsScreen extends ConsumerWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              l10n.pocketLabel(pocketName, formatCurrency(balance, currencyCode: baseCode)),
+              l10n.pocketLabel(formatCurrency(balance, currencyCode: baseCode), pocketName),
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
