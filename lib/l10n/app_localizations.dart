@@ -2797,6 +2797,228 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Arus kas bulan ini menurun {pct}% dibanding {month}.'**
   String trendCashFlowDecreaseTip(Object month, Object pct);
+
+  /// No description provided for @notificationDailyBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Jangan lupa catat pengeluaran hari ini'**
+  String get notificationDailyBody;
+
+  /// No description provided for @notificationTestTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi Tes - Money Manager'**
+  String get notificationTestTitle;
+
+  /// No description provided for @notificationTestBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Jika kamu melihat ini, notifikasi aplikasi berfungsi dengan baik! 🎉'**
+  String get notificationTestBody;
+
+  /// No description provided for @enterCategoryName.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan nama kategori'**
+  String get enterCategoryName;
+
+  /// No description provided for @fillGoalNameAndTarget.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi nama dan target nominal'**
+  String get fillGoalNameAndTarget;
+
+  /// No description provided for @fillBudgetAmountCategory.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi nominal dan pilih kategori'**
+  String get fillBudgetAmountCategory;
+
+  /// No description provided for @fillRecurringAmountAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi jumlah dan pilih akun'**
+  String get fillRecurringAmountAccount;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menyimpan: {error}'**
+  String saveFailed(String error);
+
+  /// No description provided for @signInSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil masuk sebagai {email}'**
+  String signInSuccess(String email);
+
+  /// No description provided for @signInFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal login Google: {error}'**
+  String signInFailed(String error);
+
+  /// No description provided for @signInCancelled.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk Google dibatalkan atau memerlukan konfirmasi akun.'**
+  String get signInCancelled;
+
+  /// No description provided for @signInAuthMisconfigured.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal autentikasi Google (SHA-1 / OAuth Client ID belum terdaftar di Google Cloud Console).'**
+  String get signInAuthMisconfigured;
+
+  /// No description provided for @signOutSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil keluar dari akun Google'**
+  String get signOutSuccess;
+
+  /// No description provided for @signInForBackupRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan masuk dengan Google Drive untuk mencadangkan data.'**
+  String get signInForBackupRequired;
+
+  /// No description provided for @restoreSuccessCount.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil memulihkan {count} data dari Google Drive.'**
+  String restoreSuccessCount(int count);
+
+  /// No description provided for @driveFileDeleted.
+  ///
+  /// In id, this message translates to:
+  /// **'File backup berhasil dihapus dari Google Drive.'**
+  String get driveFileDeleted;
+
+  /// No description provided for @infoCloud.
+  ///
+  /// In id, this message translates to:
+  /// **'Info Cloud'**
+  String get infoCloud;
+
+  /// No description provided for @openCloudConsole.
+  ///
+  /// In id, this message translates to:
+  /// **'Buka Console Cloud Google'**
+  String get openCloudConsole;
+
+  /// No description provided for @driveStorage.
+  ///
+  /// In id, this message translates to:
+  /// **'Storage: {size}'**
+  String driveStorage(String size);
+
+  /// No description provided for @backupSignInRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan masuk ke Google Drive terlebih dahulu.'**
+  String get backupSignInRequired;
+
+  /// No description provided for @backupDriveFileUnreadable.
+  ///
+  /// In id, this message translates to:
+  /// **'File backup dari Drive tidak dapat dibaca.'**
+  String get backupDriveFileUnreadable;
+
+  /// No description provided for @backupInvalidFile.
+  ///
+  /// In id, this message translates to:
+  /// **'File bukan backup yang valid.'**
+  String get backupInvalidFile;
+
+  /// No description provided for @backupNeedsPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Backup terenkripsi memerlukan kata sandi.'**
+  String get backupNeedsPassword;
+
+  /// No description provided for @backupEncryptedInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Backup terenkripsi tidak valid.'**
+  String get backupEncryptedInvalid;
+
+  /// No description provided for @backupWrongPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi salah atau file rusak.'**
+  String get backupWrongPassword;
+
+  /// No description provided for @backupEncryptedCorrupt.
+  ///
+  /// In id, this message translates to:
+  /// **'File backup terenkripsi rusak.'**
+  String get backupEncryptedCorrupt;
+
+  /// No description provided for @backupUnknownFormat.
+  ///
+  /// In id, this message translates to:
+  /// **'Format backup tidak dikenali.'**
+  String get backupUnknownFormat;
+
+  /// No description provided for @backupSchemaInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Versi skema backup tidak valid.'**
+  String get backupSchemaInvalid;
+
+  /// No description provided for @backupFromNewerVersion.
+  ///
+  /// In id, this message translates to:
+  /// **'Backup dibuat oleh versi yang lebih baru (skema {version}). Update aplikasi terlebih dahulu.'**
+  String backupFromNewerVersion(int version);
+
+  /// No description provided for @backupDataCorrupt.
+  ///
+  /// In id, this message translates to:
+  /// **'Data backup kosong atau rusak.'**
+  String get backupDataCorrupt;
+
+  /// No description provided for @backupCollectionCorrupt.
+  ///
+  /// In id, this message translates to:
+  /// **'Koleksi \"{name}\" pada backup rusak.'**
+  String backupCollectionCorrupt(String name);
+
+  /// No description provided for @backupSnapshotMissing.
+  ///
+  /// In id, this message translates to:
+  /// **'Snapshot cadangan tidak ditemukan.'**
+  String get backupSnapshotMissing;
+
+  /// No description provided for @driveUploadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal mengunggah backup ke Google Drive ({code})'**
+  String driveUploadFailed(int code);
+
+  /// No description provided for @driveListFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal mengambil daftar backup dari Google Drive ({code})'**
+  String driveListFailed(int code);
+
+  /// No description provided for @driveDownloadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal mengunduh backup dari Google Drive ({code})'**
+  String driveDownloadFailed(int code);
+
+  /// No description provided for @driveDeleteFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menghapus file backup dari Google Drive ({code})'**
+  String driveDeleteFailed(int code);
+
+  /// No description provided for @biometricReason.
+  ///
+  /// In id, this message translates to:
+  /// **'Buka Money Manager dengan biometrik'**
+  String get biometricReason;
 }
 
 class _AppLocalizationsDelegate

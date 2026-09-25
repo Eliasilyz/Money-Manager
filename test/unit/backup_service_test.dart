@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:money_manager/database/database.dart';
 import 'package:money_manager/features/settings/application/backup_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('BackupService', () {
@@ -10,6 +11,7 @@ void main() {
     const service = BackupService();
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       db = AppDatabase.memory();
     });
 
@@ -49,7 +51,7 @@ void main() {
     test('export then restore roundtrips all seeded data', () async {
       await seedData();
       final raw = await service.generateBackup(db);
-      final parsed = service.parseBackup(raw);
+      final parsed = await service.parseBackup(raw);
       expect(parsed['accounts'], hasLength(1));
       expect(parsed['categories'], hasLength(1));
       expect(parsed['notes'], hasLength(1));
@@ -73,14 +75,14 @@ void main() {
       expect(root['data'], isA<Map<String, dynamic>>());
     });
 
-    test('corrupted file is rejected', () {
-      expect(() => service.parseBackup('{bukan json'), throwsA(isA<BackupException>()));
-      expect(() => service.parseBackup('{"format":"money_manager_backup"}'), throwsA(isA<BackupException>()));
+    test('corrupted file is rejected', () async {
+      await expectLater(service.parseBackup('{bukan json'), throwsA(isA<BackupException>()));
+      await expectLater(service.parseBackup('{"format":"money_manager_backup"}'), throwsA(isA<BackupException>()));
     });
 
-    test('unknown format is rejected', () {
+    test('unknown format is rejected', () async {
       const raw = '{"format":"something_else","schemaVersion":1,"data":{}}';
-      expect(() => service.parseBackup(raw), throwsA(isA<BackupException>()));
+      await expectLater(service.parseBackup(raw), throwsA(isA<BackupException>()));
     });
 
     test('old schema is accepted', () async {
@@ -88,7 +90,7 @@ void main() {
       final raw = await service.generateBackup(db);
       final root = jsonDecode(raw) as Map<String, dynamic>;
       root['schemaVersion'] = 1;
-      final parsed = service.parseBackup(jsonEncode(root));
+      final parsed = await service.parseBackup(jsonEncode(root));
       expect(parsed['accounts'], hasLength(1));
     });
 
@@ -97,16 +99,16 @@ void main() {
       final raw = await service.generateBackup(db);
       final root = jsonDecode(raw) as Map<String, dynamic>;
       root['schemaVersion'] = 99;
-      expect(() => service.parseBackup(jsonEncode(root)), throwsA(isA<BackupException>()));
+      await expectLater(service.parseBackup(jsonEncode(root)), throwsA(isA<BackupException>()));
     });
 
-    test('malformed collection row values are rejected', () {
+    test('malformed collection row values are rejected', () async {
       final raw = jsonEncode({
         'format': backupFormatIdentifier,
         'schemaVersion': 1,
         'data': {'accounts': 'bukan list'},
       });
-      expect(() => service.parseBackup(raw), throwsA(isA<BackupException>()));
+      await expectLater(service.parseBackup(raw), throwsA(isA<BackupException>()));
     });
 
     test('unknown collection names are detected', () {
@@ -134,10 +136,10 @@ void main() {
     test('encrypted backup requires password', () async {
       await seedData();
       final raw = await service.generateBackup(db, password: 'rahasia');
-      expect(() => service.parseBackup(raw), throwsA(isA<BackupException>()));
-      expect(() => service.parseBackup(raw, password: 'salah'), throwsA(isA<BackupException>()));
+      await expectLater(service.parseBackup(raw), throwsA(isA<BackupException>()));
+      await expectLater(service.parseBackup(raw, password: 'salah'), throwsA(isA<BackupException>()));
 
-      final parsed = service.parseBackup(raw, password: 'rahasia');
+      final parsed = await service.parseBackup(raw, password: 'rahasia');
       expect(parsed['accounts'], hasLength(1));
     });
   });

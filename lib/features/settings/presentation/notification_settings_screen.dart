@@ -65,7 +65,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   ref.read(settingsServiceProvider).saveNotificationsEnabled(v);
                   final svc = ref.read(notificationServiceProvider);
                   if (v) {
-                    svc.scheduleDaily();
+                    svc.scheduleDaily(time: ref.read(notifDailyTimeProvider));
                   } else {
                     svc.cancelAll();
                   }
@@ -250,7 +250,12 @@ activeThumbColor: colors.primary,
           onChanged: (v) {
             ref.read(notifDailyProvider.notifier).state = v;
             ref.read(settingsServiceProvider).saveNotifDaily(v);
-            // TODO: reschedule daily reminder with current time
+            final svc = ref.read(notificationServiceProvider);
+            if (v) {
+              svc.scheduleDaily(time: dailyTime);
+            } else {
+              svc.cancelDaily();
+            }
           },
           secondary: Icon(Icons.alarm_outlined, color: colors.primary, size: 22),
           title: Text(l10n.notificationTypeDailyReminder,
@@ -274,7 +279,7 @@ activeThumbColor: colors.primary,
                       '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
                   ref.read(notifDailyTimeProvider.notifier).state = formatted;
                   ref.read(settingsServiceProvider).saveNotifDailyTime(formatted);
-                  // TODO: reschedule daily reminder with new time
+                  ref.read(notificationServiceProvider).scheduleDaily(time: formatted);
                 }
               },
               child: Container(
@@ -302,35 +307,63 @@ activeThumbColor: colors.primary,
   }
 
   Widget _systemPermissionTile(BuildContext context, AppLocalizations l10n, AppColorsT colors) {
-    return ListTile(
-      leading: Icon(Icons.shield_outlined, color: colors.primary, size: 22),
-      title: Row(
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.notifications,
-              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary)),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
+          Row(
+            children: [
+              Icon(Icons.shield_outlined, color: colors.primary, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    Text(
+                      l10n.notifications,
+                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: colors.textPrimary),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        l10n.notificationPermissionAllowed,
+                        style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: colors.primary),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () {
+                // Opens app notification settings on Android / iOS
+                const MethodChannel('app_settings').invokeMethod('openNotificationSettings');
+              },
+              icon: Icon(Icons.settings_outlined, size: 16, color: colors.primary),
+              label: Text(
+                l10n.notificationOpenSystemSettings,
+                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
             ),
-            // ponytail: permission check is platform-specific; show "allowed"
-            // as default and let the OS prompt on first schedule.
-            child: Text(l10n.notificationPermissionAllowed,
-                style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: colors.primary)),
           ),
         ],
       ),
-      trailing: TextButton(
-        onPressed: () {
-          // Opens app notification settings on Android / iOS
-          const MethodChannel('app_settings').invokeMethod('openNotificationSettings');
-        },
-        child: Text(l10n.notificationOpenSystemSettings,
-            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: colors.primary)),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     );
   }
 }

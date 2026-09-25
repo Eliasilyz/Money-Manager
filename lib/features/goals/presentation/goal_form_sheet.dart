@@ -256,7 +256,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
     if (name.isEmpty || target == null || target <= 0) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Isi nama dan target nominal', style: GoogleFonts.inter())),
+        SnackBar(content: Text(AppLocalizations.of(context).fillGoalNameAndTarget, style: GoogleFonts.inter())),
       );
       return;
     }

@@ -9,7 +9,7 @@ final settingsServiceProvider = Provider((ref) => SettingsService());
 
 class SettingsService {
   static const _themeKey = 'theme_mode';
-  static const _localeKey = 'locale';
+  static const _localeKey = AppConstants.localeKey;
   static const _pinKey = 'pin_hash';
   static const _saltKey = 'pin_salt';
   static const _biometricKey = 'biometric_enabled';
@@ -164,6 +164,8 @@ final settingsInitProvider = FutureProvider<void>((ref) async {
   ref.read(maxBackupsProvider.notifier).state = await service.getMaxBackups();
 
   if (notif) {
-    await ref.read(notificationServiceProvider).scheduleDaily();
+    await ref
+        .read(notificationServiceProvider)
+        .scheduleDaily(time: ref.read(notifDailyTimeProvider));
   }
 });

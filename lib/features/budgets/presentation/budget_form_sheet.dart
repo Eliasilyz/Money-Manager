@@ -225,7 +225,7 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
     if (amount == null || amount <= 0 || _selectedCategoryId == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Isi nominal dan pilih kategori', style: GoogleFonts.inter())),
+        SnackBar(content: Text(AppLocalizations.of(context).fillBudgetAmountCategory, style: GoogleFonts.inter())),
       );
       return;
     }

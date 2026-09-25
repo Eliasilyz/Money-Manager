@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:money_manager/core/crypto/crypto_utils.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
+import 'package:money_manager/l10n/l10n_loader.dart';
 
 class SecurityException implements Exception {
   final String message;
@@ -53,7 +54,7 @@ class SecurityService {
   Future<bool> authenticateWithBiometrics() async {
     try {
       return await _auth.authenticate(
-        localizedReason: 'Buka Money Manager dengan biometrik',
+        localizedReason: (await loadAppL10n()).biometricReason,
         options: const AuthenticationOptions(stickyAuth: true, biometricOnly: true),
       );
     } catch (_) {

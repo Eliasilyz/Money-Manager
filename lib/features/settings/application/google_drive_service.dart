@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:money_manager/l10n/l10n_loader.dart';
 
 class DriveBackupFile {
   final String id;
@@ -91,7 +92,7 @@ class GoogleDriveService {
       return DriveBackupFile.fromJson(json);
     } else {
       debugPrint('Drive Upload Error [${response.statusCode}]: ${response.body}');
-      throw Exception('Gagal mengunggah backup ke Google Drive (${response.statusCode})');
+      throw Exception((await loadAppL10n()).driveUploadFailed(response.statusCode));
     }
   }
 
@@ -110,7 +111,7 @@ class GoogleDriveService {
       return filesList.map((f) => DriveBackupFile.fromJson(f as Map<String, dynamic>)).toList();
     } else {
       debugPrint('Drive List Error [${response.statusCode}]: ${response.body}');
-      throw Exception('Gagal mengambil daftar backup dari Google Drive (${response.statusCode})');
+      throw Exception((await loadAppL10n()).driveListFailed(response.statusCode));
     }
   }
 
@@ -126,7 +127,7 @@ class GoogleDriveService {
       return response.bodyBytes;
     } else {
       debugPrint('Drive Download Error [${response.statusCode}]: ${response.body}');
-      throw Exception('Gagal mengunduh backup dari Google Drive (${response.statusCode})');
+      throw Exception((await loadAppL10n()).driveDownloadFailed(response.statusCode));
     }
   }
 
@@ -140,7 +141,7 @@ class GoogleDriveService {
 
     if (response.statusCode != 200 && response.statusCode != 204) {
       debugPrint('Drive Delete Error [${response.statusCode}]: ${response.body}');
-      throw Exception('Gagal menghapus file backup dari Google Drive (${response.statusCode})');
+      throw Exception((await loadAppL10n()).driveDeleteFailed(response.statusCode));
     }
   }
 

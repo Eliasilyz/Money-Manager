@@ -464,7 +464,7 @@ class _RecurringFormSheetState extends ConsumerState<RecurringFormSheet> {
     if (amount == null || amount <= 0 || _selectedAccountId == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Isi jumlah dan pilih akun', style: GoogleFonts.inter())),
+        SnackBar(content: Text(AppLocalizations.of(context).fillRecurringAmountAccount, style: GoogleFonts.inter())),
       );
       return;
     }

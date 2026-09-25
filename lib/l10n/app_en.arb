@@ -461,5 +461,119 @@
   "trendIncomeIncreaseTip": "Income this month increased {pct}% vs {month}. Great job!",
   "trendIncomeDecreaseTip": "Income this month dropped {pct}% vs {month}.",
   "trendCashFlowIncreaseTip": "Cash flow increased {pct}% vs {month}.",
-  "trendCashFlowDecreaseTip": "Cash flow decreased {pct}% vs {month}."
+  "trendCashFlowDecreaseTip": "Cash flow decreased {pct}% vs {month}.",
+  "notificationDailyBody": "Don't forget to log today's expenses",
+  "notificationTestTitle": "Test Notification - Money Manager",
+  "notificationTestBody": "If you can see this, app notifications are working! 🎉",
+  "enterCategoryName": "Enter a category name",
+  "fillGoalNameAndTarget": "Enter name and target amount",
+  "fillBudgetAmountCategory": "Enter amount and select a category",
+  "fillRecurringAmountAccount": "Enter amount and select an account",
+  "saveFailed": "Failed to save: {error}",
+  "@saveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInSuccess": "Signed in as {email}",
+  "@signInSuccess": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "signInFailed": "Google sign-in failed: {error}",
+  "@signInFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInCancelled": "Google sign-in was cancelled or requires account confirmation.",
+  "signInAuthMisconfigured": "Google authentication failed (SHA-1 / OAuth Client ID not registered in Google Cloud Console).",
+  "signOutSuccess": "Signed out of Google account",
+  "signInForBackupRequired": "Please sign in with Google Drive to back up your data.",
+  "restoreSuccessCount": "Successfully restored {count} records from Google Drive.",
+  "@restoreSuccessCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "driveFileDeleted": "Backup file deleted from Google Drive.",
+  "infoCloud": "Cloud Info",
+  "openCloudConsole": "Open Google Cloud Console",
+  "driveStorage": "Storage: {size}",
+  "@driveStorage": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSignInRequired": "Please sign in to Google Drive first.",
+  "backupDriveFileUnreadable": "The backup file from Drive could not be read.",
+  "backupInvalidFile": "The file is not a valid backup.",
+  "backupNeedsPassword": "The encrypted backup requires a password.",
+  "backupEncryptedInvalid": "The encrypted backup is invalid.",
+  "backupWrongPassword": "Wrong password or the file is corrupted.",
+  "backupEncryptedCorrupt": "The encrypted backup file is corrupted.",
+  "backupUnknownFormat": "Unrecognized backup format.",
+  "backupSchemaInvalid": "Invalid backup schema version.",
+  "backupFromNewerVersion": "This backup was created by a newer version (schema {version}). Please update the app first.",
+  "@backupFromNewerVersion": {
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "backupDataCorrupt": "Backup data is empty or corrupted.",
+  "backupCollectionCorrupt": "Collection \"{name}\" in the backup is corrupted.",
+  "@backupCollectionCorrupt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSnapshotMissing": "Backup snapshot not found.",
+  "driveUploadFailed": "Failed to upload backup to Google Drive ({code})",
+  "@driveUploadFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "driveListFailed": "Failed to list backups from Google Drive ({code})",
+  "@driveListFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "driveDownloadFailed": "Failed to download backup from Google Drive ({code})",
+  "@driveDownloadFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "driveDeleteFailed": "Failed to delete backup file from Google Drive ({code})",
+  "@driveDeleteFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "biometricReason": "Unlock Money Manager with biometrics"
 }

@@ -462,5 +462,119 @@
   "trendIncomeIncreaseTip": "Pemasukan bulan ini naik {pct}% dibanding {month}. Kerja bagus!",
   "trendIncomeDecreaseTip": "Pemasukan bulan ini turun {pct}% dibanding {month}.",
   "trendCashFlowIncreaseTip": "Arus kas bulan ini meningkat {pct}% dibanding {month}.",
-  "trendCashFlowDecreaseTip": "Arus kas bulan ini menurun {pct}% dibanding {month}."
+  "trendCashFlowDecreaseTip": "Arus kas bulan ini menurun {pct}% dibanding {month}.",
+  "notificationDailyBody": "Jangan lupa catat pengeluaran hari ini",
+  "notificationTestTitle": "Notifikasi Tes - Money Manager",
+  "notificationTestBody": "Jika kamu melihat ini, notifikasi aplikasi berfungsi dengan baik! 🎉",
+  "enterCategoryName": "Masukkan nama kategori",
+  "fillGoalNameAndTarget": "Isi nama dan target nominal",
+  "fillBudgetAmountCategory": "Isi nominal dan pilih kategori",
+  "fillRecurringAmountAccount": "Isi jumlah dan pilih akun",
+  "saveFailed": "Gagal menyimpan: {error}",
+  "@saveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInSuccess": "Berhasil masuk sebagai {email}",
+  "@signInSuccess": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "signInFailed": "Gagal login Google: {error}",
+  "@signInFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInCancelled": "Masuk Google dibatalkan atau memerlukan konfirmasi akun.",
+  "signInAuthMisconfigured": "Gagal autentikasi Google (SHA-1 / OAuth Client ID belum terdaftar di Google Cloud Console).",
+  "signOutSuccess": "Berhasil keluar dari akun Google",
+  "signInForBackupRequired": "Silakan masuk dengan Google Drive untuk mencadangkan data.",
+  "restoreSuccessCount": "Berhasil memulihkan {count} data dari Google Drive.",
+  "@restoreSuccessCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "driveFileDeleted": "File backup berhasil dihapus dari Google Drive.",
+  "infoCloud": "Info Cloud",
+  "openCloudConsole": "Buka Console Cloud Google",
+  "driveStorage": "Storage: {size}",
+  "@driveStorage": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSignInRequired": "Silakan masuk ke Google Drive terlebih dahulu.",
+  "backupDriveFileUnreadable": "File backup dari Drive tidak dapat dibaca.",
+  "backupInvalidFile": "File bukan backup yang valid.",
+  "backupNeedsPassword": "Backup terenkripsi memerlukan kata sandi.",
+  "backupEncryptedInvalid": "Backup terenkripsi tidak valid.",
+  "backupWrongPassword": "Kata sandi salah atau file rusak.",
+  "backupEncryptedCorrupt": "File backup terenkripsi rusak.",
+  "backupUnknownFormat": "Format backup tidak dikenali.",
+  "backupSchemaInvalid": "Versi skema backup tidak valid.",
+  "backupFromNewerVersion": "Backup dibuat oleh versi yang lebih baru (skema {version}). Update aplikasi terlebih dahulu.",
+  "@backupFromNewerVersion": {
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "backupDataCorrupt": "Data backup kosong atau rusak.",
+  "backupCollectionCorrupt": "Koleksi \"{name}\" pada backup rusak.",
+  "@backupCollectionCorrupt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSnapshotMissing": "Snapshot cadangan tidak ditemukan.",
+  "driveUploadFailed": "Gagal mengunggah backup ke Google Drive ({code})",
+  "@driveUploadFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "driveListFailed": "Gagal mengambil daftar backup dari Google Drive ({code})",
+  "@driveListFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "driveDownloadFailed": "Gagal mengunduh backup dari Google Drive ({code})",
+  "@driveDownloadFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "driveDeleteFailed": "Gagal menghapus file backup dari Google Drive ({code})",
+  "@driveDeleteFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "biometricReason": "Buka Money Manager dengan biometrik"
 }

@@ -14,6 +14,7 @@ class AppConstants {
   static const String encryptionKeyAlias = 'money_manager_encryption_key';
   static const int paginationPageSize = 50;
   static const int defaultMaxBackups = 5;
+  static const String localeKey = 'locale';
 
   AppConstants._();
 }

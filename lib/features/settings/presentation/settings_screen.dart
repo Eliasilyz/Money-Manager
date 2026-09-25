@@ -318,10 +318,18 @@ class SettingsScreen extends ConsumerWidget {
     final colors = AppColorsT.of(ctx);
     return Expanded(
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           ref.read(localeProvider.notifier).state = loc;
-          ref.read(settingsServiceProvider).saveLocale(loc);
-          Navigator.pop(ctx);
+          await ref.read(settingsServiceProvider).saveLocale(loc);
+          // Rebuild notification channels + reschedule so their text follows the new locale.
+          if (ref.read(notificationsEnabledProvider)) {
+            final svc = ref.read(notificationServiceProvider);
+            await svc.init(force: true);
+            if (ref.read(notifDailyProvider)) {
+              await svc.scheduleDaily(time: ref.read(notifDailyTimeProvider));
+            }
+          }
+          if (ctx.mounted) Navigator.pop(ctx);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -388,11 +396,12 @@ class SettingsScreen extends ConsumerWidget {
               Container(
                 width: 64, height: 64,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [colors.primary, colors.primaryDark]),
                   shape: BoxShape.circle,
                   boxShadow: [BoxShadow(color: colors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
                 ),
-                child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 32),
+                child: ClipOval(
+                  child: Image.asset('assets/icons/app_icon.png', fit: BoxFit.cover, width: 64, height: 64),
+                ),
               ),
               const SizedBox(height: 14),
               Text('Money Manager', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),

@@ -221,7 +221,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(l10n.driveBackupsTitle, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-            Text('Storage: $_totalDriveSize', style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+            Text(l10n.driveStorage(_totalDriveSize), style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
           ],
         ),
         const SizedBox(height: 8),
@@ -478,6 +478,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   }
 
   Future<void> _handleGoogleSignIn() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _operating = true);
     try {
       final user = await ref.read(googleUserNotifierProvider.notifier).signIn();
@@ -485,17 +486,17 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         await _fetchDriveFiles();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Berhasil masuk sebagai ${user.email}', style: GoogleFonts.inter(fontSize: 13))),
+          SnackBar(content: Text(l10n.signInSuccess(user.email), style: GoogleFonts.inter(fontSize: 13))),
         );
       }
     } catch (e) {
       if (!mounted) return;
-      String msg = 'Gagal login Google: $e';
+      String msg = l10n.signInFailed(e.toString());
       final errStr = e.toString();
       if (errStr.contains('ApiException: 4') || errStr.contains('sign_in_required')) {
-        msg = 'Masuk Google dibatalkan atau memerlukan konfirmasi akun.';
+        msg = l10n.signInCancelled;
       } else if (errStr.contains('ApiException: 10') || errStr.contains('developer_error')) {
-        msg = 'Gagal autentikasi Google (SHA-1 / OAuth Client ID belum terdaftar di Google Cloud Console).';
+        msg = l10n.signInAuthMisconfigured;
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -503,7 +504,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           backgroundColor: AppColors.rose,
           duration: const Duration(seconds: 5),
           action: SnackBarAction(
-            label: 'Info Cloud',
+            label: l10n.infoCloud,
             textColor: Colors.white,
             onPressed: () => _showCloudConsoleHelp(context),
           ),
@@ -516,13 +517,14 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
 
   Future<void> _handleGoogleSignOut() async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _operating = true);
     try {
       await ref.read(googleUserNotifierProvider.notifier).signOut();
       await _fetchDriveFiles();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Berhasil keluar dari akun Google', style: GoogleFonts.inter(fontSize: 13))),
+        SnackBar(content: Text(l10n.signOutSuccess, style: GoogleFonts.inter(fontSize: 13))),
       );
     } finally {
       if (mounted) setState(() => _operating = false);
@@ -539,7 +541,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       if (user == null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Silakan masuk dengan Google Drive untuk mencadangkan data.', style: GoogleFonts.inter(fontSize: 13))),
+          SnackBar(content: Text(l10n.signInForBackupRequired, style: GoogleFonts.inter(fontSize: 13))),
         );
         return;
       }
@@ -624,7 +626,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Berhasil memulihkan $restoredCount data dari Google Drive.', style: GoogleFonts.inter(fontSize: 13))),
+        SnackBar(content: Text(l10n.restoreSuccessCount(restoredCount), style: GoogleFonts.inter(fontSize: 13))),
       );
     } on BackupException catch (e) {
       if (!mounted) return;
@@ -672,7 +674,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         await _fetchDriveFiles();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File backup berhasil dihapus dari Google Drive.', style: GoogleFonts.inter(fontSize: 13))),
+          SnackBar(content: Text(l10n.driveFileDeleted, style: GoogleFonts.inter(fontSize: 13))),
         );
       }
     } catch (e) {
@@ -743,7 +745,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   }
                 },
                 icon: const Icon(Icons.open_in_new, size: 18),
-                label: Text('Buka Console Cloud Google', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                label: Text(l10n.openCloudConsole, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.gold,
                   foregroundColor: AppColors.bg,

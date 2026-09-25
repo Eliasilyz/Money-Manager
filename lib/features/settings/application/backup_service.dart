@@ -10,6 +10,7 @@ import 'package:money_manager/core/crypto/crypto_utils.dart';
 import 'package:money_manager/database/database.dart' as db;
 import 'package:money_manager/features/settings/application/auth_service.dart';
 import 'package:money_manager/features/settings/application/google_drive_service.dart';
+import 'package:money_manager/l10n/l10n_loader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -113,7 +114,7 @@ class BackupService {
   }) async {
     final authHeaders = await authService.getAuthHeaders();
     if (authHeaders == null) {
-      throw const BackupException('Silakan masuk ke Google Drive terlebih dahulu.');
+      throw BackupException((await loadAppL10n()).backupSignInRequired);
     }
 
     final bytes = await createCompressedBackup(database, password: password);
@@ -149,7 +150,7 @@ class BackupService {
   }) async {
     final authHeaders = await authService.getAuthHeaders();
     if (authHeaders == null) {
-      throw const BackupException('Silakan masuk ke Google Drive terlebih dahulu.');
+      throw BackupException((await loadAppL10n()).backupSignInRequired);
     }
 
     final bytes = await driveService.downloadBackup(authHeaders: authHeaders, fileId: fileId);
@@ -161,11 +162,11 @@ class BackupService {
       try {
         jsonStr = utf8.decode(bytes);
       } catch (_) {
-        throw const BackupException('File backup dari Drive tidak dapat dibaca.');
+        throw BackupException((await loadAppL10n()).backupDriveFileUnreadable);
       }
     }
 
-    final parsedData = parseBackup(jsonStr, password: password);
+    final parsedData = await parseBackup(jsonStr, password: password);
 
     // Create safety snapshot before overwriting
     await createSafetySnapshot(database);
@@ -210,51 +211,50 @@ class BackupService {
 
   // --- Parsing & restore ---
 
-  Map<String, List<Map<String, dynamic>>> parseBackup(String raw, {String? password}) {
+  Future<Map<String, List<Map<String, dynamic>>>> parseBackup(String raw, {String? password}) async {
+    final l10n = await loadAppL10n();
     Map<String, dynamic> root;
     try {
       root = jsonDecode(raw) as Map<String, dynamic>;
     } catch (_) {
-      throw const BackupException('File bukan backup yang valid.');
+      throw BackupException(l10n.backupInvalidFile);
     }
 
     final format = root['format'];
     if (format == backupEncryptionMarker) {
       if (password == null || password.isEmpty) {
-        throw const BackupException('Backup terenkripsi memerlukan kata sandi.');
+        throw BackupException(l10n.backupNeedsPassword);
       }
       final payload = root['payload'];
-      if (payload is! String) throw const BackupException('Backup terenkripsi tidak valid.');
+      if (payload is! String) throw BackupException(l10n.backupEncryptedInvalid);
       String decrypted;
       try {
         decrypted = CryptoUtils.decryptData(payload, password);
       } catch (_) {
-        throw const BackupException('Kata sandi salah atau file rusak.');
+        throw BackupException(l10n.backupWrongPassword);
       }
       try {
         root = jsonDecode(decrypted) as Map<String, dynamic>;
       } catch (_) {
-        throw const BackupException('File backup terenkripsi rusak.');
+        throw BackupException(l10n.backupEncryptedCorrupt);
       }
     } else if (format != backupFormatIdentifier) {
-      throw const BackupException('Format backup tidak dikenali.');
+      throw BackupException(l10n.backupUnknownFormat);
     }
 
     final schemaVersion = root['schemaVersion'];
-    if (schemaVersion is! int) throw const BackupException('Versi skema backup tidak valid.');
+    if (schemaVersion is! int) throw BackupException(l10n.backupSchemaInvalid);
     if (schemaVersion > AppConstants.backupSchemaVersion) {
-      throw BackupException(
-        'Backup dibuat oleh versi yang lebih baru (skema $schemaVersion). Update aplikasi terlebih dahulu.',
-      );
+      throw BackupException(l10n.backupFromNewerVersion(schemaVersion));
     }
 
     final data = root['data'];
-    if (data is! Map<String, dynamic>) throw const BackupException('Data backup kosong atau rusak.');
+    if (data is! Map<String, dynamic>) throw BackupException(l10n.backupDataCorrupt);
 
     return data.map((key, value) {
       final rows = value;
       if (rows is! List) {
-        throw BackupException('Koleksi "$key" pada backup rusak.');
+        throw BackupException(l10n.backupCollectionCorrupt(key));
       }
       return MapEntry(key, rows.whereType<Map<String, dynamic>>().toList());
     });
@@ -300,10 +300,10 @@ class BackupService {
     final dir = await _safetyDir();
     final file = File('${dir.path}/safety-snapshot.json');
     if (!await file.exists()) {
-      throw const BackupException('Snapshot cadangan tidak ditemukan.');
+      throw BackupException((await loadAppL10n()).backupSnapshotMissing);
     }
     final raw = await file.readAsString();
-    final data = parseBackup(raw);
+    final data = await parseBackup(raw);
     await restoreBackup(database, data);
     await file.delete();
   }

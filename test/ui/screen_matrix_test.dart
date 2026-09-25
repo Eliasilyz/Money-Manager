@@ -177,9 +177,10 @@ class _StubSettingsService extends SettingsService {
 }
 
 class _StubNotificationService extends NotificationService {
-  @override Future<void> init() async {}
+  @override Future<void> init({bool force = false}) async {}
   @override Future<void> scheduleDaily({String time = '19:00'}) async {}
   @override Future<void> cancelAll() async {}
+  @override Future<void> cancelDaily() async {}
 }
 
 // ---------------------------------------------------------------------------

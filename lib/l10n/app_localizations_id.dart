@@ -1469,4 +1469,144 @@ class AppLocalizationsId extends AppLocalizations {
   String trendCashFlowDecreaseTip(Object month, Object pct) {
     return 'Arus kas bulan ini menurun $pct% dibanding $month.';
   }
+
+  @override
+  String get notificationDailyBody => 'Jangan lupa catat pengeluaran hari ini';
+
+  @override
+  String get notificationTestTitle => 'Notifikasi Tes - Money Manager';
+
+  @override
+  String get notificationTestBody =>
+      'Jika kamu melihat ini, notifikasi aplikasi berfungsi dengan baik! 🎉';
+
+  @override
+  String get enterCategoryName => 'Masukkan nama kategori';
+
+  @override
+  String get fillGoalNameAndTarget => 'Isi nama dan target nominal';
+
+  @override
+  String get fillBudgetAmountCategory => 'Isi nominal dan pilih kategori';
+
+  @override
+  String get fillRecurringAmountAccount => 'Isi jumlah dan pilih akun';
+
+  @override
+  String saveFailed(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String signInSuccess(String email) {
+    return 'Berhasil masuk sebagai $email';
+  }
+
+  @override
+  String signInFailed(String error) {
+    return 'Gagal login Google: $error';
+  }
+
+  @override
+  String get signInCancelled =>
+      'Masuk Google dibatalkan atau memerlukan konfirmasi akun.';
+
+  @override
+  String get signInAuthMisconfigured =>
+      'Gagal autentikasi Google (SHA-1 / OAuth Client ID belum terdaftar di Google Cloud Console).';
+
+  @override
+  String get signOutSuccess => 'Berhasil keluar dari akun Google';
+
+  @override
+  String get signInForBackupRequired =>
+      'Silakan masuk dengan Google Drive untuk mencadangkan data.';
+
+  @override
+  String restoreSuccessCount(int count) {
+    return 'Berhasil memulihkan $count data dari Google Drive.';
+  }
+
+  @override
+  String get driveFileDeleted =>
+      'File backup berhasil dihapus dari Google Drive.';
+
+  @override
+  String get infoCloud => 'Info Cloud';
+
+  @override
+  String get openCloudConsole => 'Buka Console Cloud Google';
+
+  @override
+  String driveStorage(String size) {
+    return 'Storage: $size';
+  }
+
+  @override
+  String get backupSignInRequired =>
+      'Silakan masuk ke Google Drive terlebih dahulu.';
+
+  @override
+  String get backupDriveFileUnreadable =>
+      'File backup dari Drive tidak dapat dibaca.';
+
+  @override
+  String get backupInvalidFile => 'File bukan backup yang valid.';
+
+  @override
+  String get backupNeedsPassword => 'Backup terenkripsi memerlukan kata sandi.';
+
+  @override
+  String get backupEncryptedInvalid => 'Backup terenkripsi tidak valid.';
+
+  @override
+  String get backupWrongPassword => 'Kata sandi salah atau file rusak.';
+
+  @override
+  String get backupEncryptedCorrupt => 'File backup terenkripsi rusak.';
+
+  @override
+  String get backupUnknownFormat => 'Format backup tidak dikenali.';
+
+  @override
+  String get backupSchemaInvalid => 'Versi skema backup tidak valid.';
+
+  @override
+  String backupFromNewerVersion(int version) {
+    return 'Backup dibuat oleh versi yang lebih baru (skema $version). Update aplikasi terlebih dahulu.';
+  }
+
+  @override
+  String get backupDataCorrupt => 'Data backup kosong atau rusak.';
+
+  @override
+  String backupCollectionCorrupt(String name) {
+    return 'Koleksi \"$name\" pada backup rusak.';
+  }
+
+  @override
+  String get backupSnapshotMissing => 'Snapshot cadangan tidak ditemukan.';
+
+  @override
+  String driveUploadFailed(int code) {
+    return 'Gagal mengunggah backup ke Google Drive ($code)';
+  }
+
+  @override
+  String driveListFailed(int code) {
+    return 'Gagal mengambil daftar backup dari Google Drive ($code)';
+  }
+
+  @override
+  String driveDownloadFailed(int code) {
+    return 'Gagal mengunduh backup dari Google Drive ($code)';
+  }
+
+  @override
+  String driveDeleteFailed(int code) {
+    return 'Gagal menghapus file backup dari Google Drive ($code)';
+  }
+
+  @override
+  String get biometricReason => 'Buka Money Manager dengan biometrik';
 }

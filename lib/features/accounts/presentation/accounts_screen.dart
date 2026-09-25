@@ -432,7 +432,7 @@ class AccountsScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    t.description ?? (isIncome ? 'Pemasukan' : 'Pengeluaran'),
+                                    t.description ?? (isIncome ? l10n.income : l10n.expense),
                                     style: GoogleFonts.inter(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,

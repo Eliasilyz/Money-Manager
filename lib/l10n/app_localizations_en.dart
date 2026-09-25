@@ -1469,4 +1469,143 @@ class AppLocalizationsEn extends AppLocalizations {
   String trendCashFlowDecreaseTip(Object month, Object pct) {
     return 'Cash flow decreased $pct% vs $month.';
   }
+
+  @override
+  String get notificationDailyBody => 'Don\'t forget to log today\'s expenses';
+
+  @override
+  String get notificationTestTitle => 'Test Notification - Money Manager';
+
+  @override
+  String get notificationTestBody =>
+      'If you can see this, app notifications are working! 🎉';
+
+  @override
+  String get enterCategoryName => 'Enter a category name';
+
+  @override
+  String get fillGoalNameAndTarget => 'Enter name and target amount';
+
+  @override
+  String get fillBudgetAmountCategory => 'Enter amount and select a category';
+
+  @override
+  String get fillRecurringAmountAccount => 'Enter amount and select an account';
+
+  @override
+  String saveFailed(String error) {
+    return 'Failed to save: $error';
+  }
+
+  @override
+  String signInSuccess(String email) {
+    return 'Signed in as $email';
+  }
+
+  @override
+  String signInFailed(String error) {
+    return 'Google sign-in failed: $error';
+  }
+
+  @override
+  String get signInCancelled =>
+      'Google sign-in was cancelled or requires account confirmation.';
+
+  @override
+  String get signInAuthMisconfigured =>
+      'Google authentication failed (SHA-1 / OAuth Client ID not registered in Google Cloud Console).';
+
+  @override
+  String get signOutSuccess => 'Signed out of Google account';
+
+  @override
+  String get signInForBackupRequired =>
+      'Please sign in with Google Drive to back up your data.';
+
+  @override
+  String restoreSuccessCount(int count) {
+    return 'Successfully restored $count records from Google Drive.';
+  }
+
+  @override
+  String get driveFileDeleted => 'Backup file deleted from Google Drive.';
+
+  @override
+  String get infoCloud => 'Cloud Info';
+
+  @override
+  String get openCloudConsole => 'Open Google Cloud Console';
+
+  @override
+  String driveStorage(String size) {
+    return 'Storage: $size';
+  }
+
+  @override
+  String get backupSignInRequired => 'Please sign in to Google Drive first.';
+
+  @override
+  String get backupDriveFileUnreadable =>
+      'The backup file from Drive could not be read.';
+
+  @override
+  String get backupInvalidFile => 'The file is not a valid backup.';
+
+  @override
+  String get backupNeedsPassword => 'The encrypted backup requires a password.';
+
+  @override
+  String get backupEncryptedInvalid => 'The encrypted backup is invalid.';
+
+  @override
+  String get backupWrongPassword => 'Wrong password or the file is corrupted.';
+
+  @override
+  String get backupEncryptedCorrupt =>
+      'The encrypted backup file is corrupted.';
+
+  @override
+  String get backupUnknownFormat => 'Unrecognized backup format.';
+
+  @override
+  String get backupSchemaInvalid => 'Invalid backup schema version.';
+
+  @override
+  String backupFromNewerVersion(int version) {
+    return 'This backup was created by a newer version (schema $version). Please update the app first.';
+  }
+
+  @override
+  String get backupDataCorrupt => 'Backup data is empty or corrupted.';
+
+  @override
+  String backupCollectionCorrupt(String name) {
+    return 'Collection \"$name\" in the backup is corrupted.';
+  }
+
+  @override
+  String get backupSnapshotMissing => 'Backup snapshot not found.';
+
+  @override
+  String driveUploadFailed(int code) {
+    return 'Failed to upload backup to Google Drive ($code)';
+  }
+
+  @override
+  String driveListFailed(int code) {
+    return 'Failed to list backups from Google Drive ($code)';
+  }
+
+  @override
+  String driveDownloadFailed(int code) {
+    return 'Failed to download backup from Google Drive ($code)';
+  }
+
+  @override
+  String driveDeleteFailed(int code) {
+    return 'Failed to delete backup file from Google Drive ($code)';
+  }
+
+  @override
+  String get biometricReason => 'Unlock Money Manager with biometrics';
 }

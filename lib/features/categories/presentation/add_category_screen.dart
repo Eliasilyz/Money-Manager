@@ -161,7 +161,7 @@ class _AddCategoryScreenState extends ConsumerState<AddCategoryScreen> {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Masukkan nama kategori', style: GoogleFonts.inter())),
+        SnackBar(content: Text(AppLocalizations.of(context).enterCategoryName, style: GoogleFonts.inter())),
       );
       return;
     }

@@ -348,7 +348,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     AsyncValue<List<Category>> categoriesAsync,
   ) {
     final locale = Localizations.localeOf(context).languageCode;
-    final accountLabel = _getAccountLabelWithBalance(accountsAsync, _selectedAccountId);
+    final accountLabel = _getAccountLabelWithBalance(accountsAsync, _selectedAccountId, defaultLabel: l10n.selectAccount);
     final categoryLabel = _getCategoryLabel(categoriesAsync, l10n);
     final dateLabel = DateFormat('d MMM yyyy, HH:mm', locale).format(_selectedDate);
     final noteLabel = _noteCtrl.text.isEmpty ? l10n.hintTransactionNote : _noteCtrl.text;
@@ -505,9 +505,9 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   String _getAccountLabelWithBalance(
     AsyncValue<List<Account>> accountsAsync,
     String? accountId, {
-    String? defaultLabel,
+    required String defaultLabel,
   }) {
-    final fallbackLabel = defaultLabel ?? 'Pilih akun';
+    final fallbackLabel = defaultLabel;
     if (!accountsAsync.hasValue) return fallbackLabel;
     final active = accountsAsync.value!.where((a) => !a.isArchived).toList();
     if (accountId != null) {
@@ -910,7 +910,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: $e', style: GoogleFonts.inter())),
+          SnackBar(content: Text(AppLocalizations.of(context).saveFailed(e.toString()), style: GoogleFonts.inter())),
         );
       }
     } finally {
