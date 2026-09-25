@@ -1144,4 +1144,282 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get categoryDefaultTransfer => 'Transfer';
+
+  @override
+  String get allFinancialActivity => 'All financial activity';
+
+  @override
+  String get manageCategories => 'Manage Categories';
+
+  @override
+  String get financialNotes => 'Financial Notes';
+
+  @override
+  String get searchTransactionsHint => 'Search transactions or notes...';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get filterTransactionsTitle => 'Filter Transactions';
+
+  @override
+  String get totalIncome => 'Total income';
+
+  @override
+  String get totalExpenses => 'Total expenses';
+
+  @override
+  String get transactionDetails => 'Transaction Details';
+
+  @override
+  String get todayBalance => 'Today\'s balance';
+
+  @override
+  String aboutVersion(Object build, Object version) {
+    return 'Version $version (Build $build)';
+  }
+
+  @override
+  String get aboutDesc =>
+      'A personal financial management app that helps you track transactions, budgets, wallets, recurring transactions, and financial goals securely & privately.';
+
+  @override
+  String get developer => 'Developer';
+
+  @override
+  String get license => 'License';
+
+  @override
+  String get supportDeveloper => 'Support Developer (Donate)';
+
+  @override
+  String get upcoming30Days => 'Upcoming (30 days)';
+
+  @override
+  String itemsCount(Object count) {
+    return '$count items';
+  }
+
+  @override
+  String get goalName => 'GOAL NAME';
+
+  @override
+  String get targetDate => 'Target Date';
+
+  @override
+  String get notSet => 'Not set';
+
+  @override
+  String get prioritySubtitle => 'Show at top of Goals page';
+
+  @override
+  String get saveGoal => 'Save Goal';
+
+  @override
+  String get recentTransactions => 'Recent transactions';
+
+  @override
+  String get incomeThisMonth => 'Income this month';
+
+  @override
+  String get expenseThisMonth => 'Expense this month';
+
+  @override
+  String get sixMonths => '6 months';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get goals => 'Goals';
+
+  @override
+  String get budgetAmount => 'BUDGET AMOUNT';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get saveBudget => 'Save Budget';
+
+  @override
+  String get negative => 'Negative';
+
+  @override
+  String accountHistoryOf(Object name) {
+    return '$name History';
+  }
+
+  @override
+  String activeCount(Object count) {
+    return '$count active';
+  }
+
+  @override
+  String get quickAccess => 'Quick Access';
+
+  @override
+  String get manageCategoriesSubtitle => 'Manage transaction categories';
+
+  @override
+  String get addNotesSubtitle => 'Add transaction notes';
+
+  @override
+  String get last6Months => 'Last 6 months';
+
+  @override
+  String get categoryDistribution => 'Category distribution';
+
+  @override
+  String get positiveTrend => 'Positive trend';
+
+  @override
+  String trendPosTip(Object month, Object pct) {
+    return 'Expenses this month dropped $pct% vs $month. Keep it up!';
+  }
+
+  @override
+  String get trendKeepMonitoring =>
+      'Keep monitoring your expenses to reach your financial goals.';
+
+  @override
+  String get hintTransactionNote => 'Dinner with team...';
+
+  @override
+  String get selectDestinationAccount => 'Select Destination Account';
+
+  @override
+  String get confirmDeleteTransaction =>
+      'Are you sure you want to delete this transaction?';
+
+  @override
+  String get enterTransactionAmount => 'Enter transaction amount';
+
+  @override
+  String get selectAccountFirst => 'Select an account first';
+
+  @override
+  String get selectDestinationAccountFirst =>
+      'Select destination account for transfer';
+
+  @override
+  String get deleteTransaction => 'Delete Transaction';
+
+  @override
+  String trendVsLastMonth(Object lastMonth, Object percent) {
+    return '$percent% vs $lastMonth';
+  }
+
+  @override
+  String get noRecurringTransactions => 'No recurring transactions yet';
+
+  @override
+  String get tapAddRecurring => 'Tap \"+ Add\" to add one';
+
+  @override
+  String renewInDays(Object count) {
+    return 'Renews in $count days';
+  }
+
+  @override
+  String get budgetRemainingThisMonth => 'Remaining budget this month';
+
+  @override
+  String budgetAttentionWarning(Object name, Object pct) {
+    return 'Budget for $name has reached $pct% of monthly limit.';
+  }
+
+  @override
+  String pocketLabel(Object balance, Object name) {
+    return 'Pocket $name • $balance';
+  }
+
+  @override
+  String get deposit => 'Deposit';
+
+  @override
+  String pocketName(Object name) {
+    return '$name Pocket';
+  }
+
+  @override
+  String get monthlyFinancialPlan => 'Monthly financial plan';
+
+  @override
+  String get realizeYourDreams => 'Realize your dreams';
+
+  @override
+  String get manageDebtsAndReceivables => 'Manage debts & receivables';
+
+  @override
+  String progressPercentOfTarget(Object pct) {
+    return '$pct% of target';
+  }
+
+  @override
+  String get noSavingsGoals => 'No savings goals yet';
+
+  @override
+  String get tapAddGoal => 'Tap \"+ Add\" to create a goal';
+
+  @override
+  String get noActiveDebts => 'No active debts';
+
+  @override
+  String get debtList => 'Debt list';
+
+  @override
+  String dueDateWithDate(Object date) {
+    return 'Due date: $date';
+  }
+
+  @override
+  String get addDebtTitle => 'Add Debt/Receivable';
+
+  @override
+  String get nameLabel => 'NAME';
+
+  @override
+  String get personNameHint => 'e.g. John';
+
+  @override
+  String get dueDateTitle => 'Due Date';
+
+  @override
+  String get saveDebt => 'Save Debt/Receivable';
+
+  @override
+  String get fillNameAndAmount => 'Enter name and amount';
+
+  @override
+  String get attentionNeeded => 'Attention needed';
+
+  @override
+  String get financialInsight => 'Financial insight';
+
+  @override
+  String trendExpenseIncreaseTip(Object month, Object pct) {
+    return 'Expenses this month increased $pct% vs $month. Watch your budget!';
+  }
+
+  @override
+  String trendIncomeIncreaseTip(Object month, Object pct) {
+    return 'Income this month increased $pct% vs $month. Great job!';
+  }
+
+  @override
+  String trendIncomeDecreaseTip(Object month, Object pct) {
+    return 'Income this month dropped $pct% vs $month.';
+  }
+
+  @override
+  String trendCashFlowIncreaseTip(Object month, Object pct) {
+    return 'Cash flow increased $pct% vs $month.';
+  }
+
+  @override
+  String trendCashFlowDecreaseTip(Object month, Object pct) {
+    return 'Cash flow decreased $pct% vs $month.';
+  }
 }

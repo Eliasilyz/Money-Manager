@@ -32,7 +32,7 @@ void main() {
           );
     });
 
-    tearDown(() => db.close());
+    tearDown(() async => await db.close());
 
     test('createAccount inserts account with UUID and balance properly', () async {
       await accService.createAccount(

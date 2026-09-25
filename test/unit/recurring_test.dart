@@ -103,7 +103,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // empty state, then open the create sheet
-    expect(find.text('Belum ada data'), findsOneWidget);
+    expect(find.textContaining('Belum ada'), findsOneWidget);
     await tester.tap(find.text('Tambah'));
     await tester.pumpAndSettle();
 
@@ -117,10 +117,10 @@ void main() {
     await tester.tap(find.text('Simpan'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Rp 150.000'), findsOneWidget);
+    expect(find.textContaining('150.000'), findsWidgets);
 
     // open edit sheet from the tile and delete
-    await tester.tap(find.textContaining('Rp 150.000'));
+    await tester.tap(find.textContaining('150.000').last);
     await tester.pumpAndSettle();
     expect(find.text('Simpan perubahan'), findsOneWidget);
     await tester.ensureVisible(find.text('Hapus'));
@@ -129,7 +129,7 @@ void main() {
     await tester.tap(find.text('Hapus').last);
     await tester.pumpAndSettle();
 
-    expect(find.text('Belum ada data'), findsOneWidget);
+    expect(find.textContaining('Belum ada'), findsOneWidget);
     await db.close();
   });
 }

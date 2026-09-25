@@ -7,6 +7,7 @@ class Goal {
   final String? linkedAccountId;
   final DateTime startDate;
   final DateTime? targetDate;
+  final bool isPriority;
   final String status;
   final String? note;
   final DateTime createdAt;
@@ -21,6 +22,7 @@ class Goal {
     this.linkedAccountId,
     required this.startDate,
     this.targetDate,
+    this.isPriority = false,
     this.status = 'active',
     this.note,
     required this.createdAt,
@@ -36,6 +38,7 @@ class Goal {
     String? linkedAccountId,
     DateTime? startDate,
     DateTime? targetDate,
+    bool? isPriority,
     String? status,
     String? note,
     DateTime? createdAt,
@@ -50,6 +53,7 @@ class Goal {
       linkedAccountId: linkedAccountId ?? this.linkedAccountId,
       startDate: startDate ?? this.startDate,
       targetDate: targetDate ?? this.targetDate,
+      isPriority: isPriority ?? this.isPriority,
       status: status ?? this.status,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
@@ -66,6 +70,7 @@ class Goal {
     'linkedAccountId': linkedAccountId,
     'startDate': startDate.toIso8601String(),
     'targetDate': targetDate?.toIso8601String(),
+    'isPriority': isPriority,
     'status': status,
     'note': note,
     'createdAt': createdAt.toIso8601String(),
@@ -81,6 +86,7 @@ class Goal {
         linkedAccountId: json['linkedAccountId'] as String?,
         startDate: DateTime.parse(json['startDate'] as String),
         targetDate: json['targetDate'] != null ? DateTime.parse(json['targetDate'] as String) : null,
+        isPriority: json['isPriority'] as bool? ?? false,
         status: json['status'] as String? ?? 'active',
         note: json['note'] as String?,
         createdAt: DateTime.parse(json['createdAt'] as String),

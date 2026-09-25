@@ -2,8 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:money_manager/domain/entities/exchange_rate.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
+
+String formatCurrency(num amount, {String currencyCode = 'IDR', String locale = 'id'}) {
+  final digits = currencyDigits(currencyCode);
+  final symbol = currencySymbol(currencyCode);
+  final fmt = NumberFormat.currency(
+    locale: locale,
+    symbol: symbol.isNotEmpty ? '$symbol ' : '',
+    decimalDigits: digits,
+  );
+  return fmt.format(amount);
+}
 
 String localizedCategoryName(AppLocalizations l10n, String? systemKey, String fallback) {
   switch (systemKey) {
@@ -118,23 +130,17 @@ class MonthPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppColorsT.of(context);
     final locale = Localizations.localeOf(context).languageCode;
-    final label = DateFormat('MMMM yyyy', locale).format(month);
+    final label = DateFormat('MMM yyyy', locale).format(month);
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: colors.surfaceRaised,
+          color: colors.primary.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: colors.border),
+          border: Border.all(color: colors.primary.withValues(alpha: 0.35)),
         ),
-        child: Row(
-          children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: colors.textPrimary)),
-            const SizedBox(width: 4),
-            Icon(Icons.calendar_today_outlined, size: 14, color: colors.textSecondary),
-          ],
-        ),
+        child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
       ),
     );
   }
@@ -453,20 +459,48 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
-    return NavigationBar(
-      backgroundColor: const Color(0xFF0E3B2B),
-      indicatorColor: Colors.white.withValues(alpha: 0.15),
-      selectedIndex: navigationShell.currentIndex,
-      onDestinationSelected: (index) => navigationShell.goBranch(index),
-      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      height: 64,
-      destinations: [
-        NavigationDestination(icon: const Icon(Icons.home_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.home, color: Colors.white), label: l10n.dashboard),
-        NavigationDestination(icon: const Icon(Icons.receipt_long_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.receipt_long, color: Colors.white), label: l10n.transactions),
-        NavigationDestination(icon: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.account_balance_wallet, color: Colors.white), label: l10n.accounts),
-        NavigationDestination(icon: const Icon(Icons.more_horiz_outlined, color: Color(0xFF999999)), selectedIcon: const Icon(Icons.more_horiz, color: Colors.white), label: l10n.settings),
-      ],
+    return NavigationBarTheme(
+      data: NavigationBarThemeData(
+        indicatorColor: Colors.transparent,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white);
+          }
+          return GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w400, color: Colors.white.withValues(alpha: 0.45));
+        }),
+      ),
+      child: NavigationBar(
+        backgroundColor: colors.navBackground,
+        indicatorColor: Colors.transparent,
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: (index) => navigationShell.goBranch(index),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        height: 64,
+        destinations: [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined, color: Colors.white.withValues(alpha: 0.45), size: 24),
+            selectedIcon: const Icon(Icons.home_rounded, color: Colors.white, size: 24),
+            label: l10n.dashboard,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined, color: Colors.white.withValues(alpha: 0.45), size: 24),
+            selectedIcon: const Icon(Icons.receipt_long_rounded, color: Colors.white, size: 24),
+            label: l10n.transactions,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined, color: Colors.white.withValues(alpha: 0.45), size: 24),
+            selectedIcon: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 24),
+            label: l10n.accounts,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.grid_view_rounded, color: Colors.white.withValues(alpha: 0.45), size: 22),
+            selectedIcon: const Icon(Icons.grid_view_rounded, color: Colors.white, size: 22),
+            label: l10n.othersTitle,
+          ),
+        ],
+      ),
     );
   }
 }

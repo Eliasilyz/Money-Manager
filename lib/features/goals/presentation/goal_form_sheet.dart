@@ -38,6 +38,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
   late final TextEditingController _noteCtrl;
   DateTime _startDate = DateTime.now();
   DateTime? _targetDate;
+  bool _isPriority = false;
   bool _saving = false;
 
   bool get _isEditing => widget.edit != null;
@@ -51,6 +52,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
     _noteCtrl = TextEditingController(text: g?.note ?? '');
     _startDate = g?.startDate ?? DateTime.now();
     _targetDate = g?.targetDate;
+    _isPriority = g?.isPriority ?? false;
   }
 
   @override
@@ -83,12 +85,12 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
           ),
           const SizedBox(height: 16),
           Text(
-            _isEditing ? l10n.editGoal : 'Tambah Tujuan',
+            _isEditing ? l10n.editGoal : l10n.addTarget,
             style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary),
           ),
           const SizedBox(height: 16),
           Text(
-            'NAMA TUJUAN',
+            l10n.goalName,
             style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
           ),
           const SizedBox(height: 8),
@@ -96,13 +98,13 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
             controller: _nameCtrl,
             style: GoogleFonts.inter(color: colors.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Contoh: Dana Darurat',
+              hintText: Localizations.localeOf(context).languageCode == 'id' ? 'mis. Dana Darurat' : 'e.g. Emergency Fund',
               prefixIcon: Icon(Icons.flag_outlined, color: colors.textSecondary),
             ),
           ),
           const SizedBox(height: 16),
           Text(
-            'TARGET NOMINAL',
+            l10n.amount.toUpperCase(),
             style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
           ),
           const SizedBox(height: 8),
@@ -119,7 +121,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
           ),
           const SizedBox(height: 16),
           Text(
-            'CATATAN',
+            l10n.note.toUpperCase(),
             style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
           ),
           const SizedBox(height: 8),
@@ -127,7 +129,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
             controller: _noteCtrl,
             style: GoogleFonts.inter(color: colors.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Opsional',
+              hintText: l10n.optional,
               prefixIcon: Icon(Icons.note_outlined, color: colors.textSecondary),
             ),
             maxLines: 2,
@@ -141,9 +143,9 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
             ),
             child: ListTile(
               leading: const Icon(Icons.calendar_today_outlined, color: AppColors.gold, size: 20),
-              title: Text('Tanggal Mulai', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+              title: Text(l10n.startDate, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
               subtitle: Text(
-                DateFormat('dd MMMM yyyy').format(_startDate),
+                DateFormat('dd MMMM yyyy', Localizations.localeOf(context).languageCode).format(_startDate),
                 style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
               ),
               trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
@@ -165,11 +167,11 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
             ),
             child: ListTile(
               leading: const Icon(Icons.event_outlined, color: AppColors.gold, size: 20),
-              title: Text('Target Selesai', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+              title: Text(l10n.targetDate, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
               subtitle: Text(
                 _targetDate != null
-                    ? DateFormat('dd MMMM yyyy').format(_targetDate!)
-                    : 'Belum ditentukan',
+                    ? DateFormat('dd MMMM yyyy', Localizations.localeOf(context).languageCode).format(_targetDate!)
+                    : l10n.notSet,
                 style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
               ),
               trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
@@ -180,6 +182,21 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
                 );
                 if (picked != null && context.mounted) setState(() => _targetDate = picked);
               },
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colors.border),
+            ),
+            child: SwitchListTile(
+              value: _isPriority,
+              onChanged: (val) => setState(() => _isPriority = val),
+              title: Text(l10n.priority, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+              subtitle: Text(l10n.prioritySubtitle, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
+              activeTrackColor: AppColors.gold,
             ),
           ),
           const SizedBox(height: 16),
@@ -214,7 +231,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
                       child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                     )
                   : Text(
-                      _isEditing ? l10n.saveChanges : 'Simpan Tujuan',
+                      _isEditing ? l10n.saveChanges : l10n.saveGoal,
                       style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                     ),
             ),
@@ -259,6 +276,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
           targetAmount: target,
           startDate: _startDate,
           targetDate: _targetDate,
+          isPriority: _isPriority,
           note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
           linkedAccountId: widget.edit!.linkedAccountId ?? pocket.id,
           updatedAt: now,
@@ -280,6 +298,7 @@ class _GoalFormSheetState extends ConsumerState<GoalFormSheet> {
           linkedAccountId: pocket.id,
           startDate: _startDate,
           targetDate: _targetDate,
+          isPriority: _isPriority,
           note: _noteCtrl.text.isNotEmpty ? _noteCtrl.text : null,
           createdAt: now,
           updatedAt: now,

@@ -20,18 +20,26 @@ class AccountsDao extends DatabaseAccessor<AppDatabase>
   Future<int> deleteAccount(String id) =>
       (delete(accountsTable)..where((a) => a.id.equals(id))).go();
 
-  Future<List<Account>> getAllAccounts() => select(accountsTable).get();
+  Future<List<Account>> getAllAccounts() =>
+      (select(accountsTable)..orderBy([(a) => OrderingTerm.asc(a.sortOrder)])).get();
 
   Future<List<Account>> getActiveAccounts() =>
-      (select(accountsTable)..where((a) => a.isArchived.equals(false))).get();
+      (select(accountsTable)
+        ..where((a) => a.isArchived.equals(false))
+        ..orderBy([(a) => OrderingTerm.asc(a.sortOrder)]))
+      .get();
 
   Future<Account?> getAccountById(String id) =>
       (select(accountsTable)..where((a) => a.id.equals(id))).getSingleOrNull();
 
-  Stream<List<Account>> watchAllAccounts() => select(accountsTable).watch();
+  Stream<List<Account>> watchAllAccounts() =>
+      (select(accountsTable)..orderBy([(a) => OrderingTerm.asc(a.sortOrder)])).watch();
 
   Stream<List<Account>> watchActiveAccounts() =>
-      (select(accountsTable)..where((a) => a.isArchived.equals(false))).watch();
+      (select(accountsTable)
+        ..where((a) => a.isArchived.equals(false))
+        ..orderBy([(a) => OrderingTerm.asc(a.sortOrder)]))
+      .watch();
 
   Stream<Account?> watchAccountById(String id) =>
       (select(accountsTable)..where((a) => a.id.equals(id)))
@@ -43,13 +51,13 @@ class AccountsDao extends DatabaseAccessor<AppDatabase>
 
   Future<void> updateSortOrders(List<({String id, int sortOrder})> orders) async {
     await batch((b) {
-      b.replaceAll(
-        accountsTable,
-        orders.map((o) => AccountsTableCompanion(
-              id: Value(o.id),
-              sortOrder: Value(o.sortOrder),
-            )),
-      );
+      for (final o in orders) {
+        b.update(
+          accountsTable,
+          AccountsTableCompanion(sortOrder: Value(o.sortOrder)),
+          where: (a) => a.id.equals(o.id),
+        );
+      }
     });
   }
 }

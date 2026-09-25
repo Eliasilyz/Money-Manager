@@ -59,15 +59,21 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
           final active = sorted.where((a) => !a.isArchived).toList();
           final archived = sorted.where((a) => a.isArchived).toList();
 
-          return ReorderableListView(
+          return ListView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-            onReorderItem: (movedKey, newIndex) => _onReorderItem(active, movedKey as String, newIndex),
             children: [
               if (active.isNotEmpty) ...[
                 _sectionHeader(l10n.activeAccounts, active.length, colors, l10n),
-                ...active.map((a) => _accountTile(a, transactions, colors, l10n)),
+                ReorderableListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: active.length,
+                  onReorderItem: (oldIdx, newIdx) => _onReorderItem(active, oldIdx, newIdx),
+                  itemBuilder: (ctx, index) => _accountTile(active[index], transactions, colors, l10n),
+                ),
               ],
               if (archived.isNotEmpty) ...[
+                const SizedBox(height: 16),
                 _sectionHeader(l10n.archivedAccounts, archived.length, colors, l10n),
                 ...archived.map((a) => _accountTile(a, transactions, colors, l10n)),
               ],
@@ -80,14 +86,14 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
     );
   }
 
-  void _onReorderItem(List<Account> active, String movedKey, int newIndex) {
-    final oldIndex = active.indexWhere((a) => a.id == movedKey);
-    if (oldIndex == -1 || oldIndex == newIndex) return;
-    final moved = active.removeAt(oldIndex);
-    active.insert(newIndex, moved);
+  void _onReorderItem(List<Account> activeList, int oldIndex, int newIndex) {
+    if (oldIndex < 0 || oldIndex >= activeList.length || newIndex < 0 || newIndex >= activeList.length) return;
+    final item = activeList.removeAt(oldIndex);
+    activeList.insert(newIndex, item);
+
     final orders = <({String id, int sortOrder})>[];
-    for (var i = 0; i < active.length; i++) {
-      orders.add((id: active[i].id, sortOrder: i));
+    for (var i = 0; i < activeList.length; i++) {
+      orders.add((id: activeList[i].id, sortOrder: i));
     }
     ref.read(accountsNotifierProvider.notifier).updateSortOrders(orders);
   }
@@ -267,7 +273,7 @@ class _ManageAccountsScreenState extends ConsumerState<ManageAccountsScreen> {
             TextField(
               controller: targetCtrl,
               keyboardType: TextInputType.number,
-              style: GoogleFonts.jetBrainsMono(fontSize: 18),
+              style: GoogleFonts.jetBrainsMono(fontSize: 18, color: colors.textPrimary),
               autofocus: true,
               decoration: const InputDecoration(prefixText: 'Rp '),
             ),

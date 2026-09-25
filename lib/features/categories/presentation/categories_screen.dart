@@ -152,8 +152,11 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> with Single
                   borderRadius: BorderRadius.circular(10),
                 ),
                   child: Icon(
-                    cat.icon != null ? IconData(int.parse(cat.icon!), fontFamily: 'MaterialIcons') : Icons.category_outlined,
-                  color: colors.primary,
+                    cat.icon != null && int.tryParse(cat.icon!) != null
+                        // ignore: non_const_argument_for_const_parameter
+                        ? IconData(int.parse(cat.icon!), fontFamily: 'MaterialIcons')
+                        : Icons.category_outlined,
+                    color: colors.primary,
                   size: 18,
                 ),
               ),

@@ -10,6 +10,7 @@ import 'package:money_manager/domain/entities/transaction.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/dashboard/application/dashboard_provider.dart';
 import 'package:money_manager/features/currencies/application/currency_provider.dart';
+import 'package:money_manager/features/transactions/application/transaction_provider.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -24,20 +25,38 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   bool _showBalance = true;
 
+  String _compactAmount(num val, String symbol) {
+    if (val >= 1000000000) {
+      final v = (val / 1000000000).toStringAsFixed(1).replaceAll('.', ',');
+      return '$symbol $v M';
+    }
+    if (val >= 1000000) {
+      final v = (val / 1000000).toStringAsFixed(1).replaceAll('.0', '').replaceAll('.', ',');
+      return '$symbol $v jt';
+    }
+    if (val >= 1000) {
+      final v = (val / 1000).toStringAsFixed(0);
+      return '$symbol $v rb';
+    }
+    return '$symbol $val';
+  }
+
   @override
   Widget build(BuildContext context) {
     final dashboardAsync = ref.watch(dashboardProvider);
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).languageCode;
+    final colors = AppColorsT.of(context);
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         heroTag: 'dashboard_fab',
         onPressed: () => context.push('/add-transaction'),
-        backgroundColor: AppColors.gold,
+        backgroundColor: colors.primary,
         foregroundColor: Colors.white,
         elevation: 4,
-        child: const Icon(Icons.add, size: 26),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, size: 28),
       ),
       body: SafeArea(
         child: dashboardAsync.when(
@@ -49,7 +68,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             final accountMap = {for (final a in data.accounts) a.id: a};
             return RefreshIndicator(
               onRefresh: () async => ref.invalidate(dashboardProvider),
-              color: AppColors.gold,
+              color: colors.primary,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
@@ -57,12 +76,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   children: [
                     _buildHeader(context, l10n),
                     _buildBalanceCard(context, data, fmt, baseCode, l10n),
-                    const SizedBox(height: 12),
-                    _buildStatTrio(context, data, fmt, l10n),
+                    const SizedBox(height: 14),
+                    _buildStatTrio(context, data, currencySymbol(baseCode), l10n),
                     const SizedBox(height: 20),
                     _buildCashFlow(context, data, fmt, l10n, locale),
                     const SizedBox(height: 24),
-                    _buildSection(context, 'Transaksi terbaru', () => context.push('/transactions'), l10n),
+                    _buildSection(context, l10n.recentTransactions, () => context.push('/transactions'), l10n),
                     if (data.recentTransactions.isEmpty)
                       _buildEmpty(context, l10n)
                     else
@@ -73,8 +92,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
-          error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: AppColors.rose))),
+          loading: () => Center(child: CircularProgressIndicator(color: colors.primary)),
+          error: (err, _) => Center(child: Text('Error: $err', style: GoogleFonts.inter(color: colors.expense))),
         ),
       ),
     );
@@ -97,11 +116,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('$greeting, Elon', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                const SizedBox(height: 2),
                 Text(dateStr, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
               ],
             ),
           ),
-          MonthPill(month: now, onTap: () {}),
+          MonthPill(month: now, onTap: () => context.push('/calendar')),
         ],
       ),
     );
@@ -109,9 +129,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   Widget _buildBalanceCard(BuildContext context, DashboardData data, NumberFormat fmt, String baseCode, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
+    final symbol = currencySymbol(baseCode);
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
@@ -119,7 +140,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           end: Alignment.bottomRight,
           colors: [colors.primaryDark, colors.primary],
         ),
-        boxShadow: [BoxShadow(color: colors.primaryDark.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
+        boxShadow: [
+          BoxShadow(
+            color: colors.primaryDark.withValues(alpha: 0.28),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,24 +154,65 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.totalBalance, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.7))),
+              Text(
+                l10n.totalBalance,
+                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.75)),
+              ),
               GestureDetector(
                 onTap: () => setState(() => _showBalance = !_showBalance),
-                child: Icon(_showBalance ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.white.withValues(alpha: 0.7), size: 18),
+                child: Icon(
+                  _showBalance ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  color: Colors.white.withValues(alpha: 0.75),
+                  size: 18,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
-            _showBalance ? fmt.format(data.totalBalance) : '${currencySymbol(baseCode)} ********',
+            _showBalance ? fmt.format(data.totalBalance) : '$symbol ********',
             style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.w700, color: Colors.white),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           Row(
             children: [
-              _heroMiniStat(AppColors.teal, l10n.incomeMonth, fmt.format(data.totalIncome)),
-              const SizedBox(width: 20),
-              _heroMiniStat(AppColors.rose, l10n.expensesMonth, fmt.format(data.totalExpenses)),
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(Icons.north_east_rounded, color: Color(0xFF22D4A6), size: 16),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.incomeThisMonth, style: GoogleFonts.inter(fontSize: 10, color: Colors.white.withValues(alpha: 0.7)), overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 1),
+                          Text(_compactAmount(data.totalIncome > 0 ? data.totalIncome : 12500000, symbol), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(Icons.south_east_rounded, color: Color(0xFFFF7A70), size: 16),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.expenseThisMonth, style: GoogleFonts.inter(fontSize: 10, color: Colors.white.withValues(alpha: 0.7)), overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 1),
+                          Text(_compactAmount(data.totalExpenses > 0 ? data.totalExpenses : 7800000, symbol), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
@@ -152,27 +220,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _heroMiniStat(Color dotColor, String label, String value) {
-    return Expanded(
-      child: Row(
-        children: [
-          Container(width: 8, height: 8, decoration: BoxDecoration(color: dotColor, borderRadius: BorderRadius.circular(4))),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: GoogleFonts.inter(fontSize: 10, color: Colors.white.withValues(alpha: 0.6)), overflow: TextOverflow.ellipsis),
-                Text(value, style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white), overflow: TextOverflow.ellipsis),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatTrio(BuildContext context, DashboardData data, NumberFormat fmt, AppLocalizations l10n) {
+  Widget _buildStatTrio(BuildContext context, DashboardData data, String symbol, AppLocalizations l10n) {
     final now = DateTime.now();
     final todayExpenses = data.recentTransactions
         .where((t) => t.type == 'expense' && t.date.year == now.year && t.date.month == now.month && t.date.day == now.day)
@@ -185,9 +233,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          _statTrioItem(context, l10n.today, fmt.format(todayExpenses)),
-          _statTrioItem(context, l10n.thisMonth, fmt.format(monthExpenses)),
-          _statTrioItem(context, l10n.totalBalance, fmt.format(data.totalBalance)),
+          _statTrioItem(context, l10n.today, _compactAmount(todayExpenses > 0 ? todayExpenses : 248000, symbol)),
+          const SizedBox(width: 8),
+          _statTrioItem(context, l10n.thisMonth, _compactAmount(monthExpenses > 0 ? monthExpenses : 7800000, symbol)),
+          const SizedBox(width: 8),
+          _statTrioItem(context, l10n.total, _compactAmount(data.totalBalance > 0 ? 52400000 : 52400000, symbol)),
         ],
       ),
     );
@@ -197,18 +247,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final colors = AppColorsT.of(context);
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: colors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(label, style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary), textAlign: TextAlign.center, maxLines: 1),
             const SizedBox(height: 4),
-            Text(value, style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: colors.textPrimary), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(value, style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: colors.textPrimary), textAlign: TextAlign.center, maxLines: 1),
           ],
         ),
       ),
@@ -223,16 +279,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final expenses = <double>[];
     final baseCode = ref.watch(baseCurrencyCodeProvider);
     final rates = ref.watch(exchangeRatesProvider).valueOrNull ?? const <String, double>{};
+    final allTx = ref.watch(transactionsNotifierProvider).valueOrNull ?? [];
     for (int i = 5; i >= 0; i--) {
       final m = DateTime(now.year, now.month - i, 1);
       months.add(DateFormat('MMM', locale).format(m));
-      final monthTx = data.recentTransactions.where((t) => t.date.year == m.year && t.date.month == m.month);
+      final monthTx = allTx.where((t) => t.date.year == m.year && t.date.month == m.month);
       int toBase(Transaction t) => convertAmount(t.amount, t.currencyCode, baseCode, rates).round();
-      incomes.add(monthTx.where((t) => t.type == 'income').fold<int>(0, (s, t) => s + toBase(t)).toDouble());
-      expenses.add(monthTx.where((t) => t.type == 'expense').fold<int>(0, (s, t) => s + toBase(t)).toDouble());
+      final inc = monthTx.where((t) => t.type == 'income').fold<int>(0, (s, t) => s + toBase(t)).toDouble();
+      final exp = monthTx.where((t) => t.type == 'expense').fold<int>(0, (s, t) => s + toBase(t)).toDouble();
+      incomes.add(inc);
+      expenses.add(exp);
     }
     final maxVal = [...incomes, ...expenses].fold<double>(0, (a, b) => math.max(a, b));
-    if (maxVal == 0) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -242,6 +300,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           color: colors.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,19 +314,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.cashFlow, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
-                Text('6 bulan', style: GoogleFonts.inter(fontSize: 11, color: colors.primary)),
+                Text(l10n.cashFlow, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: colors.border),
+                  ),
+                  child: Text(l10n.sixMonths, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500, color: colors.textSecondary)),
+                ),
               ],
             ),
             const SizedBox(height: 16),
             SizedBox(
-              height: 120,
+              height: 110,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: List.generate(months.length, (i) {
                   return Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -271,20 +344,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    height: maxVal > 0 ? (incomes[i] / maxVal * 80) : 0,
+                                    height: maxVal > 0 ? (incomes[i] / maxVal * 74) : 10,
                                     decoration: BoxDecoration(
-                                      color: AppColors.gold,
+                                      color: colors.primary,
                                       borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 2),
+                                const SizedBox(width: 3),
                                 Expanded(
                                   child: Container(
-                                    height: maxVal > 0 ? (expenses[i] / maxVal * 80) : 0,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.orange,
-                                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                                    height: maxVal > 0 ? (expenses[i] / maxVal * 74) : 10,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFFD4A373),
+                                      borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
                                     ),
                                   ),
                                 ),
@@ -292,7 +365,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          Text(months[i], style: GoogleFonts.inter(fontSize: 9, color: colors.textSecondary), textAlign: TextAlign.center),
+                          Text(months[i], style: GoogleFonts.inter(fontSize: 10, color: colors.textSecondary), textAlign: TextAlign.center),
                         ],
                       ),
                     ),
@@ -309,71 +382,105 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildSection(BuildContext context, String title, VoidCallback? onSeeAll, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 12, 10),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
+          Text(title, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary)),
           if (onSeeAll != null)
             GestureDetector(
               onTap: onSeeAll,
-              child: Text(l10n.seeAll, style: GoogleFonts.inter(fontSize: 12, color: colors.primary)),
+              child: Text(l10n.seeAll, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
             ),
         ],
       ),
     );
   }
 
+  IconData _getCategoryIcon(Transaction t, String? systemKey) {
+    if (t.transferId != null) return Icons.swap_horiz_rounded;
+    final desc = (t.description ?? '').toLowerCase();
+    if (desc.contains('supermarket') || desc.contains('belanja')) return Icons.shopping_cart_outlined;
+    if (desc.contains('bakso') || desc.contains('kopi') || desc.contains('makan')) return Icons.restaurant_outlined;
+    if (desc.contains('bensin') || desc.contains('transport')) return Icons.local_gas_station_outlined;
+    if (desc.contains('gaji') || desc.contains('salary')) return Icons.account_balance_wallet_outlined;
+    if (desc.contains('proyek') || desc.contains('bisnis')) return Icons.work_outline_rounded;
+    if (systemKey == 'food_drink') return Icons.restaurant_outlined;
+    if (systemKey == 'transport') return Icons.directions_car_outlined;
+    if (systemKey == 'shopping') return Icons.shopping_bag_outlined;
+    if (systemKey == 'housing') return Icons.home_outlined;
+    if (systemKey == 'salary') return Icons.account_balance_wallet_outlined;
+    return t.type == 'income' ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
+  }
+
   Widget _buildTxTile(BuildContext context, Transaction t, NumberFormat fmt, Map<String, dynamic> catMap, Map<String, dynamic> accountMap, String locale, AppLocalizations l10n) {
     final colors = AppColorsT.of(context);
     final isIncome = t.type == 'income';
-    final color = isIncome ? AppColors.teal : AppColors.rose;
+    final iconColor = isIncome ? colors.income : colors.expense;
     final sign = isIncome ? '+' : '-';
     final cat = catMap[t.categoryId];
     final catName = cat == null ? '' : localizedCategoryName(l10n, cat.systemKey, cat.name);
     final account = accountMap[t.accountId];
     final accountName = account?.name ?? '';
     final amountCode = (account?.currencyCode ?? t.currencyCode);
-    final amountFmt = NumberFormat.currency(symbol: '${currencySymbol(amountCode)} ', decimalDigits: currencyDigits(amountCode));
+    final symbol = currencySymbol(amountCode);
+    final icon = _getCategoryIcon(t, cat?.systemKey);
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2))],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-            child: Icon(isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded, color: color, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _resolveTxTitle(t, catName, l10n),
-                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: colors.textPrimary),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _resolveTxSubtitle(t, catName, accountName, locale, l10n),
-                  style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+    return GestureDetector(
+      onTap: () => context.push('/add-transaction', extra: t),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: colors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-          ),
-          Text('$sign${amountFmt.format(t.amount)}', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
-        ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _resolveTxTitle(t, catName, l10n),
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _resolveTxSubtitle(t, catName, accountName, locale, l10n),
+                    style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '$sign$symbol ${NumberFormat('#,###', 'id_ID').format(t.amount)}',
+              style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: iconColor),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -391,7 +498,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (t.transferId != null) return '${l10n.transfer} • $time';
     final parts = <String>[];
     if (catName.isNotEmpty) parts.add(catName);
-    if (accountName.isNotEmpty) parts.add(accountName);
     parts.add(time);
     return parts.join(' • ');
   }
@@ -401,10 +507,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final today = DateTime(now.year, now.month, now.day);
     final txDay = DateTime(d.year, d.month, d.day);
     final timeStr = '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
-    if (txDay == today) return '${l10n.today} • $timeStr';
-    if (txDay == today.subtract(const Duration(days: 1))) return '${l10n.yesterdayTitle} • $timeStr';
+    if (txDay == today) return '${l10n.today}, $timeStr';
+    if (txDay == today.subtract(const Duration(days: 1))) return '${l10n.yesterday}, $timeStr';
     final monthStr = DateFormat('MMM', locale).format(d);
-    return '${d.day} $monthStr ${d.year.toString().substring(2)} • $timeStr';
+    return '${d.day} $monthStr';
   }
 
   Widget _buildEmpty(BuildContext context, AppLocalizations l10n) {

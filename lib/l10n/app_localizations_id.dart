@@ -1143,4 +1143,282 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get categoryDefaultTransfer => 'Transfer';
+
+  @override
+  String get allFinancialActivity => 'Semua aktivitas keuangan';
+
+  @override
+  String get manageCategories => 'Kelola Kategori';
+
+  @override
+  String get financialNotes => 'Catatan Keuangan';
+
+  @override
+  String get searchTransactionsHint => 'Cari transaksi atau catatan...';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get filterTransactionsTitle => 'Filter Transaksi';
+
+  @override
+  String get totalIncome => 'Total pemasukan';
+
+  @override
+  String get totalExpenses => 'Total pengeluaran';
+
+  @override
+  String get transactionDetails => 'Detail transaksi';
+
+  @override
+  String get todayBalance => 'Saldo hari ini';
+
+  @override
+  String aboutVersion(Object build, Object version) {
+    return 'Versi $version (Build $build)';
+  }
+
+  @override
+  String get aboutDesc =>
+      'Aplikasi manajemen keuangan pribadi yang membantu Anda melacak transaksi, anggaran, dompet, transaksi berulang, serta impian finansial Anda secara aman & privat.';
+
+  @override
+  String get developer => 'Pengembang';
+
+  @override
+  String get license => 'Lisensi';
+
+  @override
+  String get supportDeveloper => 'Dukung Pengembang (Donasi)';
+
+  @override
+  String get upcoming30Days => 'Akan datang (30 hari)';
+
+  @override
+  String itemsCount(Object count) {
+    return '$count item';
+  }
+
+  @override
+  String get goalName => 'NAMA TUJUAN';
+
+  @override
+  String get targetDate => 'Target Selesai';
+
+  @override
+  String get notSet => 'Belum ditentukan';
+
+  @override
+  String get prioritySubtitle => 'Tampilkan di paling atas halaman Impian';
+
+  @override
+  String get saveGoal => 'Simpan Tujuan';
+
+  @override
+  String get recentTransactions => 'Transaksi terbaru';
+
+  @override
+  String get incomeThisMonth => 'Pemasukan bulan ini';
+
+  @override
+  String get expenseThisMonth => 'Pengeluaran bulan ini';
+
+  @override
+  String get sixMonths => '6 bulan';
+
+  @override
+  String get yesterday => 'Kemarin';
+
+  @override
+  String get goals => 'Target';
+
+  @override
+  String get budgetAmount => 'JUMLAH ANGGARAN';
+
+  @override
+  String get period => 'Periode';
+
+  @override
+  String get saveBudget => 'Simpan Anggaran';
+
+  @override
+  String get negative => 'Negatif';
+
+  @override
+  String accountHistoryOf(Object name) {
+    return 'Riwayat $name';
+  }
+
+  @override
+  String activeCount(Object count) {
+    return '$count aktif';
+  }
+
+  @override
+  String get quickAccess => 'Akses cepat';
+
+  @override
+  String get manageCategoriesSubtitle => 'Kelola kategori transaksi';
+
+  @override
+  String get addNotesSubtitle => 'Tambah catatan transaksi';
+
+  @override
+  String get last6Months => '6 bulan terakhir';
+
+  @override
+  String get categoryDistribution => 'Distribusi per kategori';
+
+  @override
+  String get positiveTrend => 'Tren positif';
+
+  @override
+  String trendPosTip(Object month, Object pct) {
+    return 'Pengeluaran bulan ini turun $pct% dibanding $month. Pertahankan!';
+  }
+
+  @override
+  String get trendKeepMonitoring =>
+      'Pantau terus pengeluaran untuk mencapai target keuanganmu.';
+
+  @override
+  String get hintTransactionNote => 'Makan malam bersama tim...';
+
+  @override
+  String get selectDestinationAccount => 'Pilih Akun Tujuan';
+
+  @override
+  String get confirmDeleteTransaction =>
+      'Apakah Anda yakin ingin menghapus transaksi ini?';
+
+  @override
+  String get enterTransactionAmount => 'Masukkan jumlah transaksi';
+
+  @override
+  String get selectAccountFirst => 'Pilih akun terlebih dahulu';
+
+  @override
+  String get selectDestinationAccountFirst =>
+      'Pilih akun tujuan untuk transfer';
+
+  @override
+  String get deleteTransaction => 'Hapus Transaksi';
+
+  @override
+  String trendVsLastMonth(Object lastMonth, Object percent) {
+    return '$percent% dibanding $lastMonth';
+  }
+
+  @override
+  String get noRecurringTransactions => 'Belum ada transaksi berulang';
+
+  @override
+  String get tapAddRecurring => 'Tap \"+ Tambah\" untuk menambahkan';
+
+  @override
+  String renewInDays(Object count) {
+    return 'Perpanjang dalam $count hari';
+  }
+
+  @override
+  String get budgetRemainingThisMonth => 'Sisa anggaran bulan ini';
+
+  @override
+  String budgetAttentionWarning(Object name, Object pct) {
+    return 'Anggaran $name sudah mencapai $pct% dari batas bulanan.';
+  }
+
+  @override
+  String pocketLabel(Object balance, Object name) {
+    return 'Kantong $name • $balance';
+  }
+
+  @override
+  String get deposit => 'Setor';
+
+  @override
+  String pocketName(Object name) {
+    return 'Kantong $name';
+  }
+
+  @override
+  String get monthlyFinancialPlan => 'Rencana keuangan bulanan';
+
+  @override
+  String get realizeYourDreams => 'Wujudkan impianmu';
+
+  @override
+  String get manageDebtsAndReceivables => 'Kelola utang piutang';
+
+  @override
+  String progressPercentOfTarget(Object pct) {
+    return '$pct% dari target';
+  }
+
+  @override
+  String get noSavingsGoals => 'Belum ada target tabungan';
+
+  @override
+  String get tapAddGoal => 'Tap \"+ Tambah\" untuk membuat target';
+
+  @override
+  String get noActiveDebts => 'Tidak ada hutang aktif';
+
+  @override
+  String get debtList => 'Daftar hutang';
+
+  @override
+  String dueDateWithDate(Object date) {
+    return 'Jatuh tempo: $date';
+  }
+
+  @override
+  String get addDebtTitle => 'Tambah Utang/Piutang';
+
+  @override
+  String get nameLabel => 'NAMA';
+
+  @override
+  String get personNameHint => 'Contoh: Budi';
+
+  @override
+  String get dueDateTitle => 'Jatuh Tempo';
+
+  @override
+  String get saveDebt => 'Simpan Utang/Piutang';
+
+  @override
+  String get fillNameAndAmount => 'Isi nama dan nominal';
+
+  @override
+  String get attentionNeeded => 'Perlu perhatian';
+
+  @override
+  String get financialInsight => 'Insight keuangan';
+
+  @override
+  String trendExpenseIncreaseTip(Object month, Object pct) {
+    return 'Pengeluaran bulan ini naik $pct% dibanding $month. Perhatikan anggaranmu!';
+  }
+
+  @override
+  String trendIncomeIncreaseTip(Object month, Object pct) {
+    return 'Pemasukan bulan ini naik $pct% dibanding $month. Kerja bagus!';
+  }
+
+  @override
+  String trendIncomeDecreaseTip(Object month, Object pct) {
+    return 'Pemasukan bulan ini turun $pct% dibanding $month.';
+  }
+
+  @override
+  String trendCashFlowIncreaseTip(Object month, Object pct) {
+    return 'Arus kas bulan ini meningkat $pct% dibanding $month.';
+  }
+
+  @override
+  String trendCashFlowDecreaseTip(Object month, Object pct) {
+    return 'Arus kas bulan ini menurun $pct% dibanding $month.';
+  }
 }

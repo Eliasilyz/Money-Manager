@@ -96,7 +96,7 @@ class SettingsScreen extends ConsumerWidget {
             Text(l10n.helpAndInfo, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.info_outline, l10n.aboutApp, 'Money Manager • ${l10n.version}', () {}),
+              _tile(context, Icons.info_outline, l10n.aboutApp, 'Money Manager • ${l10n.version}', () => _showAboutBottomSheet(context, colors, l10n)),
             ]),
             if (AppLinks.showDonation) ...[
               const SizedBox(height: 12),
@@ -294,6 +294,104 @@ class SettingsScreen extends ConsumerWidget {
         style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary),
         textAlign: TextAlign.center,
       ),
+    );
+  }
+
+  void _showAboutBottomSheet(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: colors.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: colors.border, borderRadius: BorderRadius.circular(2))),
+              const SizedBox(height: 20),
+              Container(
+                width: 64, height: 64,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [colors.primary, colors.primaryDark]),
+                  shape: BoxShape.circle,
+                  boxShadow: [BoxShadow(color: colors.primary.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4))],
+                ),
+                child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 32),
+              ),
+              const SizedBox(height: 14),
+              Text('Money Manager', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w700, color: colors.textPrimary)),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(color: colors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                child: Text(l10n.aboutVersion('2.4.0', '2026'), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.aboutDesc,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary, height: 1.4),
+              ),
+              const SizedBox(height: 20),
+              Divider(color: colors.border),
+              const SizedBox(height: 12),
+              _aboutInfoRow(l10n.developer, 'Farel Hanafi', Icons.person_outline, colors),
+              const SizedBox(height: 10),
+              _aboutInfoRow(l10n.license, 'MIT License • Open Source', Icons.verified_user_outlined, colors),
+              const SizedBox(height: 16),
+              if (AppLinks.showDonation) ...[
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      final uri = Uri.parse(AppLinks.donationUrl);
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colors.expense,
+                      side: BorderSide(color: colors.expense),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    icon: const Icon(Icons.favorite, size: 18),
+                    label: Text(l10n.supportDeveloper, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(l10n.close, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _aboutInfoRow(String label, String value, IconData icon, AppColorsT colors) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: colors.primary),
+        const SizedBox(width: 10),
+        Text(label, style: GoogleFonts.inter(fontSize: 13, color: colors.textSecondary)),
+        const Spacer(),
+        Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary)),
+      ],
     );
   }
 }

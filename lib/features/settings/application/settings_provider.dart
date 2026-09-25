@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:money_manager/core/constants/app_constants.dart';
 import 'package:money_manager/features/settings/application/notification_service.dart';
+import 'package:money_manager/theme/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final settingsServiceProvider = Provider((ref) => SettingsService());
@@ -92,6 +93,19 @@ class SettingsService {
   Future<bool> getNotifBackup() async => (await _prefs).getBool(_notifBackupKey) ?? true;
   Future<void> saveNotifBackup(bool v) async => (await _prefs).setBool(_notifBackupKey, v);
   Future<String> getNotifDailyTime() async => (await _prefs).getString(_notifDailyTimeKey) ?? '19:00';
+  static const _themePresetKey = 'theme_preset';
+
+  Future<AppThemePreset> getThemePreset() async {
+    final prefs = await _prefs;
+    final v = prefs.getString(_themePresetKey);
+    return AppThemePreset.fromId(v);
+  }
+
+  Future<void> saveThemePreset(AppThemePreset preset) async {
+    final prefs = await _prefs;
+    await prefs.setString(_themePresetKey, preset.id);
+  }
+
   Future<void> saveNotifDailyTime(String v) async => (await _prefs).setString(_notifDailyTimeKey, v);
 
   Future<String> getBaseCurrencyCode() async =>
@@ -100,6 +114,7 @@ class SettingsService {
 }
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+final themePresetProvider = StateProvider<AppThemePreset>((ref) => AppThemePreset.emerald);
 final localeProvider = StateProvider<Locale>((ref) => const Locale('id'));
 final notificationsEnabledProvider = StateProvider<bool>((ref) => false);
 final notifRecurringProvider = StateProvider<bool>((ref) => true);
@@ -115,9 +130,11 @@ final notificationServiceProvider = Provider<NotificationService>((ref) => Notif
 final settingsInitProvider = FutureProvider<void>((ref) async {
   final service = ref.read(settingsServiceProvider);
   final tm = await service.getThemeMode();
+  final preset = await service.getThemePreset();
   final loc = await service.getLocale();
   final notif = await service.getNotificationsEnabled();
   ref.read(themeModeProvider.notifier).state = tm;
+  ref.read(themePresetProvider.notifier).state = preset;
   ref.read(localeProvider.notifier).state = loc;
   ref.read(notificationsEnabledProvider.notifier).state = notif;
   ref.read(notifRecurringProvider.notifier).state = await service.getNotifRecurring();
