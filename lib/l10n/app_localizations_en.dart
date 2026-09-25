@@ -80,7 +80,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get addAccount => '+ Add Account';
+  String get addAccount => 'Add Account';
 
   @override
   String get noAccounts => 'No accounts yet';
@@ -596,6 +596,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restoreWarning => 'Current data will be replaced.';
+
+  @override
+  String get googleDriveTitle => 'Google Drive';
+
+  @override
+  String googleDriveConnected(Object email) {
+    return 'Connected as $email';
+  }
+
+  @override
+  String get driveBackupsTitle => 'Google Drive Backups';
+
+  @override
+  String get loadingDriveBackups => 'Loading backups...';
+
+  @override
+  String get noDriveBackups => 'No backup files found on Google Drive';
+
+  @override
+  String get deleteDriveBackupTitle => 'Delete Drive Backup?';
+
+  @override
+  String deleteDriveBackupConfirm(Object name) {
+    return 'Backup file \"$name\" will be deleted from Google Drive.';
+  }
+
+  @override
+  String get backupSuccess => 'Backup to Google Drive completed!';
+
+  @override
+  String get backupProgress => 'Uploading backup to Google Drive...';
+
+  @override
+  String get restoreProgress => 'Restoring data from Google Drive...';
+
+  @override
+  String get enterBackupPassword => 'Enter Encryption Password';
+
+  @override
+  String get backupPasswordHint => 'Password (leave empty if not encrypted)';
+
+  @override
+  String get googleCloudSetupInfo => 'Cloud Console Guide';
+
+  @override
+  String get googleCloudSetupDesc =>
+      'Ensure Google Drive API and OAuth 2.0 Client ID (Package: id.eliasilyz.moneymanager) are configured at https://console.cloud.google.com/';
 
   @override
   String get version => 'Version';

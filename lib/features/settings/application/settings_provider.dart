@@ -108,6 +108,14 @@ class SettingsService {
 
   Future<void> saveNotifDailyTime(String v) async => (await _prefs).setString(_notifDailyTimeKey, v);
 
+  static const _backupIntervalKey = 'backup_interval';
+  static const _maxBackupsKey = 'max_backups';
+
+  Future<String> getBackupInterval() async => (await _prefs).getString(_backupIntervalKey) ?? 'Daily';
+  Future<void> saveBackupInterval(String v) async => (await _prefs).setString(_backupIntervalKey, v);
+  Future<int> getMaxBackups() async => (await _prefs).getInt(_maxBackupsKey) ?? 5;
+  Future<void> saveMaxBackups(int v) async => (await _prefs).setInt(_maxBackupsKey, v);
+
   Future<String> getBaseCurrencyCode() async =>
       (await _prefs).getString(_baseCurrencyKey) ?? AppConstants.defaultBaseCurrency;
   Future<void> saveBaseCurrencyCode(String v) async => (await _prefs).setString(_baseCurrencyKey, v);
@@ -124,6 +132,11 @@ final notifDailyProvider = StateProvider<bool>((ref) => true);
 final notifBackupProvider = StateProvider<bool>((ref) => true);
 final notifDailyTimeProvider = StateProvider<String>((ref) => '19:00');
 final baseCurrencyCodeProvider = StateProvider<String>((ref) => AppConstants.defaultBaseCurrency);
+
+final autoBackupProvider = StateProvider<bool>((ref) => false);
+final wifiOnlyProvider = StateProvider<bool>((ref) => true);
+final backupIntervalProvider = StateProvider<String>((ref) => 'Daily');
+final maxBackupsProvider = StateProvider<int>((ref) => 5);
 
 final notificationServiceProvider = Provider<NotificationService>((ref) => NotificationService());
 
@@ -144,7 +157,13 @@ final settingsInitProvider = FutureProvider<void>((ref) async {
   ref.read(notifBackupProvider.notifier).state = await service.getNotifBackup();
   ref.read(notifDailyTimeProvider.notifier).state = await service.getNotifDailyTime();
   ref.read(baseCurrencyCodeProvider.notifier).state = await service.getBaseCurrencyCode();
+
+  ref.read(autoBackupProvider.notifier).state = await service.getAutoBackup();
+  ref.read(wifiOnlyProvider.notifier).state = await service.getWifiOnly();
+  ref.read(backupIntervalProvider.notifier).state = await service.getBackupInterval();
+  ref.read(maxBackupsProvider.notifier).state = await service.getMaxBackups();
+
   if (notif) {
     await ref.read(notificationServiceProvider).scheduleDaily();
   }
-});
+});
