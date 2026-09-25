@@ -187,7 +187,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         children: [
                           Text(l10n.incomeThisMonth, style: GoogleFonts.inter(fontSize: 10, color: Colors.white.withValues(alpha: 0.7)), overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 1),
-                          Text(_compactAmount(data.totalIncome > 0 ? data.totalIncome : 12500000, symbol), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis),
+                          Text(_compactAmount(data.totalIncome, symbol), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis),
                         ],
                       ),
                     ),
@@ -206,7 +206,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         children: [
                           Text(l10n.expenseThisMonth, style: GoogleFonts.inter(fontSize: 10, color: Colors.white.withValues(alpha: 0.7)), overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 1),
-                          Text(_compactAmount(data.totalExpenses > 0 ? data.totalExpenses : 7800000, symbol), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis),
+                          Text(_compactAmount(data.totalExpenses, symbol), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white), overflow: TextOverflow.ellipsis),
                         ],
                       ),
                     ),
@@ -233,11 +233,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          _statTrioItem(context, l10n.today, _compactAmount(todayExpenses > 0 ? todayExpenses : 248000, symbol)),
+          _statTrioItem(context, l10n.today, _compactAmount(todayExpenses, symbol)),
           const SizedBox(width: 8),
-          _statTrioItem(context, l10n.thisMonth, _compactAmount(monthExpenses > 0 ? monthExpenses : 7800000, symbol)),
+          _statTrioItem(context, l10n.thisMonth, _compactAmount(monthExpenses, symbol)),
           const SizedBox(width: 8),
-          _statTrioItem(context, l10n.total, _compactAmount(data.totalBalance > 0 ? 52400000 : 52400000, symbol)),
+          _statTrioItem(context, l10n.total, _compactAmount(data.totalBalance, symbol)),
         ],
       ),
     );
