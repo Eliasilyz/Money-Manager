@@ -84,10 +84,10 @@ Money Manager follows a **Feature-First Clean Architecture** design pattern. Eac
 
 ```mermaid
 graph TD
-    UI[Presentation Layer: Screens & Widgets] -->|Consumes| Provider[Application Layer: Riverpod Providers & Services]
-    Provider -->|Calls| Repo[Domain / Data Layer: Repositories]
-    Repo -->|Queries| DAO[Database Layer: Drift DAOs]
-    DAO -->|Reads/Writes| SQLite[(Local SQLite Database)]
+    A[Presentation Layer] -- Consumes --> B[Riverpod Providers]
+    B -- Calls --> C[Repositories]
+    C -- Queries --> D[Drift DAOs]
+    D -- Reads/Writes --> E[(Local SQLite)]
 ```
 
 ### Folder Structure Overview
