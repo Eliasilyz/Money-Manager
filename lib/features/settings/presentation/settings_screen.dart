@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:money_manager/core/config/app_links.dart';
+import 'package:money_manager/core/constants/app_constants.dart';
 import 'package:money_manager/features/budgets/application/budget_provider.dart';
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/goals/application/goal_provider.dart';
@@ -99,7 +100,23 @@ class SettingsScreen extends ConsumerWidget {
             Text(l10n.helpAndInfo, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
             _buildSectionCard(context, [
-              _tile(context, Icons.info_outline, l10n.aboutApp, 'Money Manager • ${l10n.version}', () => _showAboutBottomSheet(context, colors, l10n)),
+              _tile(context, Icons.info_outline, l10n.aboutApp, 'Money Manager • v${AppConstants.appVersion}', () => _showAboutBottomSheet(context, colors, l10n)),
+              if (AppLinks.hasContactUrl) ...[
+                const Divider(height: 1),
+                _tile(context, Icons.mail_outline, l10n.contact, AppLinks.contactUrl.replaceFirst('mailto:', ''), () => _openExternalUrl(AppLinks.contactUrl)),
+              ],
+              if (AppLinks.hasPrivacyPolicy) ...[
+                const Divider(height: 1),
+                _tile(context, Icons.privacy_tip_outlined, l10n.privacyPolicy, l10n.privacyPolicy, () => _openExternalUrl(AppLinks.privacyPolicyUrl)),
+              ],
+              if (AppLinks.hasTermsOfService) ...[
+                const Divider(height: 1),
+                _tile(context, Icons.description_outlined, l10n.termsOfService, l10n.termsOfService, () => _openExternalUrl(AppLinks.termsOfServiceUrl)),
+              ],
+              if (AppLinks.hasRateApp) ...[
+                const Divider(height: 1),
+                _tile(context, Icons.star_outline, l10n.rateApp, l10n.rateApp, () => _openExternalUrl(AppLinks.rateAppUrl)),
+              ],
             ]),
             if (AppLinks.showDonation) ...[
               const SizedBox(height: 12),
@@ -321,6 +338,13 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _openExternalUrl(String urlString) async {
+    final uri = Uri.parse(urlString);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   Widget _buildDonationCard(BuildContext context, AppColorsT colors, AppLocalizations l10n) {
     return _buildSectionCard(context, [
       ListTile(
@@ -376,7 +400,7 @@ class SettingsScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(color: colors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                child: Text(l10n.aboutVersion('2.4.0', '2026'), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
+                child: Text(l10n.aboutVersion('1', AppConstants.appVersion), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: colors.primary)),
               ),
               const SizedBox(height: 16),
               Text(
@@ -387,9 +411,11 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 20),
               Divider(color: colors.border),
               const SizedBox(height: 12),
-              _aboutInfoRow(l10n.developer, 'Farel Hanafi', Icons.person_outline, colors),
-              const SizedBox(height: 10),
-              _aboutInfoRow(l10n.license, 'MIT License • Open Source', Icons.verified_user_outlined, colors),
+              if (AppLinks.hasDeveloperCredits) ...[
+                _aboutInfoRow(l10n.developer, AppLinks.developerName, Icons.person_outline, colors),
+                const SizedBox(height: 10),
+              ],
+              _aboutInfoRow(l10n.license, 'GNU AGPLv3 • Open Source', Icons.verified_user_outlined, colors),
               const SizedBox(height: 16),
               if (AppLinks.showDonation) ...[
                 SizedBox(
