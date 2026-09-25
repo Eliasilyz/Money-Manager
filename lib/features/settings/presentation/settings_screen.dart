@@ -7,6 +7,7 @@ import 'package:money_manager/features/budgets/application/budget_provider.dart'
 import 'package:money_manager/features/categories/application/category_provider.dart';
 import 'package:money_manager/features/goals/application/goal_provider.dart';
 import 'package:money_manager/features/recurring/application/recurring_provider.dart';
+import 'package:money_manager/features/settings/application/auth_service.dart';
 import 'package:money_manager/features/settings/application/settings_provider.dart';
 import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_colors.dart';
@@ -20,6 +21,7 @@ class SettingsScreen extends ConsumerWidget {
     final colors = AppColorsT.of(context);
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeProvider);
+
     final locale = ref.watch(localeProvider);
     final notif = ref.watch(notificationsEnabledProvider);
     final notifRecurring = ref.watch(notifRecurringProvider);
@@ -57,8 +59,9 @@ class SettingsScreen extends ConsumerWidget {
             Text(l10n.appSettingsSubtitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
             const SizedBox(height: 16),
 
-            _buildProfileCard(context, colors),
+            _buildProfileCard(context, colors, l10n, ref),
             const SizedBox(height: 24),
+
 
             Text(l10n.view, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textSecondary)),
             const SizedBox(height: 8),
@@ -110,9 +113,10 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileCard(BuildContext context, AppColorsT colors) {
+  Widget _buildProfileCard(BuildContext context, AppColorsT colors, AppLocalizations l10n, WidgetRef ref) {
+    final user = ref.watch(googleUserNotifierProvider);
     return GestureDetector(
-      onTap: () => context.push('/security'),
+      onTap: () => context.push('/backup'),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -122,18 +126,64 @@ class SettingsScreen extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: colors.primary,
-              child: Text('ME', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 16)),
-            ),
+            if (user?.photoUrl != null)
+              CircleAvatar(
+                radius: 24,
+                backgroundImage: NetworkImage(user!.photoUrl!),
+              )
+            else
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: colors.primary,
+                child: Text(
+                  user != null
+                      ? (user.displayName ?? user.email).substring(0, 1).toUpperCase()
+                      : 'ME',
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 16),
+                ),
+              ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Mas Elon', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary)),
-                  Text('maselon@email.com', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          user != null ? (user.displayName ?? 'Google User') : l10n.profileName,
+                          style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (user != null) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.gold.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.cloud_done, size: 10, color: AppColors.gold),
+                              const SizedBox(width: 3),
+                              Text(
+                                'GDrive',
+                                style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: colors.textPrimary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  Text(
+                    user != null ? user.email : l10n.notSignedIn,
+                    style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary),
+                  ),
                 ],
               ),
             ),

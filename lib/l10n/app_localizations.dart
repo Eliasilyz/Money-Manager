@@ -239,7 +239,7 @@ abstract class AppLocalizations {
   /// No description provided for @addAccount.
   ///
   /// In id, this message translates to:
-  /// **'+ Akun'**
+  /// **'Akun'**
   String get addAccount;
 
   /// No description provided for @noAccounts.
@@ -1177,6 +1177,90 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Data saat ini akan diganti.'**
   String get restoreWarning;
+
+  /// No description provided for @googleDriveTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Google Drive'**
+  String get googleDriveTitle;
+
+  /// No description provided for @googleDriveConnected.
+  ///
+  /// In id, this message translates to:
+  /// **'Terhubung sebagai {email}'**
+  String googleDriveConnected(Object email);
+
+  /// No description provided for @driveBackupsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar Cadangan di Google Drive'**
+  String get driveBackupsTitle;
+
+  /// No description provided for @loadingDriveBackups.
+  ///
+  /// In id, this message translates to:
+  /// **'Memuat daftar cadangan...'**
+  String get loadingDriveBackups;
+
+  /// No description provided for @noDriveBackups.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada file backup di Google Drive'**
+  String get noDriveBackups;
+
+  /// No description provided for @deleteDriveBackupTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Cadangan Drive?'**
+  String get deleteDriveBackupTitle;
+
+  /// No description provided for @deleteDriveBackupConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'File cadangan \"{name}\" akan dihapus dari Google Drive.'**
+  String deleteDriveBackupConfirm(Object name);
+
+  /// No description provided for @backupSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Backup ke Google Drive berhasil!'**
+  String get backupSuccess;
+
+  /// No description provided for @backupProgress.
+  ///
+  /// In id, this message translates to:
+  /// **'Mengunggah backup ke Google Drive...'**
+  String get backupProgress;
+
+  /// No description provided for @restoreProgress.
+  ///
+  /// In id, this message translates to:
+  /// **'Memulihkan data dari Google Drive...'**
+  String get restoreProgress;
+
+  /// No description provided for @enterBackupPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan Kata Sandi Enkripsi'**
+  String get enterBackupPassword;
+
+  /// No description provided for @backupPasswordHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi (kosongkan jika tidak terenkripsi)'**
+  String get backupPasswordHint;
+
+  /// No description provided for @googleCloudSetupInfo.
+  ///
+  /// In id, this message translates to:
+  /// **'Panduan Cloud Console'**
+  String get googleCloudSetupInfo;
+
+  /// No description provided for @googleCloudSetupDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Pastikan Google Drive API dan OAuth 2.0 Client ID (Package: id.eliasilyz.moneymanager) sudah dikonfigurasi pada https://console.cloud.google.com/'**
+  String get googleCloudSetupDesc;
 
   /// No description provided for @version.
   ///

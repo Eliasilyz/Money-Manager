@@ -80,7 +80,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get addAccount => '+ Akun';
+  String get addAccount => 'Akun';
 
   @override
   String get noAccounts => 'Belum ada akun';
@@ -597,6 +597,54 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get restoreWarning => 'Data saat ini akan diganti.';
+
+  @override
+  String get googleDriveTitle => 'Google Drive';
+
+  @override
+  String googleDriveConnected(Object email) {
+    return 'Terhubung sebagai $email';
+  }
+
+  @override
+  String get driveBackupsTitle => 'Daftar Cadangan di Google Drive';
+
+  @override
+  String get loadingDriveBackups => 'Memuat daftar cadangan...';
+
+  @override
+  String get noDriveBackups => 'Belum ada file backup di Google Drive';
+
+  @override
+  String get deleteDriveBackupTitle => 'Hapus Cadangan Drive?';
+
+  @override
+  String deleteDriveBackupConfirm(Object name) {
+    return 'File cadangan \"$name\" akan dihapus dari Google Drive.';
+  }
+
+  @override
+  String get backupSuccess => 'Backup ke Google Drive berhasil!';
+
+  @override
+  String get backupProgress => 'Mengunggah backup ke Google Drive...';
+
+  @override
+  String get restoreProgress => 'Memulihkan data dari Google Drive...';
+
+  @override
+  String get enterBackupPassword => 'Masukkan Kata Sandi Enkripsi';
+
+  @override
+  String get backupPasswordHint =>
+      'Kata sandi (kosongkan jika tidak terenkripsi)';
+
+  @override
+  String get googleCloudSetupInfo => 'Panduan Cloud Console';
+
+  @override
+  String get googleCloudSetupDesc =>
+      'Pastikan Google Drive API dan OAuth 2.0 Client ID (Package: id.eliasilyz.moneymanager) sudah dikonfigurasi pada https://console.cloud.google.com/';
 
   @override
   String get version => 'Versi';
