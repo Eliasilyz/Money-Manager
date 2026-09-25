@@ -5,9 +5,11 @@ class AppLinks {
 
   static const String donationUrl = 'https://ko-fi.com/eliasilyz';
 
-  static const String privacyPolicyUrl = 'https://TODO_FILL_ME';
+  static const String privacyPolicyUrl =
+      'https://github.com/Eliasilyz/Money-Manager/wiki/Privacy-Policy';
 
-  static const String termsOfServiceUrl = 'https://TODO_FILL_ME';
+  static const String termsOfServiceUrl =
+      'https://github.com/Eliasilyz/Money-Manager/wiki/Terms-of-Service';
 
   static const String contactUrl = 'mailto:farellh12@gmail.com';
 
