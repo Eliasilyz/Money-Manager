@@ -2233,6 +2233,486 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Transfer'**
   String get categoryDefaultTransfer;
+
+  /// No description provided for @allFinancialActivity.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua aktivitas keuangan'**
+  String get allFinancialActivity;
+
+  /// No description provided for @manageCategories.
+  ///
+  /// In id, this message translates to:
+  /// **'Kelola Kategori'**
+  String get manageCategories;
+
+  /// No description provided for @financialNotes.
+  ///
+  /// In id, this message translates to:
+  /// **'Catatan Keuangan'**
+  String get financialNotes;
+
+  /// No description provided for @searchTransactionsHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari transaksi atau catatan...'**
+  String get searchTransactionsHint;
+
+  /// No description provided for @filter.
+  ///
+  /// In id, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @filterTransactionsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Filter Transaksi'**
+  String get filterTransactionsTitle;
+
+  /// No description provided for @totalIncome.
+  ///
+  /// In id, this message translates to:
+  /// **'Total pemasukan'**
+  String get totalIncome;
+
+  /// No description provided for @totalExpenses.
+  ///
+  /// In id, this message translates to:
+  /// **'Total pengeluaran'**
+  String get totalExpenses;
+
+  /// No description provided for @transactionDetails.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail transaksi'**
+  String get transactionDetails;
+
+  /// No description provided for @todayBalance.
+  ///
+  /// In id, this message translates to:
+  /// **'Saldo hari ini'**
+  String get todayBalance;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In id, this message translates to:
+  /// **'Versi {version} (Build {build})'**
+  String aboutVersion(Object build, Object version);
+
+  /// No description provided for @aboutDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Aplikasi manajemen keuangan pribadi yang membantu Anda melacak transaksi, anggaran, dompet, transaksi berulang, serta impian finansial Anda secara aman & privat.'**
+  String get aboutDesc;
+
+  /// No description provided for @developer.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengembang'**
+  String get developer;
+
+  /// No description provided for @license.
+  ///
+  /// In id, this message translates to:
+  /// **'Lisensi'**
+  String get license;
+
+  /// No description provided for @supportDeveloper.
+  ///
+  /// In id, this message translates to:
+  /// **'Dukung Pengembang (Donasi)'**
+  String get supportDeveloper;
+
+  /// No description provided for @upcoming30Days.
+  ///
+  /// In id, this message translates to:
+  /// **'Akan datang (30 hari)'**
+  String get upcoming30Days;
+
+  /// No description provided for @itemsCount.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} item'**
+  String itemsCount(Object count);
+
+  /// No description provided for @goalName.
+  ///
+  /// In id, this message translates to:
+  /// **'NAMA TUJUAN'**
+  String get goalName;
+
+  /// No description provided for @targetDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Target Selesai'**
+  String get targetDate;
+
+  /// No description provided for @notSet.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ditentukan'**
+  String get notSet;
+
+  /// No description provided for @prioritySubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tampilkan di paling atas halaman Impian'**
+  String get prioritySubtitle;
+
+  /// No description provided for @saveGoal.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Tujuan'**
+  String get saveGoal;
+
+  /// No description provided for @recentTransactions.
+  ///
+  /// In id, this message translates to:
+  /// **'Transaksi terbaru'**
+  String get recentTransactions;
+
+  /// No description provided for @incomeThisMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemasukan bulan ini'**
+  String get incomeThisMonth;
+
+  /// No description provided for @expenseThisMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengeluaran bulan ini'**
+  String get expenseThisMonth;
+
+  /// No description provided for @sixMonths.
+  ///
+  /// In id, this message translates to:
+  /// **'6 bulan'**
+  String get sixMonths;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In id, this message translates to:
+  /// **'Kemarin'**
+  String get yesterday;
+
+  /// No description provided for @goals.
+  ///
+  /// In id, this message translates to:
+  /// **'Target'**
+  String get goals;
+
+  /// No description provided for @budgetAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'JUMLAH ANGGARAN'**
+  String get budgetAmount;
+
+  /// No description provided for @period.
+  ///
+  /// In id, this message translates to:
+  /// **'Periode'**
+  String get period;
+
+  /// No description provided for @saveBudget.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Anggaran'**
+  String get saveBudget;
+
+  /// No description provided for @negative.
+  ///
+  /// In id, this message translates to:
+  /// **'Negatif'**
+  String get negative;
+
+  /// No description provided for @accountHistoryOf.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat {name}'**
+  String accountHistoryOf(Object name);
+
+  /// No description provided for @activeCount.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} aktif'**
+  String activeCount(Object count);
+
+  /// No description provided for @quickAccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Akses cepat'**
+  String get quickAccess;
+
+  /// No description provided for @manageCategoriesSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Kelola kategori transaksi'**
+  String get manageCategoriesSubtitle;
+
+  /// No description provided for @addNotesSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah catatan transaksi'**
+  String get addNotesSubtitle;
+
+  /// No description provided for @last6Months.
+  ///
+  /// In id, this message translates to:
+  /// **'6 bulan terakhir'**
+  String get last6Months;
+
+  /// No description provided for @categoryDistribution.
+  ///
+  /// In id, this message translates to:
+  /// **'Distribusi per kategori'**
+  String get categoryDistribution;
+
+  /// No description provided for @positiveTrend.
+  ///
+  /// In id, this message translates to:
+  /// **'Tren positif'**
+  String get positiveTrend;
+
+  /// No description provided for @trendPosTip.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengeluaran bulan ini turun {pct}% dibanding {month}. Pertahankan!'**
+  String trendPosTip(Object month, Object pct);
+
+  /// No description provided for @trendKeepMonitoring.
+  ///
+  /// In id, this message translates to:
+  /// **'Pantau terus pengeluaran untuk mencapai target keuanganmu.'**
+  String get trendKeepMonitoring;
+
+  /// No description provided for @hintTransactionNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Makan malam bersama tim...'**
+  String get hintTransactionNote;
+
+  /// No description provided for @selectDestinationAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Akun Tujuan'**
+  String get selectDestinationAccount;
+
+  /// No description provided for @confirmDeleteTransaction.
+  ///
+  /// In id, this message translates to:
+  /// **'Apakah Anda yakin ingin menghapus transaksi ini?'**
+  String get confirmDeleteTransaction;
+
+  /// No description provided for @enterTransactionAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan jumlah transaksi'**
+  String get enterTransactionAmount;
+
+  /// No description provided for @selectAccountFirst.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih akun terlebih dahulu'**
+  String get selectAccountFirst;
+
+  /// No description provided for @selectDestinationAccountFirst.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih akun tujuan untuk transfer'**
+  String get selectDestinationAccountFirst;
+
+  /// No description provided for @deleteTransaction.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Transaksi'**
+  String get deleteTransaction;
+
+  /// No description provided for @trendVsLastMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'{percent}% dibanding {lastMonth}'**
+  String trendVsLastMonth(Object lastMonth, Object percent);
+
+  /// No description provided for @noRecurringTransactions.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada transaksi berulang'**
+  String get noRecurringTransactions;
+
+  /// No description provided for @tapAddRecurring.
+  ///
+  /// In id, this message translates to:
+  /// **'Tap \"+ Tambah\" untuk menambahkan'**
+  String get tapAddRecurring;
+
+  /// No description provided for @renewInDays.
+  ///
+  /// In id, this message translates to:
+  /// **'Perpanjang dalam {count} hari'**
+  String renewInDays(Object count);
+
+  /// No description provided for @budgetRemainingThisMonth.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa anggaran bulan ini'**
+  String get budgetRemainingThisMonth;
+
+  /// No description provided for @budgetAttentionWarning.
+  ///
+  /// In id, this message translates to:
+  /// **'Anggaran {name} sudah mencapai {pct}% dari batas bulanan.'**
+  String budgetAttentionWarning(Object name, Object pct);
+
+  /// No description provided for @pocketLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Kantong {name} • {balance}'**
+  String pocketLabel(Object balance, Object name);
+
+  /// No description provided for @deposit.
+  ///
+  /// In id, this message translates to:
+  /// **'Setor'**
+  String get deposit;
+
+  /// No description provided for @pocketName.
+  ///
+  /// In id, this message translates to:
+  /// **'Kantong {name}'**
+  String pocketName(Object name);
+
+  /// No description provided for @monthlyFinancialPlan.
+  ///
+  /// In id, this message translates to:
+  /// **'Rencana keuangan bulanan'**
+  String get monthlyFinancialPlan;
+
+  /// No description provided for @realizeYourDreams.
+  ///
+  /// In id, this message translates to:
+  /// **'Wujudkan impianmu'**
+  String get realizeYourDreams;
+
+  /// No description provided for @manageDebtsAndReceivables.
+  ///
+  /// In id, this message translates to:
+  /// **'Kelola utang piutang'**
+  String get manageDebtsAndReceivables;
+
+  /// No description provided for @progressPercentOfTarget.
+  ///
+  /// In id, this message translates to:
+  /// **'{pct}% dari target'**
+  String progressPercentOfTarget(Object pct);
+
+  /// No description provided for @noSavingsGoals.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada target tabungan'**
+  String get noSavingsGoals;
+
+  /// No description provided for @tapAddGoal.
+  ///
+  /// In id, this message translates to:
+  /// **'Tap \"+ Tambah\" untuk membuat target'**
+  String get tapAddGoal;
+
+  /// No description provided for @noActiveDebts.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada hutang aktif'**
+  String get noActiveDebts;
+
+  /// No description provided for @debtList.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar hutang'**
+  String get debtList;
+
+  /// No description provided for @dueDateWithDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh tempo: {date}'**
+  String dueDateWithDate(Object date);
+
+  /// No description provided for @addDebtTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Utang/Piutang'**
+  String get addDebtTitle;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'NAMA'**
+  String get nameLabel;
+
+  /// No description provided for @personNameHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: Budi'**
+  String get personNameHint;
+
+  /// No description provided for @dueDateTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh Tempo'**
+  String get dueDateTitle;
+
+  /// No description provided for @saveDebt.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Utang/Piutang'**
+  String get saveDebt;
+
+  /// No description provided for @fillNameAndAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Isi nama dan nominal'**
+  String get fillNameAndAmount;
+
+  /// No description provided for @attentionNeeded.
+  ///
+  /// In id, this message translates to:
+  /// **'Perlu perhatian'**
+  String get attentionNeeded;
+
+  /// No description provided for @financialInsight.
+  ///
+  /// In id, this message translates to:
+  /// **'Insight keuangan'**
+  String get financialInsight;
+
+  /// No description provided for @trendExpenseIncreaseTip.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengeluaran bulan ini naik {pct}% dibanding {month}. Perhatikan anggaranmu!'**
+  String trendExpenseIncreaseTip(Object month, Object pct);
+
+  /// No description provided for @trendIncomeIncreaseTip.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemasukan bulan ini naik {pct}% dibanding {month}. Kerja bagus!'**
+  String trendIncomeIncreaseTip(Object month, Object pct);
+
+  /// No description provided for @trendIncomeDecreaseTip.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemasukan bulan ini turun {pct}% dibanding {month}.'**
+  String trendIncomeDecreaseTip(Object month, Object pct);
+
+  /// No description provided for @trendCashFlowIncreaseTip.
+  ///
+  /// In id, this message translates to:
+  /// **'Arus kas bulan ini meningkat {pct}% dibanding {month}.'**
+  String trendCashFlowIncreaseTip(Object month, Object pct);
+
+  /// No description provided for @trendCashFlowDecreaseTip.
+  ///
+  /// In id, this message translates to:
+  /// **'Arus kas bulan ini menurun {pct}% dibanding {month}.'**
+  String trendCashFlowDecreaseTip(Object month, Object pct);
 }
 
 class _AppLocalizationsDelegate

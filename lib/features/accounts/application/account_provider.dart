@@ -69,8 +69,18 @@ class AccountsNotifier extends StateNotifier<AsyncValue<List<Account>>> {
   }
 
   Future<void> updateSortOrders(List<({String id, int sortOrder})> orders) async {
+    final currentList = state.valueOrNull;
+    if (currentList != null) {
+      final orderMap = {for (final o in orders) o.id: o.sortOrder};
+      final updatedList = currentList.map((a) {
+        if (orderMap.containsKey(a.id)) {
+          return a.copyWith(sortOrder: orderMap[a.id]);
+        }
+        return a;
+      }).toList();
+      state = AsyncValue.data(updatedList);
+    }
     await _service.updateSortOrders(orders);
-    await loadAccounts();
   }
 }
 

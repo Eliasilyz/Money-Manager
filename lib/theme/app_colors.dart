@@ -26,6 +26,107 @@ class AppColors {
   static const amber = orange;
 }
 
+enum AppThemePreset {
+  emerald(
+    id: 'emerald',
+    name: 'Emerald Forest',
+    primaryLight: Color(0xFF1B6E4B),
+    primaryDarkLight: Color(0xFF0F5A3C),
+    navBgLight: Color(0xFF0E3B2B),
+    heroLight: Color(0xFF0F5A3C),
+    primaryDarkTheme: Color(0xFF34A873),
+    primaryDarkDark: Color(0xFF14573A),
+    navBgDark: Color(0xFF0A0F0C),
+    heroDark: Color(0xFF14573A),
+    previewColor: Color(0xFF1B6E4B),
+  ),
+  ocean(
+    id: 'ocean',
+    name: 'Ocean Sapphire',
+    primaryLight: Color(0xFF1A5694),
+    primaryDarkLight: Color(0xFF0E3864),
+    navBgLight: Color(0xFF0C2B4E),
+    heroLight: Color(0xFF0E3864),
+    primaryDarkTheme: Color(0xFF4C93DC),
+    primaryDarkDark: Color(0xFF154374),
+    navBgDark: Color(0xFF091624),
+    heroDark: Color(0xFF154374),
+    previewColor: Color(0xFF1A5694),
+  ),
+  midnight(
+    id: 'midnight',
+    name: 'Midnight Dark',
+    primaryLight: Color(0xFF263238),
+    primaryDarkLight: Color(0xFF192227),
+    navBgLight: Color(0xFF10171B),
+    heroLight: Color(0xFF192227),
+    primaryDarkTheme: Color(0xFF38BDF8),
+    primaryDarkDark: Color(0xFF0369A1),
+    navBgDark: Color(0xFF0B0F12),
+    heroDark: Color(0xFF0C2434),
+    previewColor: Color(0xFF38BDF8),
+  ),
+  sunset(
+    id: 'sunset',
+    name: 'Sunset Terracotta',
+    primaryLight: Color(0xFFB45309),
+    primaryDarkLight: Color(0xFF78350F),
+    navBgLight: Color(0xFF451A03),
+    heroLight: Color(0xFF78350F),
+    primaryDarkTheme: Color(0xFFF59E0B),
+    primaryDarkDark: Color(0xFF92400E),
+    navBgDark: Color(0xFF1C0E05),
+    heroDark: Color(0xFF451A03),
+    previewColor: Color(0xFFB45309),
+  ),
+  amethyst(
+    id: 'amethyst',
+    name: 'Royal Amethyst',
+    primaryLight: Color(0xFF6D28D9),
+    primaryDarkLight: Color(0xFF4C1D95),
+    navBgLight: Color(0xFF2E1065),
+    heroLight: Color(0xFF4C1D95),
+    primaryDarkTheme: Color(0xFFA78BFA),
+    primaryDarkDark: Color(0xFF5B21B6),
+    navBgDark: Color(0xFF130924),
+    heroDark: Color(0xFF2E1065),
+    previewColor: Color(0xFF6D28D9),
+  );
+
+  final String id;
+  final String name;
+  final Color primaryLight;
+  final Color primaryDarkLight;
+  final Color navBgLight;
+  final Color heroLight;
+  final Color primaryDarkTheme;
+  final Color primaryDarkDark;
+  final Color navBgDark;
+  final Color heroDark;
+  final Color previewColor;
+
+  const AppThemePreset({
+    required this.id,
+    required this.name,
+    required this.primaryLight,
+    required this.primaryDarkLight,
+    required this.navBgLight,
+    required this.heroLight,
+    required this.primaryDarkTheme,
+    required this.primaryDarkDark,
+    required this.navBgDark,
+    required this.heroDark,
+    required this.previewColor,
+  });
+
+  static AppThemePreset fromId(String? id) {
+    return AppThemePreset.values.firstWhere(
+      (p) => p.id == id,
+      orElse: () => AppThemePreset.emerald,
+    );
+  }
+}
+
 @immutable
 class AppColorsT extends ThemeExtension<AppColorsT> {
   final Color background;
@@ -86,6 +187,40 @@ class AppColorsT extends ThemeExtension<AppColorsT> {
     heroCard: Color(0xFF14573A),
   );
 
+  static AppColorsT forPreset(AppThemePreset preset, {required bool isDark}) {
+    if (isDark) {
+      return AppColorsT(
+        background: const Color(0xFF0E1411),
+        surface: const Color(0xFF161E19),
+        surfaceRaised: const Color(0xFF1D2822),
+        border: const Color(0xFF26332B),
+        textPrimary: const Color(0xFFE7EEE9),
+        textSecondary: const Color(0xFF9CAAA2),
+        primary: preset.primaryDarkTheme,
+        primaryDark: preset.primaryDarkDark,
+        navBackground: preset.navBgDark,
+        income: const Color(0xFF4CC38A),
+        expense: const Color(0xFFF0716A),
+        heroCard: preset.heroDark,
+      );
+    } else {
+      return AppColorsT(
+        background: const Color(0xFFF4F6F5),
+        surface: const Color(0xFFFFFFFF),
+        surfaceRaised: const Color(0xFFFFFFFF),
+        border: const Color(0xFFE6EBE8),
+        textPrimary: const Color(0xFF1A1F1C),
+        textSecondary: const Color(0xFF7A857F),
+        primary: preset.primaryLight,
+        primaryDark: preset.primaryDarkLight,
+        navBackground: preset.navBgLight,
+        income: const Color(0xFF1F7A4D),
+        expense: const Color(0xFFE0524A),
+        heroCard: preset.heroLight,
+      );
+    }
+  }
+
   @override
   AppColorsT copyWith({
     Color? background, Color? surface, Color? surfaceRaised, Color? border,
@@ -118,6 +253,14 @@ class AppColorsT extends ThemeExtension<AppColorsT> {
       heroCard: Color.lerp(heroCard, other.heroCard, t)!,
     );
   }
+
+  Color get heroCardBg => heroCard;
+  Color get cardBackground => surface;
+  Color get card => surface;
+  Color get card2 => surfaceRaised;
+  Color get textMuted => textSecondary;
+  Color get gold => primary;
+  Color get gold2 => primaryDark;
 
   static AppColorsT of(BuildContext context) => Theme.of(context).extension<AppColorsT>()!;
 }

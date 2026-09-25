@@ -107,6 +107,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
           keyboardType: TextInputType.number,
           maxLength: 6,
           autofocus: true,
+          style: GoogleFonts.inter(fontSize: 16, color: colors.textPrimary),
           decoration: InputDecoration(
             labelText: l10n.enterPin,
             counterText: '',

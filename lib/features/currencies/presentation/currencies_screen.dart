@@ -132,7 +132,7 @@ class CurrenciesScreen extends ConsumerWidget {
           controller: ctrl,
           autofocus: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          style: GoogleFonts.jetBrainsMono(fontSize: 16),
+          style: GoogleFonts.jetBrainsMono(fontSize: 16, color: AppColorsT.of(context).textPrimary),
           decoration: InputDecoration(hintText: '0', labelText: l10n.exchangeRateLabel),
         ),
         actions: [

@@ -87,7 +87,7 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              _isEditing ? l10n.editBudget : 'Tambah Budget',
+              _isEditing ? l10n.editBudget : l10n.addBudget,
               style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, color: colors.textPrimary),
             ),
             const SizedBox(height: 16),
@@ -97,14 +97,14 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
                 return DropdownButtonFormField<String>(
                   initialValue: _selectedCategoryId,
                   dropdownColor: colors.surfaceRaised,
-                  hint: Text('Pilih Kategori', style: GoogleFonts.inter(color: colors.textSecondary)),
+                  hint: Text(l10n.selectCategory, style: GoogleFonts.inter(color: colors.textSecondary)),
                   items: expenseCats.map((c) => DropdownMenuItem(
                     value: c.id,
                     child: Text(localizedCategoryName(l10n, c.systemKey, c.name), style: GoogleFonts.inter(color: colors.textPrimary)),
                   )).toList(),
                   onChanged: (val) => setState(() => _selectedCategoryId = val),
                   decoration: InputDecoration(
-                    labelText: 'Kategori',
+                    labelText: l10n.category,
                     prefixIcon: Icon(Icons.category_outlined, color: colors.textSecondary),
                   ),
                 );
@@ -114,7 +114,7 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'JUMLAH BUDGET',
+              l10n.budgetAmount,
               style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
             ),
             const SizedBox(height: 8),
@@ -131,21 +131,21 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'PERIODE',
+              l10n.period.toUpperCase(),
               style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               initialValue: _period,
               dropdownColor: colors.surfaceRaised,
-              items: const [
-                DropdownMenuItem(value: 'weekly', child: Text('Mingguan')),
-                DropdownMenuItem(value: 'monthly', child: Text('Bulanan')),
-                DropdownMenuItem(value: 'yearly', child: Text('Tahunan')),
+              items: [
+                DropdownMenuItem(value: 'weekly', child: Text(l10n.frequencyWeekly)),
+                DropdownMenuItem(value: 'monthly', child: Text(l10n.frequencyMonthly)),
+                DropdownMenuItem(value: 'yearly', child: Text(l10n.frequencyYearly)),
               ],
               onChanged: (val) => setState(() => _period = val ?? 'monthly'),
               decoration: InputDecoration(
-                labelText: 'Periode',
+                labelText: l10n.period,
                 prefixIcon: Icon(Icons.calendar_month_outlined, color: colors.textSecondary),
               ),
             ),
@@ -158,9 +158,9 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
               ),
               child: ListTile(
                 leading: const Icon(Icons.calendar_today_outlined, color: AppColors.gold, size: 20),
-                title: Text('Tanggal Mulai', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+                title: Text(l10n.startDate, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                 subtitle: Text(
-                  DateFormat('dd MMMM yyyy').format(_startDate),
+                  DateFormat('dd MMMM yyyy', Localizations.localeOf(context).languageCode).format(_startDate),
                   style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
                 ),
                 trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
@@ -207,7 +207,7 @@ class _BudgetFormSheetState extends ConsumerState<BudgetFormSheet> {
                         child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                       )
                     : Text(
-                        _isEditing ? l10n.saveChanges : 'Simpan Budget',
+                        _isEditing ? l10n.saveChanges : l10n.saveBudget,
                         style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                       ),
               ),

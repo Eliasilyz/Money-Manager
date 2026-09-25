@@ -90,34 +90,341 @@ Future<void> _seedDefaults(AppDatabase db) async {
     await db.batch((batch) {
       batch.insertAll(db.categoriesTable, [
         // Expense
-        CategoriesTableCompanion.insert(id: 'exp_food_drink', name: 'Makan & Minum', type: Value('expense'), systemKey: Value('food_drink'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_transport', name: 'Transportasi', type: Value('expense'), systemKey: Value('transport'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_shopping', name: 'Belanja', type: Value('expense'), systemKey: Value('shopping'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_housing', name: 'Rumah & Sewa', type: Value('expense'), systemKey: Value('housing'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_utilities', name: 'Tagihan & Utilitas', type: Value('expense'), systemKey: Value('utilities'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_health', name: 'Kesehatan', type: Value('expense'), systemKey: Value('health'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_education', name: 'Pendidikan', type: Value('expense'), systemKey: Value('education'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_entertainment', name: 'Hiburan', type: Value('expense'), systemKey: Value('entertainment'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_vacation', name: 'Liburan', type: Value('expense'), systemKey: Value('vacation'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_family', name: 'Keluarga & Anak', type: Value('expense'), systemKey: Value('family'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_personal_care', name: 'Perawatan Diri', type: Value('expense'), systemKey: Value('personal_care'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_gifts', name: 'Hadiah & Donasi', type: Value('expense'), systemKey: Value('gifts'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_debt_payment', name: 'Cicilan & Hutang', type: Value('expense'), systemKey: Value('debt_payment'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_insurance', name: 'Asuransi', type: Value('expense'), systemKey: Value('insurance'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_subscriptions', name: 'Langganan', type: Value('expense'), systemKey: Value('subscriptions'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'exp_other', name: 'Lainnya', type: Value('expense'), systemKey: Value('other_expense'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_food_drink', name: 'Makan & Minum', type: const Value('expense'), systemKey: const Value('food_drink'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_transport', name: 'Transportasi', type: const Value('expense'), systemKey: const Value('transport'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_shopping', name: 'Belanja', type: const Value('expense'), systemKey: const Value('shopping'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_housing', name: 'Rumah & Sewa', type: const Value('expense'), systemKey: const Value('housing'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_utilities', name: 'Tagihan & Utilitas', type: const Value('expense'), systemKey: const Value('utilities'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_health', name: 'Kesehatan', type: const Value('expense'), systemKey: const Value('health'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_education', name: 'Pendidikan', type: const Value('expense'), systemKey: const Value('education'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_entertainment', name: 'Hiburan', type: const Value('expense'), systemKey: const Value('entertainment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_vacation', name: 'Liburan', type: const Value('expense'), systemKey: const Value('vacation'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_family', name: 'Keluarga & Anak', type: const Value('expense'), systemKey: const Value('family'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_personal_care', name: 'Perawatan Diri', type: const Value('expense'), systemKey: const Value('personal_care'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_gifts', name: 'Hadiah & Donasi', type: const Value('expense'), systemKey: const Value('gifts'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_debt_payment', name: 'Cicilan & Hutang', type: const Value('expense'), systemKey: const Value('debt_payment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_insurance', name: 'Asuransi', type: const Value('expense'), systemKey: const Value('insurance'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_subscriptions', name: 'Langganan', type: const Value('expense'), systemKey: const Value('subscriptions'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'exp_other', name: 'Lainnya', type: const Value('expense'), systemKey: const Value('other_expense'), createdAt: Value(now), updatedAt: Value(now)),
         // Income
-        CategoriesTableCompanion.insert(id: 'inc_salary', name: 'Gaji', type: Value('income'), systemKey: Value('salary'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'inc_bonus', name: 'Bonus', type: Value('income'), systemKey: Value('bonus'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'inc_business', name: 'Usaha', type: Value('income'), systemKey: Value('business'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'inc_investment', name: 'Investasi', type: Value('income'), systemKey: Value('investment'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'inc_gift', name: 'Hadiah', type: Value('income'), systemKey: Value('gift'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'inc_sale', name: 'Penjualan', type: Value('income'), systemKey: Value('sale'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'inc_refund', name: 'Pengembalian Dana', type: Value('income'), systemKey: Value('refund'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'inc_other', name: 'Lainnya', type: Value('income'), systemKey: Value('other_income'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_salary', name: 'Gaji', type: const Value('income'), systemKey: const Value('salary'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_bonus', name: 'Bonus', type: const Value('income'), systemKey: const Value('bonus'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_business', name: 'Usaha', type: const Value('income'), systemKey: const Value('business'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_investment', name: 'Investasi', type: const Value('income'), systemKey: const Value('investment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_gift', name: 'Hadiah', type: const Value('income'), systemKey: const Value('gift'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_sale', name: 'Penjualan', type: const Value('income'), systemKey: const Value('sale'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_refund', name: 'Pengembalian Dana', type: const Value('income'), systemKey: const Value('refund'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'inc_other', name: 'Lainnya', type: const Value('income'), systemKey: const Value('other_income'), createdAt: Value(now), updatedAt: Value(now)),
         // System (hidden)
-        CategoriesTableCompanion.insert(id: 'sys_balance_adj', name: 'Penyesuaian saldo', type: Value('system'), systemKey: Value('balance_adjustment'), createdAt: Value(now), updatedAt: Value(now)),
-        CategoriesTableCompanion.insert(id: 'sys_transfer', name: 'Transfer', type: Value('system'), systemKey: Value('transfer'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'sys_balance_adj', name: 'Penyesuaian saldo', type: const Value('system'), systemKey: const Value('balance_adjustment'), createdAt: Value(now), updatedAt: Value(now)),
+        CategoriesTableCompanion.insert(id: 'sys_transfer', name: 'Transfer', type: const Value('system'), systemKey: const Value('transfer'), createdAt: Value(now), updatedAt: Value(now)),
+      ]);
+    });
+  }
+
+  final existingAccounts = await db.select(db.accountsTable).get();
+  if (existingAccounts.isEmpty) {
+    final now = DateTime.now();
+    await db.batch((batch) {
+      batch.insertAll(db.accountsTable, [
+        AccountsTableCompanion.insert(
+          id: 'acc_bca',
+          name: 'BCA Utama',
+          accountType: 'savings',
+          currencyCode: const Value('IDR'),
+          initialBalance: const Value(9850000),
+          note: const Value('•••• 2841'),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        AccountsTableCompanion.insert(
+          id: 'acc_jago',
+          name: 'Jago Tabungan',
+          accountType: 'savings',
+          currencyCode: const Value('IDR'),
+          initialBalance: const Value(6775000),
+          note: const Value('•••• 9120 • bunga 4,5%'),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        AccountsTableCompanion.insert(
+          id: 'acc_gopay',
+          name: 'GoPay',
+          accountType: 'wallet',
+          currencyCode: const Value('IDR'),
+          initialBalance: const Value(1425000),
+          note: const Value('•••• 2841 • promo aktif'),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        AccountsTableCompanion.insert(
+          id: 'acc_bca_plat',
+          name: 'BCA Platinum',
+          accountType: 'credit',
+          currencyCode: const Value('IDR'),
+          initialBalance: const Value(-1200000),
+          note: const Value('•••• 1182 • tagihan 28 Sep'),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        AccountsTableCompanion.insert(
+          id: 'acc_reksa',
+          name: 'Reksa Dana',
+          accountType: 'investment',
+          currencyCode: const Value('IDR'),
+          initialBalance: const Value(1100000),
+          note: const Value('•••• 7712 • imbal hasil 7,2%'),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+      ]);
+    });
+
+    final today = DateTime(now.year, now.month, now.day);
+    await db.batch((batch) {
+      batch.insertAll(db.transactionsTable, [
+        TransactionsTableCompanion.insert(
+          id: 'tx_supermarket',
+          type: 'expense',
+          accountId: 'acc_bca',
+          categoryId: const Value('exp_shopping'),
+          amount: 286500,
+          currencyCode: 'IDR',
+          description: const Value('Supermarket Fresh'),
+          date: today.add(const Duration(hours: 18, minutes: 20)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        TransactionsTableCompanion.insert(
+          id: 'tx_kopi',
+          type: 'expense',
+          accountId: 'acc_gopay',
+          categoryId: const Value('exp_food_drink'),
+          amount: 68000,
+          currencyCode: 'IDR',
+          description: const Value('Kopi bersama tim'),
+          date: today.add(const Duration(hours: 15, minutes: 42)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        TransactionsTableCompanion.insert(
+          id: 'tx_bensin',
+          type: 'expense',
+          accountId: 'acc_bca',
+          categoryId: const Value('exp_transport'),
+          amount: 180000,
+          currencyCode: 'IDR',
+          description: const Value('Isi bensin'),
+          date: today.add(const Duration(hours: 8, minutes: 10)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        TransactionsTableCompanion.insert(
+          id: 'tx_bakso',
+          type: 'expense',
+          accountId: 'acc_gopay',
+          categoryId: const Value('exp_food_drink'),
+          amount: 10000,
+          currencyCode: 'IDR',
+          description: const Value('Bakso'),
+          date: today.add(const Duration(hours: 18)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        TransactionsTableCompanion.insert(
+          id: 'tx_proyek',
+          type: 'income',
+          accountId: 'acc_bca',
+          categoryId: const Value('inc_business'),
+          amount: 1750000,
+          currencyCode: 'IDR',
+          description: const Value('Proyek desain'),
+          note: const Value('DP tahap 2'),
+          date: today.subtract(const Duration(days: 1)).add(const Duration(hours: 14)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        TransactionsTableCompanion.insert(
+          id: 'tx_gaji',
+          type: 'income',
+          accountId: 'acc_bca',
+          categoryId: const Value('inc_salary'),
+          amount: 12500000,
+          currencyCode: 'IDR',
+          description: const Value('Gaji bulanan'),
+          date: today.subtract(const Duration(days: 2)).add(const Duration(hours: 9)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+      ]);
+    });
+
+    await db.batch((batch) {
+      batch.insertAll(db.budgetsTable, [
+        BudgetsTableCompanion.insert(
+          id: 'bgt_food',
+          categoryId: 'exp_food_drink',
+          amount: 2500000,
+          currencyCode: 'IDR',
+          startDate: DateTime(now.year, now.month, 1),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        BudgetsTableCompanion.insert(
+          id: 'bgt_transport',
+          categoryId: 'exp_transport',
+          amount: 1200000,
+          currencyCode: 'IDR',
+          startDate: DateTime(now.year, now.month, 1),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        BudgetsTableCompanion.insert(
+          id: 'bgt_shopping',
+          categoryId: 'exp_shopping',
+          amount: 1500000,
+          currencyCode: 'IDR',
+          startDate: DateTime(now.year, now.month, 1),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        BudgetsTableCompanion.insert(
+          id: 'bgt_housing',
+          categoryId: 'exp_housing',
+          amount: 1500000,
+          currencyCode: 'IDR',
+          startDate: DateTime(now.year, now.month, 1),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        BudgetsTableCompanion.insert(
+          id: 'bgt_entertainment',
+          categoryId: 'exp_entertainment',
+          amount: 1300000,
+          currencyCode: 'IDR',
+          startDate: DateTime(now.year, now.month, 1),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+      ]);
+    });
+
+    await db.batch((batch) {
+      batch.insertAll(db.goalsTable, [
+        GoalsTableCompanion.insert(
+          id: 'goal_japan',
+          name: 'Liburan ke Jepang',
+          targetAmount: 25000000,
+          currentAmount: const Value(18500000),
+          currencyCode: 'IDR',
+          isPriority: const Value(true),
+          startDate: now,
+          targetDate: Value(DateTime(2026, 12, 31)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        GoalsTableCompanion.insert(
+          id: 'goal_emergency',
+          name: 'Dana darurat',
+          targetAmount: 40000000,
+          currentAmount: const Value(22000000),
+          currencyCode: 'IDR',
+          isPriority: const Value(false),
+          startDate: now,
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        GoalsTableCompanion.insert(
+          id: 'goal_laptop',
+          name: 'Laptop baru',
+          targetAmount: 9000000,
+          currentAmount: const Value(7200000),
+          currencyCode: 'IDR',
+          isPriority: const Value(false),
+          startDate: now,
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+      ]);
+    });
+
+    await db.batch((batch) {
+      batch.insertAll(db.debtsTable, [
+        DebtsTableCompanion.insert(
+          id: 'debt_motor',
+          personName: 'Cicilan motor',
+          type: 'borrowed',
+          originalAmount: 30000000,
+          remainingAmount: 22750000,
+          currencyCode: 'IDR',
+          totalInstallments: const Value(24),
+          paidInstallments: const Value(7),
+          billingDay: const Value(25),
+          dueDate: now.add(const Duration(days: 30)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+      ]);
+    });
+
+    await db.batch((batch) {
+      batch.insertAll(db.recurringTransactionsTable, [
+        RecurringTransactionsTableCompanion.insert(
+          id: 'rec_sewa',
+          type: 'expense',
+          accountId: 'acc_bca',
+          categoryId: const Value('exp_housing'),
+          amount: 2750000,
+          currencyCode: 'IDR',
+          description: const Value('Sewa apartemen'),
+          frequency: 'monthly',
+          startDate: now,
+          nextOccurrence: now.add(const Duration(days: 12)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        RecurringTransactionsTableCompanion.insert(
+          id: 'rec_internet',
+          type: 'expense',
+          accountId: 'acc_bca',
+          categoryId: const Value('exp_utilities'),
+          amount: 425000,
+          currencyCode: 'IDR',
+          description: const Value('Internet rumah'),
+          frequency: 'monthly',
+          startDate: now,
+          nextOccurrence: now.add(const Duration(days: 16)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        RecurringTransactionsTableCompanion.insert(
+          id: 'rec_seluler',
+          type: 'expense',
+          accountId: 'acc_bca',
+          categoryId: const Value('exp_utilities'),
+          amount: 160000,
+          currencyCode: 'IDR',
+          description: const Value('Paket seluler'),
+          frequency: 'monthly',
+          startDate: now,
+          nextOccurrence: now.add(const Duration(days: 19)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
+        RecurringTransactionsTableCompanion.insert(
+          id: 'rec_gaji',
+          type: 'income',
+          accountId: 'acc_bca',
+          categoryId: const Value('inc_salary'),
+          amount: 12500000,
+          currencyCode: 'IDR',
+          description: const Value('Gaji bulanan'),
+          frequency: 'monthly',
+          startDate: now,
+          nextOccurrence: now.add(const Duration(days: 25)),
+          createdAt: Value(now),
+          updatedAt: Value(now),
+        ),
       ]);
     });
   }
@@ -131,14 +438,15 @@ class MoneyManagerApp extends ConsumerWidget {
     ref.watch(settingsInitProvider);
     ref.watch(securityInitProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final themePreset = ref.watch(themePresetProvider);
     final locale = ref.watch(localeProvider);
     final locked = ref.watch(appLockedProvider);
 
     return MaterialApp.router(
       title: 'Money Manager',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: AppTheme.light(preset: themePreset),
+      darkTheme: AppTheme.dark(preset: themePreset),
       themeMode: themeMode,
       locale: locale,
       supportedLocales: const <Locale>[Locale('id'), Locale('en')],

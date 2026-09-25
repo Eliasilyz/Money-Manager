@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:money_manager/domain/entities/debt.dart';
 import 'package:money_manager/features/debts/application/debt_provider.dart';
+import 'package:money_manager/l10n/app_localizations.dart';
 import 'package:money_manager/theme/app_theme.dart';
 
 class AddDebtScreen extends ConsumerStatefulWidget {
@@ -34,9 +35,11 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Utang/Piutang', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.addDebtTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -68,7 +71,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Utang',
+                                  l10n.debtTypeBorrowed,
                                   style: GoogleFonts.inter(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -93,7 +96,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Piutang',
+                              l10n.debtTypeLent,
                               style: GoogleFonts.inter(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -110,7 +113,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'NAMA',
+                l10n.nameLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -118,14 +121,14 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                 controller: _personCtrl,
                 style: GoogleFonts.inter(color: colors.textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'Contoh: Budi',
+                  hintText: l10n.personNameHint,
                   prefixIcon: Icon(Icons.person_outline, color: colors.textSecondary),
                 ),
               ),
               const SizedBox(height: 24),
 
               Text(
-                'NOMINAL',
+                l10n.nominalLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -143,7 +146,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
               const SizedBox(height: 24),
 
               Text(
-                'KETERANGAN',
+                l10n.descriptionLabel,
                 style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: colors.textSecondary, letterSpacing: 0.8),
               ),
               const SizedBox(height: 8),
@@ -151,7 +154,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                 controller: _descCtrl,
                 style: GoogleFonts.inter(color: colors.textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'Opsional',
+                  hintText: l10n.optional,
                   prefixIcon: Icon(Icons.description_outlined, color: colors.textSecondary),
                 ),
               ),
@@ -165,9 +168,9 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                 ),
                 child: ListTile(
                   leading: const Icon(Icons.event_outlined, color: AppColors.gold, size: 20),
-                  title: Text('Jatuh Tempo', style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
+                  title: Text(l10n.dueDateTitle, style: GoogleFonts.inter(fontSize: 12, color: colors.textSecondary)),
                   subtitle: Text(
-                    DateFormat('dd MMMM yyyy').format(_dueDate),
+                    DateFormat('dd MMMM yyyy', Localizations.localeOf(context).languageCode).format(_dueDate),
                     style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: colors.textPrimary),
                   ),
                   trailing: Icon(Icons.chevron_right, color: colors.textSecondary),
@@ -200,7 +203,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.bg),
                         )
                       : Text(
-                          'Simpan Utang/Piutang',
+                          l10n.saveDebt,
                           style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15),
                         ),
                 ),
@@ -213,11 +216,12 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final person = _personCtrl.text.trim();
     final amount = int.tryParse(_amountCtrl.text.replaceAll(RegExp(r'[^0-9]'), ''));
     if (person.isEmpty || amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Isi nama dan nominal', style: GoogleFonts.inter())),
+        SnackBar(content: Text(l10n.fillNameAndAmount, style: GoogleFonts.inter())),
       );
       return;
     }

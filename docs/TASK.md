@@ -19,14 +19,14 @@ Arsitektur project (untuk konteks singkat tiap sesi, biar nggak perlu explore ul
 
 ### Grup A — Quick win (kecil, 1 sesi cukup)
 
-- [x] **A1. [FIX] Fix warna tab "Pengeluaran & Pemasukan" tidak kelihatan di light mode**
+- [ ] **A1. [FIX] Fix warna tab "Pengeluaran & Pemasukan" tidak kelihatan di light mode**
   File: `lib/features/categories/presentation/categories_screen.dart`, cek juga `lib/theme/app_theme.dart` & `app_colors.dart`.
   Cari widget `TabBar`, ganti `labelColor`/`unselectedLabelColor` yang kemungkinan hardcoded jadi theme-aware (`Theme.of(context).colorScheme...`). Referensi kontras yang benar: lihat "Layar 3" di `mockup-literal-description.md` (tab switcher di halaman Tambah Transaksi, kontrasnya jelas di light mode).
   Test di light & dark mode. `flutter analyze`. Task ini kecil, tidak perlu audit terpisah.
 
 ### Grup B — Kategori multi-bahasa
 
-- [x] **B1. [AUDIT] Cek implementasi kategori default + konsistensi bahasa UI kategori**
+- [ ] **B1. [AUDIT] Cek implementasi kategori default + konsistensi bahasa UI kategori**
   Baca dulu bagian "Item 1" di `diff-mockup-vs-current.md` — temuan visual: bahasa UI app sekarang campur Inggris/Indonesia secara luas (bukan cuma kategori), jadi cek juga apakah `AppLocalizations` dipakai konsisten di layar Categories atau cuma sebagian.
   Baca kode: `lib/domain/entities/category.dart`, `lib/database/tables/categories_table.dart`, `lib/data/repositories/drift_category_repository.dart`, `lib/domain/services/category_service.dart`, `lib/features/categories/presentation/categories_screen.dart`.
   Cari di mana kategori default (Makanan, Transportasi, dll) di-seed/insert. Tulis ke Log: apakah namanya hardcoded string Indonesia, apakah ada field pembeda kategori-default vs kategori-custom-user, apakah sudah ada mekanisme lokalisasi sama sekali, dan sejauh mana `AppLocalizations` sudah dipakai di layar ini vs hardcoded string.
@@ -115,22 +115,3 @@ Ditemukan dari perbandingan screenshot: UI app sekarang campur Inggris ("Dashboa
 File diubah: lib/features/categories/presentation/categories_screen.dart
 Perubahan: labelColor & unselectedLabelColor TabBar diganti pakai Theme.of(context).colorScheme.primary / onSurface.withOpacity(0.6). Tested light & dark mode, flutter analyze bersih.
 -->
-
-### A1 — selesai [23 Sep 2026]
-File: `lib/features/categories/presentation/categories_screen.dart` (perbaikan sudah ada di working tree, diubah 19:07 sebelum TASK.md dibuat — diverifikasi sesi ini, tidak ada tambahan kode).
-Isi fix: `TabBar` (tab Pengeluaran/Pemasukan) pakai `labelColor: colors.primary`, `unselectedLabelColor: colors.textSecondary`, `indicatorColor: colors.primary` via `AppColorsT.of(context)`; AppBar `backgroundColor: colors.background` — kontras jelas di light (hijau `1B6E4B` di atas `F4F6F5`) & dark (`34A873` di atas `0E1411`).
-`app_theme.dart` `tabBarTheme` light (putih) hanya berlaku untuk AppBar hijau default; kedua TabBar di app sudah override sendiri — tidak diubah.
-`flutter analyze`: 0 error; 1 warning `non_const_argument_for_const_parameter` (categories_screen.dart:155, pre-existing/identik di HEAD) + 59 info `prefer_const` — di luar scope A1.
-Catatan: file-nya `docs/TASK.md` (bukan TASKS.md).
-
-### B1 — selesai [23 Sep 2026] (AUDIT, tanpa ubah kode)
-Catatan referensi: `diff-mockup-vs-current.md` & `current-app-literal-description.md` **tidak ada** di `docs/` (hanya TASK, mockup-literal-description, fix_round2_progress, dead_controls_audit) — audit dilakukan langsung dari kode.
-
-Temuan:
-1. **Seeding**: `lib/main.dart` → `_seedDefaults(db)` (baris 87-123), jalan sekali saat `categoriesTable` kosong. 16 kategori expense + 8 income + 2 system (`balance_adjustment`, `transfer`). Nama di DB **hardcoded string Indonesia** (`'Makan & Minum'`, `'Transportasi'`, `'Belanja'`, dll) — itu fallback, bukan label final.
-2. **Field pembeda default vs custom**: sudah ada — kolom `systemKey` (nullable) di `categories_table.dart`, entity `Category.systemKey`, diisi saat seeding; kategori buatan user `systemKey = null`. → **B2 tidak perlu tambah kolom `defaultKey` — sudah ada, namanya `systemKey`**.
-3. **Mekanisme lokalisasi: SUDAH ADA & tampak lengkap** — helper `localizedCategoryName(l10n, systemKey, fallback)` di `lib/core/widgets/app_widgets.dart:8-65` me-map `systemKey` → key `categoryDefault*`; ARB `app_id.arb` & `app_en.arb` punya ~26 key `categoryDefault*` (ID + EN sudah terisi). Fallback dipakai kalau systemKey null/tidak dikenal.
-4. **Pemakaian di layar Categories**: `categories_screen.dart` sudah konsisten `AppLocalizations` (title, tab, noData, dialog hapus — via `localizedCategoryName`). `add_category_screen.dart` juga sudah (title `${l10n.add} ${l10n.categories}`, preset via `localizedCategoryName`).
-5. **Sisa hardcoded di 2 file layar kategori** (kandidat pekerjaan B2): `add_category_screen.dart` — `'CEPAT TAMBAH'` (l.81), SnackBar `'Masukkan nama kategori'` (l.164), `'Error: $e'` (l.184); `categories_screen.dart` — `'Error: $err'` (l.79). Helper `localizedCategoryName` juga sudah dipakai di ~10 layar lain (transactions, budgets, statistics, calendar, dashboard, recurring).
-
-Implikasi untuk B2: mayoritas pekerjaan B2 (kolom + key ARB + resolve label) **sudah terimplementasi**. Sisa B2 tinggal: (a) 5 hardcoded string di butir 5, (b) pastikan tidak ada layar yang render `cat.name` mentah tanpa `localizedCategoryName` — perlu grep menyeluruh saat B2 dikerjakan, (c) tidak perlu migration tambahan karena `systemKey` sudah ada di schema. Menunggu konfirmasi user mau lanjut B2 atau skip.

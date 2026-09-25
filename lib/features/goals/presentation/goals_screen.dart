@@ -99,6 +99,11 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen> {
     );
   }
 
+  Future<void> _togglePriority(Goal g) async {
+    final updated = g.copyWith(isPriority: !g.isPriority, updatedAt: DateTime.now());
+    await ref.read(goalsNotifierProvider.notifier).updateGoal(updated);
+  }
+
   List<Widget> _buildGoals(
     List<Goal> goals,
     AppLocalizations l10n,
@@ -108,16 +113,24 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen> {
     int Function(Goal) goalProgress,
   ) {
     if (goals.isEmpty) return [_buildEmpty(colors, l10n)];
-    final primary = goals.first;
-    final secondary = goals.skip(1).take(2).toList();
+    final sortedGoals = List<Goal>.from(goals)
+      ..sort((a, b) {
+        if (a.isPriority && !b.isPriority) return -1;
+        if (!a.isPriority && b.isPriority) return 1;
+        return 0;
+      });
+    final primary = sortedGoals.first;
+    final secondary = sortedGoals.skip(1).toList();
 
     return [
       GestureDetector(
         onTap: () => showGoalFormSheet(context, edit: primary),
         child: _buildPriority(primary, l10n, locale, colors, shadow, goalProgress),
       ),
-      const SizedBox(height: 12),
-      if (secondary.isNotEmpty) _buildSecondaryRow(secondary, l10n, locale, colors, shadow, goalProgress),
+      if (secondary.isNotEmpty) ...[
+        const SizedBox(height: 16),
+        _buildSecondaryGrid(secondary, l10n, locale, colors, shadow, goalProgress),
+      ],
     ];
   }
 
@@ -145,14 +158,24 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen> {
                 child: const Icon(Icons.star_rounded, color: AppColors.lilac, size: 16),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.lilac.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.lilac.withValues(alpha: 0.35)),
+              GestureDetector(
+                onTap: () => _togglePriority(g),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.lilac.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.lilac.withValues(alpha: 0.35)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(g.isPriority ? Icons.star_rounded : Icons.star_border_rounded, color: AppColors.lilac, size: 12),
+                      const SizedBox(width: 4),
+                      Text(l10n.priority, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.6, color: AppColors.lilac)),
+                    ],
+                  ),
                 ),
-                child: Text(l10n.priority, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.6, color: AppColors.lilac)),
               ),
             ],
           ),
@@ -185,7 +208,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen> {
                 onPressed: () => showPocketDepositSheet(
                   context,
                   pocketId: g.linkedAccountId!,
-                  pocketName: 'Kantong ${g.name}',
+                  pocketName: l10n.pocketName(g.name),
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.gold,
@@ -193,7 +216,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 icon: const Icon(Icons.savings_outlined, size: 16),
-                label: Text('Setor', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700)),
+                label: Text(l10n.deposit, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700)),
               ),
             ),
           ],
@@ -202,55 +225,86 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen> {
     );
   }
 
-  Widget _buildSecondaryRow(List<Goal> secondary, AppLocalizations l10n, String locale, AppColorsT colors, List<BoxShadow>? shadow, int Function(Goal) goalProgress) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: secondary.map((g) {
-        final current = goalProgress(g);
-        final pct = g.targetAmount > 0 ? (current / g.targetAmount * 100).round() : 0;
-        final pctValue = g.targetAmount > 0 ? (current / g.targetAmount).clamp(0.0, 1.0) : 0.0;
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => showGoalFormSheet(context, edit: g),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: colors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: colors.border),
-                boxShadow: shadow,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 32, height: 32,
-                    decoration: BoxDecoration(color: AppColors.lilac.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                    child: const Icon(Icons.savings_rounded, color: AppColors.lilac, size: 16),
+  Widget _buildSecondaryGrid(
+    List<Goal> secondary,
+    AppLocalizations l10n,
+    String locale,
+    AppColorsT colors,
+    List<BoxShadow>? shadow,
+    int Function(Goal) goalProgress,
+  ) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - 12) / 2;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: secondary.map((g) {
+            final current = goalProgress(g);
+            final pct = g.targetAmount > 0 ? (current / g.targetAmount * 100).round() : 0;
+            final pctValue = g.targetAmount > 0 ? (current / g.targetAmount).clamp(0.0, 1.0) : 0.0;
+            return SizedBox(
+              width: itemWidth,
+              child: GestureDetector(
+                onTap: () => showGoalFormSheet(context, edit: g),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: colors.border),
+                    boxShadow: shadow,
                   ),
-                  const SizedBox(height: 10),
-                  Text(g.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 6),
-                  Text(_short(current, locale), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: LinearProgressIndicator(
-                      value: pctValue,
-                      backgroundColor: colors.border,
-                      color: AppColors.lilac,
-                      minHeight: 4,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 32, height: 32,
+                            decoration: BoxDecoration(color: AppColors.lilac.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(Icons.savings_rounded, color: AppColors.lilac, size: 16),
+                          ),
+                          InkWell(
+                            onTap: () => _togglePriority(g),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                g.isPriority ? Icons.star_rounded : Icons.star_border_rounded,
+                                color: g.isPriority ? AppColors.gold : colors.textSecondary.withValues(alpha: 0.6),
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(g.name, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      const SizedBox(height: 4),
+                      Text(_short(current, locale), style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: colors.textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: LinearProgressIndicator(
+                          value: pctValue,
+                          backgroundColor: colors.border,
+                          color: AppColors.lilac,
+                          minHeight: 4,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(l10n.progress(pct), style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ],
                   ),
-                  const SizedBox(height: 6),
-                  Text(l10n.progress(pct), style: GoogleFonts.inter(fontSize: 11, color: colors.textSecondary)),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
     );
   }
 
