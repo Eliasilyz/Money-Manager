@@ -123,9 +123,13 @@ lib/
 
 ---
 
-## 📷 Screenshots
+## 📷 Tangkapan Layar
 
-<!-- TODO: add screenshots from dashboard, transactions, budgets screens -->
+<p align="center">
+  <img src="https://files.catbox.moe/salvzh.jpg" width="30%" alt="Dashboard Screen" />
+  <img src="https://files.catbox.moe/i91zx0.jpg" width="30%" alt="Transactions Screen" />
+  <img src="https://files.catbox.moe/0loypg.jpg" width="30%" alt="Budgets Screen" />
+</p>
 
 ---
 

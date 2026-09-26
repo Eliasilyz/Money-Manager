@@ -1,6 +1,6 @@
 # Money Manager
 
-A secure, **offline-first** personal finance app built with Flutter. Multi-account tracking, budgets, debts, recurring transactions, statistics, and encrypted Google Drive backup â€” with no mandatory internet, no third-party account, and no server in the middle.
+A secure, **offline-first** personal finance app built with Flutter. Multi-account tracking, budgets, debts, recurring transactions, statistics, and encrypted Google Drive backup : with no mandatory internet, no third-party account, and no server in the middle.
 
 | | |
 |---|---|
@@ -15,9 +15,9 @@ A secure, **offline-first** personal finance app built with Flutter. Multi-accou
 
 Most finance apps require an internet connection, a registered account, or store your records on someone else's server. Money Manager takes the opposite stance:
 
-- **100% offline-first** â€” all cash flows, balances, and records live in a local SQLite file on your device.
-- **Strong encryption** â€” optional AES-256-GCM + HMAC-SHA256 (encrypt-then-MAC) protection for backups and exports.
-- **Own your data** â€” cloud backup uploads directly to *your* Google Drive `appDataFolder`. No middleman database, no subscription.
+- **100% offline-first** : all cash flows, balances, and records live in a local SQLite file on your device.
+- **Strong encryption** : optional AES-256-GCM + HMAC-SHA256 (encrypt-then-MAC) protection for backups and exports.
+- **Own your data** : cloud backup uploads directly to *your* Google Drive `appDataFolder`. No middleman database, no subscription.
 
 ## Wiki contents
 

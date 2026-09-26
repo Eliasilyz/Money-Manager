@@ -84,10 +84,10 @@ Money Manager menerapkan pola arsitektur **Feature-First Clean Architecture**. S
 
 ```mermaid
 graph TD
-    UI[Lapisan Presentasi: Screen & Widget] -->|Mengkonsumsi| Provider[Lapisan Aplikasi: Riverpod Provider & Service]
-    Provider -->|Memanggil| Repo[Lapisan Domain / Data: Repository]
-    Repo -->|Kueri| DAO[Lapisan Database: Drift DAO]
-    DAO -->|Baca/Tulis| SQLite[(Database SQLite Lokal)]
+    A[Presentation Layer] -- Consumes --> B[Riverpod Providers]
+    B -- Calls --> C[Repositories]
+    C -- Queries --> D[Drift DAOs]
+    D -- Reads/Writes --> E[(Local SQLite)]
 ```
 
 ### Struktur Folder Utama
@@ -125,7 +125,11 @@ lib/
 
 ## 📷 Tangkapan Layar
 
-<!-- TODO: add screenshots from dashboard, transactions, budgets screens -->
+<p align="center">
+  <img src="https://files.catbox.moe/salvzh.jpg" width="30%" alt="Dashboard Screen" />
+  <img src="https://files.catbox.moe/i91zx0.jpg" width="30%" alt="Transactions Screen" />
+  <img src="https://files.catbox.moe/0loypg.jpg" width="30%" alt="Budgets Screen" />
+</p>
 
 ---
 
